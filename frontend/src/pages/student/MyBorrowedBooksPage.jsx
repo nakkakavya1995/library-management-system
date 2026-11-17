@@ -63,6 +63,28 @@ const MyBorrowedBooksPage = () => {
     }
   };
 
+  const handleRequestReturn = async (issueId, bookTitle) => {
+    if (!window.confirm(`Do you want to submit a return request for "${bookTitle}" to the librarian?`)) {
+      return;
+    }
+    try {
+      setActionLoading(true);
+      setError('');
+      setSuccess('');
+
+      const res = await api.post(`/issues/${issueId}/request-return`);
+      setSuccess(
+        res.data.message ||
+          `Return request submitted for "${bookTitle}"! The librarian will accept your return and restock the book.`
+      );
+      fetchMyBorrowed();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to submit return request');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   const handleReturnBook = async (issueId, bookTitle) => {
     if (!window.confirm(`Are you sure you want to return "${bookTitle}"?`)) {
       return;
@@ -197,46 +219,61 @@ const MyBorrowedBooksPage = () => {
                           </span>
                         </td>
                         <td>
-                          {item.renewalStatus === 'none' && (
+                          {item.returnStatus === 'requested' ? (
+                            <span className="badge bg-warning text-dark border">
+                              <i className="bi bi-clock-history me-1"></i>Return Requested
+                            </span>
+                          ) : item.renewalStatus === 'none' ? (
                             <span className="badge bg-light text-dark border">
                               Available (0/1 used)
                             </span>
-                          )}
-                          {item.renewalStatus === 'requested' && (
+                          ) : item.renewalStatus === 'requested' ? (
                             <span className="badge bg-light text-dark border">
-                              Request Pending
+                              Renewal Pending
                             </span>
-                          )}
-                          {item.renewalStatus === 'approved' && (
+                          ) : item.renewalStatus === 'approved' ? (
                             <span className="badge bg-light text-dark border">
                               Renewed (+7 days)
                             </span>
-                          )}
-                          {item.renewalStatus === 'rejected' && (
+                          ) : (
                             <span className="badge bg-light text-dark border">
                               Renewal Rejected
                             </span>
                           )}
                         </td>
                         <td className="text-end">
-                          <div className="d-flex justify-content-end align-items-center gap-1">
-                            <button
-                              className="btn btn-outline-dark btn-sm text-nowrap"
-                              onClick={() => handleReturnBook(item._id, item.book?.title)}
-                              disabled={actionLoading}
-                              title="Return this book to free up your borrowing limit"
-                            >
-                              <i className="bi bi-box-arrow-in-left me-1"></i> Return Book
-                            </button>
+                          <div className="d-flex justify-content-end align-items-center gap-2">
+                            {/* Extend / Renew button */}
                             {item.renewalStatus === 'none' && !item.isOverdue && item.renewalCount < 1 ? (
                               <button
-                                className="btn btn-outline-secondary btn-sm text-nowrap"
+                                className="btn btn-outline-dark btn-sm rounded-pill px-3 text-nowrap fw-semibold"
                                 onClick={() => handleRequestRenewal(item._id)}
                                 disabled={actionLoading}
+                                title="Request loan renewal"
                               >
-                                <i className="bi bi-arrow-repeat me-1"></i> Extend
+                                Extend / Renew
                               </button>
                             ) : null}
+
+                            {/* Request Return button - styled exactly as requested */}
+                            {item.returnStatus === 'requested' ? (
+                              <span
+                                className="badge rounded-pill bg-warning text-dark px-3 py-2 fw-semibold shadow-sm"
+                                title="Return request is awaiting librarian review"
+                              >
+                                <i className="bi bi-clock-history me-1"></i>Return Requested
+                              </span>
+                            ) : (
+                              <button
+                                className="btn text-white btn-sm rounded-pill px-3 text-nowrap fw-semibold shadow-sm"
+                                style={{ backgroundColor: '#10b981', borderColor: '#10b981' }}
+                                onClick={() => handleRequestReturn(item._id, item.book?.title)}
+                                disabled={actionLoading}
+                                title="Request return: send request to librarian to accept return and restock book"
+                              >
+                                Request Return
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>

@@ -10,6 +10,7 @@ const LibrarianDashboard = () => {
   const [books, setBooks] = useState([]);
   const [students, setStudents] = useState([]);
   const [reservations, setReservations] = useState([]);
+  const [returnRequests, setReturnRequests] = useState([]);
   const [pendingRenewals, setPendingRenewals] = useState([]);
   const [overdueList, setOverdueList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -33,9 +34,11 @@ const LibrarianDashboard = () => {
       setReservations(resRes.data.reservations?.slice(0, 10) || []);
 
       const activeIssues = issuesRes.data.issues || [];
+      const returns = activeIssues.filter((i) => i.returnStatus === 'requested');
       const renewals = activeIssues.filter((i) => i.renewalStatus === 'requested');
       const overdues = activeIssues.filter((i) => i.isOverdue);
 
+      setReturnRequests(returns);
       setPendingRenewals(renewals.slice(0, 5));
       setOverdueList(overdues.slice(0, 5));
     } catch (err) {
@@ -48,6 +51,19 @@ const LibrarianDashboard = () => {
   useEffect(() => {
     fetchDashboardData();
   }, []);
+
+  const handleAcceptReturn = async (issueId, bookTitle, studentName) => {
+    try {
+      const res = await api.put(`/issues/${issueId}/accept-return`, { finePaid: true });
+      setSuccess(
+        res.data.message ||
+          `Return accepted for "${bookTitle}" (${studentName})! The book has been restocked and the student can now borrow again.`
+      );
+      fetchDashboardData();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Error accepting return request');
+    }
+  };
 
   const handleQuickApproveReservation = async (reservationId) => {
     try {
@@ -230,6 +246,70 @@ const LibrarianDashboard = () => {
           )}
         </div>
       </div>
+
+      {/* Pending Return Requests (from students) */}
+      {returnRequests.length > 0 && (
+        <div className="card shadow-sm border mb-4 border-success">
+          <div
+            className="card-header text-white d-flex justify-content-between align-items-center"
+            style={{ backgroundColor: '#059669' }}
+          >
+            <span className="fw-semibold">
+              <i className="bi bi-box-arrow-in-left me-2"></i>Pending Return Requests ({returnRequests.length})
+            </span>
+            <span className="badge bg-white text-success fw-bold">Action Required</span>
+          </div>
+          <div className="card-body p-0">
+            <div className="table-responsive">
+              <table className="table table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>Book</th>
+                    <th>Student</th>
+                    <th>Requested On</th>
+                    <th>Due Date</th>
+                    <th className="text-end">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {returnRequests.map((r) => (
+                    <tr key={r._id}>
+                      <td>
+                        <div className="fw-semibold text-dark">{r.book?.title}</div>
+                        <small className="text-muted">{r.book?.author}</small>
+                      </td>
+                      <td>
+                        <div className="fw-semibold">{r.student?.name}</div>
+                        <small className="text-muted">{r.student?.studentId || r.student?.email}</small>
+                      </td>
+                      <td>
+                        <span className="badge bg-light text-dark border">
+                          {r.returnRequestDate ? new Date(r.returnRequestDate).toLocaleDateString() : 'Today'}
+                        </span>
+                      </td>
+                      <td>
+                        <span>{new Date(r.dueDate).toLocaleDateString()}</span>
+                        {r.isOverdue && (
+                          <span className="ms-2 badge bg-danger text-white">Overdue</span>
+                        )}
+                      </td>
+                      <td className="text-end">
+                        <button
+                          className="btn btn-success btn-sm text-nowrap fw-semibold shadow-sm rounded-pill px-3"
+                          style={{ backgroundColor: '#059669', borderColor: '#059669' }}
+                          onClick={() => handleAcceptReturn(r._id, r.book?.title, r.student?.name)}
+                        >
+                          <i className="bi bi-check2-circle me-1"></i>Accept Return & Restock
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Pending Renewal Requests (if any) */}
       {pendingRenewals.length > 0 && (

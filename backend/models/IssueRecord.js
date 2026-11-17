@@ -55,6 +55,15 @@ const issueRecordSchema = new mongoose.Schema(
       type: Date,
       default: null
     },
+    returnStatus: {
+      type: String,
+      enum: ['none', 'requested', 'accepted'],
+      default: 'none'
+    },
+    returnRequestDate: {
+      type: Date,
+      default: null
+    },
     returnNotes: {
       type: String,
       default: ''

@@ -160,9 +160,18 @@ const ReturnBookPage = () => {
                           </span>
                         </td>
                         <td>
-                          <span className="badge bg-light text-dark border">
-                            {record.isOverdue ? `${record.daysOverdue} days overdue` : 'On time'}
-                          </span>
+                          {record.returnStatus === 'requested' ? (
+                            <span
+                              className="badge text-white border-0 shadow-sm"
+                              style={{ backgroundColor: '#059669' }}
+                            >
+                              <i className="bi bi-bell-fill me-1"></i>Return Requested
+                            </span>
+                          ) : (
+                            <span className="badge bg-light text-dark border">
+                              {record.isOverdue ? `${record.daysOverdue} days overdue` : 'On time'}
+                            </span>
+                          )}
                         </td>
                         <td>
                           <span className="fw-bold text-dark">
@@ -171,10 +180,20 @@ const ReturnBookPage = () => {
                         </td>
                         <td className="text-end">
                           <button
-                            className="btn btn-dark btn-sm"
+                            className={`btn btn-sm ${
+                              record.returnStatus === 'requested'
+                                ? 'btn-success fw-semibold shadow-sm rounded-pill px-3'
+                                : 'btn-dark'
+                            }`}
+                            style={
+                              record.returnStatus === 'requested'
+                                ? { backgroundColor: '#059669', borderColor: '#059669' }
+                                : {}
+                            }
                             onClick={() => handleOpenReturnModal(record)}
                           >
-                            <i className="bi bi-box-arrow-in-left me-1"></i> Return
+                            <i className="bi bi-box-arrow-in-left me-1"></i>
+                            {record.returnStatus === 'requested' ? 'Accept Return' : 'Return'}
                           </button>
                         </td>
                       </tr>

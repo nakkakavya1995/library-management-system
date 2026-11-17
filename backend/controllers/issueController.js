@@ -277,49 +277,6 @@ const getAllBorrowings = async (req, res, next) => {
 const getMyBorrowings = async (req, res, next) => {
   try {
     const { status } = req.query;
-
-    // Auto-sync: Ensure any approved reservations for this student are actively in IssueRecord
-    try {
-      const approvedReservations = await Reservation.find({
-        student: req.user._id,
-        status: 'approved'
-      }).populate('book');
-
-      for (const resDoc of approvedReservations) {
-        if (resDoc.book) {
-          const bookId = resDoc.book._id || resDoc.book;
-          const activeIssue = await IssueRecord.findOne({
-            book: bookId,
-            student: req.user._id,
-            status: 'issued'
-          });
-
-          if (!activeIssue) {
-            const issueDate = resDoc.responseDate || new Date();
-            const dueDate = new Date(issueDate);
-            dueDate.setDate(dueDate.getDate() + 14);
-
-            await IssueRecord.create({
-              book: bookId,
-              student: req.user._id,
-              issuedBy: resDoc.handledBy || req.user._id,
-              issueDate,
-              dueDate,
-              status: 'issued'
-            });
-
-            if (resDoc.book.availableCopies > 0) {
-              await Book.findByIdAndUpdate(bookId, {
-                $inc: { availableCopies: -1 }
-              });
-            }
-          }
-        }
-      }
-    } catch (syncErr) {
-      console.error('[Sync Error in getMyBorrowings]:', syncErr.message);
-    }
-
     let query = { student: req.user._id };
 
     if (status) {
@@ -539,6 +496,135 @@ const sendOverdueNotification = async (req, res, next) => {
   }
 };
 
+// @desc   Student requests book return
+// @route  POST /api/issues/:id/request-return
+// @access Private (Student)
+const requestReturn = async (req, res, next) => {
+  try {
+    const issueRecord = await IssueRecord.findById(req.params.id);
+
+    if (!issueRecord) {
+      return res.status(404).json({ message: 'Borrowing record not found' });
+    }
+
+    if (issueRecord.student.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'You can only request return for your own borrowed books' });
+    }
+
+    if (issueRecord.status !== 'issued') {
+      return res.status(400).json({ message: 'Only active borrowed books can be requested for return' });
+    }
+
+    if (issueRecord.returnStatus === 'requested') {
+      return res.status(400).json({ message: 'Return request has already been submitted and is awaiting librarian acceptance' });
+    }
+
+    issueRecord.returnStatus = 'requested';
+    issueRecord.returnRequestDate = new Date();
+    await issueRecord.save();
+
+    res.json({
+      success: true,
+      message: 'Return request submitted successfully. The librarian will accept your return and restock the book.',
+      issue: issueRecord
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc   Librarian/Admin accepts student's return request
+// @route  PUT /api/issues/:id/accept-return
+// @access Private (Librarian, Admin)
+const acceptReturnRequest = async (req, res, next) => {
+  try {
+    const { returnNotes, finePaid } = req.body;
+    const issueRecord = await IssueRecord.findById(req.params.id)
+      .populate('book')
+      .populate('student', 'name email studentId');
+
+    if (!issueRecord) {
+      return res.status(404).json({ message: 'Issue record not found' });
+    }
+
+    if (issueRecord.status === 'returned') {
+      return res.status(400).json({ message: 'Book has already been returned' });
+    }
+
+    const returnDate = new Date();
+    const { daysOverdue, fine } = calculateFine(issueRecord.dueDate, returnDate);
+
+    issueRecord.status = 'returned';
+    issueRecord.returnStatus = 'accepted';
+    issueRecord.returnDate = returnDate;
+    issueRecord.fineAmount = fine;
+    issueRecord.finePaid = fine > 0 ? (finePaid === true || finePaid === 'true') : true;
+    if (returnNotes) issueRecord.returnNotes = returnNotes;
+
+    await issueRecord.save();
+
+    // Mark associated reservations completed
+    await Reservation.updateMany(
+      { book: issueRecord.book._id, student: issueRecord.student._id, status: { $in: ['pending', 'approved'] } },
+      { status: 'completed' }
+    );
+
+    // Restock book available copies
+    const book = await Book.findById(issueRecord.book._id);
+    let reservationNotified = null;
+
+    if (book) {
+      book.availableCopies = Math.min(book.totalCopies, book.availableCopies + 1);
+      await book.save();
+
+      // Notify any waiting student in reservation queue
+      const pendingReservation = await Reservation.findOne({
+        book: book._id,
+        status: 'pending'
+      })
+        .sort({ createdAt: 1 })
+        .populate('student', 'name email notificationPreferences');
+
+      if (pendingReservation && pendingReservation.student) {
+        pendingReservation.status = 'approved';
+        pendingReservation.availabilityNotified = true;
+        pendingReservation.notifiedAt = new Date();
+        pendingReservation.responseDate = new Date();
+        await pendingReservation.save();
+
+        if (pendingReservation.student?.notificationPreferences?.reservations !== false) {
+          sendBookAvailableEmail({
+            studentName: pendingReservation.student.name,
+            studentEmail: pendingReservation.student.email,
+            bookTitle: book.title,
+            bookAuthor: book.author,
+            bookIsbn: book.isbn,
+            bookCategory: book.category
+          }).catch((err) =>
+            console.error('[Email Notification Error]:', err.message)
+          );
+        }
+
+        reservationNotified = {
+          studentName: pendingReservation.student.name,
+          studentEmail: pendingReservation.student.email
+        };
+      }
+    }
+
+    res.json({
+      success: true,
+      message: `Return request accepted! "${issueRecord.book?.title}" is restocked. Student ${issueRecord.student?.name} can now borrow another book.`,
+      issue: issueRecord,
+      daysOverdue,
+      fineAmount: fine,
+      reservationNotified
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   issueBook,
   returnBook,
@@ -546,6 +632,8 @@ module.exports = {
   getMyBorrowings,
   requestRenewal,
   handleRenewalRequest,
+  requestReturn,
+  acceptReturnRequest,
   payFine,
   sendOverdueNotification
 };

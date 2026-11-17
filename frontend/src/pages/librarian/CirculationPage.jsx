@@ -137,17 +137,35 @@ const CirculationPage = () => {
                           </span>
                         </td>
                         <td>
-                          <span className="badge bg-light text-dark border">
-                            {item.isOverdue ? `Overdue (${item.daysOverdue}d)` : 'On time'}
-                          </span>
+                          {item.returnStatus === 'requested' ? (
+                            <span
+                              className="badge text-white border-0 shadow-sm"
+                              style={{ backgroundColor: '#059669' }}
+                            >
+                              <i className="bi bi-bell-fill me-1"></i>Return Requested
+                            </span>
+                          ) : (
+                            <span className="badge bg-light text-dark border">
+                              {item.isOverdue ? `Overdue (${item.daysOverdue}d)` : 'On time'}
+                            </span>
+                          )}
                         </td>
                         <td className="text-end">
                           <button
-                            className="btn btn-dark btn-sm me-1"
+                            className={`btn btn-sm ${
+                              item.returnStatus === 'requested'
+                                ? 'btn-success fw-semibold shadow-sm rounded-pill px-3'
+                                : 'btn-dark'
+                            }`}
+                            style={
+                              item.returnStatus === 'requested'
+                                ? { backgroundColor: '#059669', borderColor: '#059669' }
+                                : {}
+                            }
                             onClick={() => handleReturn(item._id)}
                             title="Return Book"
                           >
-                            Return
+                            {item.returnStatus === 'requested' ? 'Accept Return' : 'Return'}
                           </button>
                         </td>
                       </tr>
