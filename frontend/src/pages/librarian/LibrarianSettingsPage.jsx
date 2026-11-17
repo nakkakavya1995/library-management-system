@@ -125,28 +125,12 @@ const LibrarianSettingsPage = () => {
               </div>
             </div>
 
-            {/* Notification Toggle Box */}
+            {/* Notification Box */}
             <div className="card shadow-sm border mb-4">
               <div className="card-header bg-light fw-bold text-dark">
-                <i className="bi bi-bell me-2"></i>Notification Toggle
+                <i className="bi bi-bell me-2"></i>Notification
               </div>
               <div className="card-body p-4">
-                <div className="d-flex justify-content-between align-items-center py-2 border-bottom">
-                  <div>
-                    <div className="fw-semibold text-dark">Due Date Email Alerts</div>
-                    <small className="text-muted">Send automated reminders to students before due dates</small>
-                  </div>
-                  <div className="form-check form-switch m-0">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      name="notifyDueDates"
-                      checked={settings.notifyDueDates}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
-
                 <div className="d-flex justify-content-between align-items-center py-2 border-bottom">
                   <div>
                     <div className="fw-semibold text-dark">Late Fine Email Alerts</div>
