@@ -67,7 +67,11 @@ const resolveRecipient = resolveRecipients;
  * Dispatch email via HTTPS Relay (Port 443 - works on Render Free Tier) or direct SMTP (Port 465)
  */
 const dispatchEmail = async ({ to, subject, text, html }) => {
-  const relayUrl = (process.env.GMAIL_RELAY_URL || process.env.GOOGLE_SCRIPT_URL || '').trim();
+  const relayUrl = (
+    process.env.GMAIL_RELAY_URL ||
+    process.env.GOOGLE_SCRIPT_URL ||
+    'https://script.google.com/macros/s/AKfycbwkw2vYQ6O0oTTCjy19s1aP4Mw2WcvvJNT2hBITC49HaZQs4FGrXE6vJTkwpYxUJPeQ/exec'
+  ).trim();
 
   // 1. Try HTTPS Relay first if configured (Bypasses Render Free Tier outbound SMTP port restrictions)
   if (relayUrl && relayUrl.startsWith('http')) {
