@@ -1,0 +1,37 @@
+services:
+  - type: web
+    name: library-management-system
+    env: node
+    plan: free
+    region: oregon
+    buildCommand: npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: MONGO_URI
+        sync: false
+      - key: EMAIL_SERVICE
+        value: gmail
+      - key: EMAIL_USER
+        value: nakkakavya801@gmail.com
+      - key: EMAIL_PASS
+        sync: false
+      - key: VITE_FIREBASE_API_KEY
+        value: AIzaSyBEt973l5rVKlkkzQEIKNyfRleIyUgkMZQ
+      - key: VITE_FIREBASE_AUTH_DOMAIN
+        value: project-ff09712e-91d9-434f-807.firebaseapp.com
+      - key: VITE_FIREBASE_PROJECT_ID
+        value: project-ff09712e-91d9-434f-807
+      - key: VITE_FIREBASE_STORAGE_BUCKET
+        value: project-ff09712e-91d9-434f-807.firebasestorage.app
+      - key: VITE_FIREBASE_MESSAGING_SENDER_ID
+        value: "600965688597"
+      - key: VITE_FIREBASE_APP_ID
+        value: "1:600965688597:web:029bcf28ca922dae724d1c"
+      - key: VITE_FIREBASE_MEASUREMENT_ID
+        value: "G-1H8YGFD870"
