@@ -103,7 +103,13 @@ const dispatchEmail = async ({ to, subject, text, html }) => {
     to,
     subject,
     text,
-    html
+    html,
+    priority: 'high',
+    headers: {
+      'X-Priority': '1',
+      'X-MSMail-Priority': 'High',
+      'Importance': 'High'
+    }
   });
 
   console.log(`[Email Service] Delivered via SMTP to ${to} (MessageId: ${info.messageId})`);
@@ -140,7 +146,7 @@ const sendLoginAlertEmail = async ({ userName, userEmail, role, loginDate, login
       ? role.charAt(0).toUpperCase() + role.slice(1).toLowerCase()
       : 'Student';
 
-    const subject = 'Welcome to Library Management System';
+    const subject = `🔐 Library Account Login Alert - ${formattedTime} (${formattedDate})`;
 
     const text = `Hello ${userName || 'User'},
 
