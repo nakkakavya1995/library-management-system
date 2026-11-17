@@ -2,10 +2,10 @@
   "name": "library-management-system",
   "version": "1.0.0",
   "description": "Full-stack Library Management System with React, Express, MongoDB, and Firebase",
-  "main": "backend/server.js",
+  "main": "server.js",
   "scripts": {
     "build": "npm --prefix frontend install --include=dev && npm --prefix frontend run build && npm --prefix backend install",
-    "start": "node backend/server.js",
+    "start": "node server.js",
     "dev": "npm start"
   },
   "keywords": [],
