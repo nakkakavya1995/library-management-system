@@ -113,14 +113,16 @@ const login = async (req, res, next) => {
 
     const token = generateToken(user);
 
-    // Send automatic login notification email in background (non-blocking)
-    sendLoginAlertEmail({
-      userName: user.name,
-      userEmail: user.email,
-      role: user.role
-    }).catch((emailErr) => {
-      console.error('[Auth Controller] Error dispatching login alert email:', emailErr.message);
-    });
+    // Only send login alert email if explicitly enabled in user notification preferences
+    if (user.notificationPreferences?.loginAlerts === true) {
+      sendLoginAlertEmail({
+        userName: user.name,
+        userEmail: user.email,
+        role: user.role
+      }).catch((emailErr) => {
+        console.error('[Auth Controller] Error dispatching login alert email:', emailErr.message);
+      });
+    }
 
     res.json({
       success: true,
@@ -248,14 +250,16 @@ const googleAuth = async (req, res, next) => {
 
     const token = generateToken(user);
 
-    // Send automatic login notification email in background (non-blocking)
-    sendLoginAlertEmail({
-      userName: user.name,
-      userEmail: user.email,
-      role: user.role
-    }).catch((emailErr) => {
-      console.error('[Google Auth] Failed to dispatch login alert email:', emailErr.message);
-    });
+    // Only send login alert email if explicitly enabled in user notification preferences
+    if (user.notificationPreferences?.loginAlerts === true) {
+      sendLoginAlertEmail({
+        userName: user.name,
+        userEmail: user.email,
+        role: user.role
+      }).catch((emailErr) => {
+        console.error('[Google Auth] Failed to dispatch login alert email:', emailErr.message);
+      });
+    }
 
     res.json({
       success: true,

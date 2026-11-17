@@ -62,7 +62,8 @@ const userSchema = new mongoose.Schema(
     notificationPreferences: {
       dueDates: { type: Boolean, default: true },
       fines: { type: Boolean, default: true },
-      reservations: { type: Boolean, default: true }
+      reservations: { type: Boolean, default: true },
+      loginAlerts: { type: Boolean, default: false }
     }
   },
   {
