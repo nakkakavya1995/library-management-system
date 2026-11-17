@@ -25,6 +25,8 @@ const connectDB = async () => {
   } catch (error) {
     console.error(`MongoDB Connection Error: ${error.message}`);
     console.error('[MongoDB] If using MongoDB Atlas, ensure Network Access allows 0.0.0.0/0 (Anywhere).');
+    console.log('[MongoDB] Retrying database connection in 5 seconds...');
+    setTimeout(connectDB, 5000);
   }
 };
 

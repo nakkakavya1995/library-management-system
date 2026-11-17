@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
+const mongoose = require('mongoose');
 const connectDB = require('./config/db');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
@@ -19,7 +20,25 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', uptime: process.uptime() });
+  const dbStates = { 0: 'disconnected', 1: 'connected', 2: 'connecting', 3: 'disconnecting' };
+  const dbStatus = dbStates[mongoose.connection.readyState] || 'unknown';
+  res.json({
+    status: 'ok',
+    uptime: process.uptime(),
+    database: dbStatus,
+    hasMongoUri: Boolean(process.env.MONGO_URI)
+  });
+});
+
+// Reject database queries early with helpful message if DB is not connected
+app.use('/api', (req, res, next) => {
+  if (req.path === '/health') return next();
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({
+      message: 'Database is not connected. In Render, please verify MONGO_URI in Environment tab, and in MongoDB Atlas ensure Network Access has 0.0.0.0/0 allowed.'
+    });
+  }
+  next();
 });
 
 app.use('/api/auth', require('./routes/authRoutes'));
