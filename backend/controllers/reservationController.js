@@ -140,9 +140,12 @@ const updateReservationStatus = async (req, res, next) => {
 
     // If reservation is approved, give permission to borrow and automatically issue the book to the student
     if (status === 'approved' && reservation.book && reservation.student) {
+      const bookId = reservation.book._id || reservation.book;
+      const studentId = reservation.student._id || reservation.student;
+
       const activeIssue = await IssueRecord.findOne({
-        book: reservation.book._id,
-        student: reservation.student._id,
+        book: bookId,
+        student: studentId,
         status: 'issued'
       });
 
@@ -152,8 +155,8 @@ const updateReservationStatus = async (req, res, next) => {
         dueDate.setDate(dueDate.getDate() + 14);
 
         await IssueRecord.create({
-          book: reservation.book._id,
-          student: reservation.student._id,
+          book: bookId,
+          student: studentId,
           issuedBy: req.user._id,
           issueDate,
           dueDate,
@@ -161,10 +164,10 @@ const updateReservationStatus = async (req, res, next) => {
         });
 
         // Decrement available copies if in stock
-        if (reservation.book.availableCopies > 0) {
-          await Book.findByIdAndUpdate(reservation.book._id, {
-            $inc: { availableCopies: -1 }
-          });
+        const bookDoc = await Book.findById(bookId);
+        if (bookDoc && bookDoc.availableCopies > 0) {
+          bookDoc.availableCopies -= 1;
+          await bookDoc.save();
         }
       }
 

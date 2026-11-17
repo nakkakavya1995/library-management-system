@@ -265,6 +265,49 @@ const getAllBorrowings = async (req, res, next) => {
 const getMyBorrowings = async (req, res, next) => {
   try {
     const { status } = req.query;
+
+    // Auto-sync: Ensure any approved reservations for this student are actively in IssueRecord
+    try {
+      const approvedReservations = await Reservation.find({
+        student: req.user._id,
+        status: 'approved'
+      }).populate('book');
+
+      for (const resDoc of approvedReservations) {
+        if (resDoc.book) {
+          const bookId = resDoc.book._id || resDoc.book;
+          const activeIssue = await IssueRecord.findOne({
+            book: bookId,
+            student: req.user._id,
+            status: 'issued'
+          });
+
+          if (!activeIssue) {
+            const issueDate = resDoc.responseDate || new Date();
+            const dueDate = new Date(issueDate);
+            dueDate.setDate(dueDate.getDate() + 14);
+
+            await IssueRecord.create({
+              book: bookId,
+              student: req.user._id,
+              issuedBy: resDoc.handledBy || req.user._id,
+              issueDate,
+              dueDate,
+              status: 'issued'
+            });
+
+            if (resDoc.book.availableCopies > 0) {
+              await Book.findByIdAndUpdate(bookId, {
+                $inc: { availableCopies: -1 }
+              });
+            }
+          }
+        }
+      }
+    } catch (syncErr) {
+      console.error('[Sync Error in getMyBorrowings]:', syncErr.message);
+    }
+
     let query = { student: req.user._id };
 
     if (status) {

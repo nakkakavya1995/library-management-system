@@ -36,6 +36,23 @@ const StudentDashboard = () => {
 
   useEffect(() => {
     fetchDashboardData();
+
+    // Auto-refresh when student tab gains focus or becomes visible
+    const handleSync = () => fetchDashboardData();
+    window.addEventListener('focus', handleSync);
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') handleSync();
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    // Auto-sync interval to catch librarian approvals in real-time
+    const interval = setInterval(handleSync, 5000);
+
+    return () => {
+      window.removeEventListener('focus', handleSync);
+      document.removeEventListener('visibilitychange', handleVisibility);
+      clearInterval(interval);
+    };
   }, []);
 
   const handleCancelReservation = async (id) => {

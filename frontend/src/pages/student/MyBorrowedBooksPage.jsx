@@ -25,6 +25,23 @@ const MyBorrowedBooksPage = () => {
 
   useEffect(() => {
     fetchMyBorrowed();
+
+    // Auto-refresh when tab gains focus or becomes visible
+    const handleSync = () => fetchMyBorrowed();
+    window.addEventListener('focus', handleSync);
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') handleSync();
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    // Auto-sync interval to catch new issues in real-time
+    const interval = setInterval(handleSync, 5000);
+
+    return () => {
+      window.removeEventListener('focus', handleSync);
+      document.removeEventListener('visibilitychange', handleVisibility);
+      clearInterval(interval);
+    };
   }, []);
 
   const handleRequestRenewal = async (issueId) => {
