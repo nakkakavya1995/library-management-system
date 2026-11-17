@@ -57,11 +57,11 @@ const LibrarianSettingsPage = () => {
 
       <form onSubmit={handleSave}>
         <div className="row g-4">
-          {/* Operational Controls Config Matching Reference Image Screen 8 */}
+          {/* Library Settings */}
           <div className="col-lg-6">
             <div className="card shadow-sm border h-100">
               <div className="card-header bg-light fw-bold text-dark">
-                <i className="bi bi-sliders me-2"></i>Operational Controls Config
+                Library Settings
               </div>
               <div className="card-body p-4">
                 <div className="mb-3">
@@ -79,7 +79,7 @@ const LibrarianSettingsPage = () => {
                   <small className="text-muted">Standard number of days a student can borrow a book.</small>
                 </div>
 
-                <div className="mb-3">
+                <div className="mb-0">
                   <label className="form-label small fw-semibold">Maximum Borrow Limit Per Student</label>
                   <input
                     type="number"
@@ -92,21 +92,6 @@ const LibrarianSettingsPage = () => {
                     required
                   />
                   <small className="text-muted">Maximum number of concurrent active book checkouts.</small>
-                </div>
-
-                <div className="mb-3">
-                  <label className="form-label small fw-semibold">Renewal Extension Period (Days)</label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    name="renewalPeriodDays"
-                    value={settings.renewalPeriodDays}
-                    onChange={handleChange}
-                    min="1"
-                    max="30"
-                    required
-                  />
-                  <small className="text-muted">Days added upon approving a renewal request.</small>
                 </div>
               </div>
             </div>
