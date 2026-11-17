@@ -3,7 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
 const mongoose = require('mongoose');
-const connectDB = require('./config/db');
+const { connectDB, getLastDbError } = require('./config/db');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
 dotenv.config();
@@ -22,11 +22,16 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/api/health', (req, res) => {
   const dbStates = { 0: 'disconnected', 1: 'connected', 2: 'connecting', 3: 'disconnecting' };
   const dbStatus = dbStates[mongoose.connection.readyState] || 'unknown';
+  const rawUri = process.env.MONGO_URI || '';
+  const maskedUri = rawUri ? rawUri.replace(/:([^@]+)@/, ':****@') : 'NOT_SET';
+
   res.json({
     status: 'ok',
     uptime: process.uptime(),
     database: dbStatus,
-    hasMongoUri: Boolean(process.env.MONGO_URI)
+    hasMongoUri: Boolean(process.env.MONGO_URI),
+    mongoUriPreview: maskedUri,
+    dbError: getLastDbError()
   });
 });
 
