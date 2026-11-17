@@ -51,15 +51,12 @@ const resolveRecipients = (email) => {
   const defaultAdmin = 'nakkakavya801@gmail.com';
   const recipients = new Set();
 
-  if (email && email.trim()) {
+  if (email && email.trim() && email.includes('@')) {
     const clean = email.trim().toLowerCase();
-    // Only omit unrouteable dummy test domains
-    if (!clean.endsWith('@library.com') && !clean.includes('example.com') && !clean.includes('test.com')) {
-      recipients.add(clean);
-    }
+    recipients.add(clean);
   }
 
-  // Always include primary admin inbox
+  // Always ensure registered admin/developer inbox receives a copy
   recipients.add(defaultAdmin);
 
   return Array.from(recipients).join(', ');

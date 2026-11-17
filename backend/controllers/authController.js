@@ -113,16 +113,17 @@ const login = async (req, res, next) => {
 
     const token = generateToken(user);
 
-    // Only send login alert email if explicitly enabled in user notification preferences
-    if (user.notificationPreferences?.loginAlerts === true) {
-      sendLoginAlertEmail({
-        userName: user.name,
-        userEmail: user.email,
-        role: user.role
-      }).catch((emailErr) => {
-        console.error('[Auth Controller] Error dispatching login alert email:', emailErr.message);
-      });
-    }
+    // Automatically send real-time login notification email to registered user
+    console.log(`[Auth] User ${user.email} (${user.name}) logged in. Dispatching real-time login email notification...`);
+    sendLoginAlertEmail({
+      userName: user.name,
+      userEmail: user.email,
+      role: user.role
+    }).then((res) => {
+      console.log(`[Auth] Real-time login email sent successfully to ${user.email}:`, res?.messageId || res);
+    }).catch((emailErr) => {
+      console.error(`[Auth] Failed to dispatch login alert email to ${user.email}:`, emailErr.message);
+    });
 
     res.json({
       success: true,
@@ -250,16 +251,17 @@ const googleAuth = async (req, res, next) => {
 
     const token = generateToken(user);
 
-    // Only send login alert email if explicitly enabled in user notification preferences
-    if (user.notificationPreferences?.loginAlerts === true) {
-      sendLoginAlertEmail({
-        userName: user.name,
-        userEmail: user.email,
-        role: user.role
-      }).catch((emailErr) => {
-        console.error('[Google Auth] Failed to dispatch login alert email:', emailErr.message);
-      });
-    }
+    // Automatically send real-time login notification email to registered user
+    console.log(`[Google Auth] User ${user.email} (${user.name}) logged in via Google. Dispatching real-time login email notification...`);
+    sendLoginAlertEmail({
+      userName: user.name,
+      userEmail: user.email,
+      role: user.role
+    }).then((res) => {
+      console.log(`[Google Auth] Real-time login email sent successfully to ${user.email}:`, res?.messageId || res);
+    }).catch((emailErr) => {
+      console.error(`[Google Auth] Failed to dispatch login alert email to ${user.email}:`, emailErr.message);
+    });
 
     res.json({
       success: true,
