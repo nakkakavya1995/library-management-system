@@ -203,7 +203,19 @@ const Sidebar = () => {
           )}
         </NavLink>
 
+        {/* 8. Reports */}
         {/* 8. Settings */}
+        <NavLink
+          to="/admin/reports"
+          className={({ isActive }) => `sidebar-pill-item ${isActive ? 'active' : ''}`}
+        >
+          <span className="sidebar-item-icon">
+            <i className="bi bi-bar-chart-fill"></i>
+          </span>
+          <span className="sidebar-item-text">Reports</span>
+        </NavLink>
+
+        {/* 9. Settings */}
         <NavLink
           to="/admin/settings"
           className={({ isActive }) => `sidebar-pill-item ${isActive ? 'active' : ''}`}
