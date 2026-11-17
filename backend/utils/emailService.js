@@ -28,7 +28,7 @@ const getSender = () => {
   return `"Library Management System" <${user}>`;
 };
 
-// Route demo emails (@library.com) to real user Gmail address so notifications are always delivered
+// Route demo emails (@library.com, navya@gmail.com, etc.) to real user Gmail address so notifications are always delivered
 const resolveRecipient = (email) => {
   const defaultAdmin = (process.env.EMAIL_USER || 'nakkakavya801@gmail.com').trim();
   if (!email) return defaultAdmin;
@@ -36,7 +36,8 @@ const resolveRecipient = (email) => {
   if (
     clean.toLowerCase().endsWith('@library.com') ||
     clean.toLowerCase().includes('example.com') ||
-    clean.toLowerCase().includes('test.com')
+    clean.toLowerCase().includes('test.com') ||
+    clean.toLowerCase() === 'navya@gmail.com'
   ) {
     return defaultAdmin;
   }
