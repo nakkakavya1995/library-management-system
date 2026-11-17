@@ -88,7 +88,15 @@ const login = async (req, res, next) => {
       return res.status(400).json({ message: 'Please provide email and password' });
     }
 
-    const user = await User.findOne({ email });
+    const identifier = (email || '').trim();
+    const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const user = await User.findOne({
+      $or: [
+        { email: { $regex: new RegExp(`^${escapeRegex(identifier)}$`, 'i') } },
+        { name: { $regex: new RegExp(`^${escapeRegex(identifier)}$`, 'i') } },
+        { studentId: identifier }
+      ]
+    });
     if (!user) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }

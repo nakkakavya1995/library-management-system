@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import AlertMessage from '../../components/AlertMessage';
@@ -7,6 +7,15 @@ import { signInWithGoogle, resetPasswordWithFirebase } from '../../services/fire
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [inputsReady, setInputsReady] = useState(false);
+
+  useEffect(() => {
+    // Delay removing readonly state slightly to prevent aggressive browser autofill
+    const timer = setTimeout(() => {
+      setInputsReady(true);
+    }, 250);
+    return () => clearTimeout(timer);
+  }, []);
   const [error, setError] = useState(() => {
     if (typeof window !== 'undefined' && window.location.search.includes('expired=true')) {
       return 'Your session has expired or database was reset. Please log in again with your credentials.';
@@ -151,17 +160,25 @@ const LoginPage = () => {
 
           <AlertMessage type="danger" message={error} onClose={() => setError('')} />
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} autoComplete="off">
+            {/* Dummy hidden inputs to absorb browser autofill */}
+            <input type="text" style={{ display: 'none' }} tabIndex="-1" autoComplete="off" />
+            <input type="password" style={{ display: 'none' }} tabIndex="-1" autoComplete="new-password" />
+
             <div className="mb-3">
-              <label className="form-label small fw-semibold">Email Address</label>
+              <label className="form-label small fw-semibold">User Name</label>
               <div className="input-group">
-                <span className="input-group-text bg-light"><i className="bi bi-envelope"></i></span>
+                <span className="input-group-text bg-light"><i className="bi bi-person"></i></span>
                 <input
-                  type="email"
+                  type="text"
+                  name="user_login_identity"
                   className="form-control"
-                  placeholder="aarav.sharma@college.edu"
+                  placeholder="Enter user name"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="off"
+                  readOnly={!inputsReady}
+                  onFocus={() => setInputsReady(true)}
                   required
                 />
               </div>
@@ -187,10 +204,14 @@ const LoginPage = () => {
                 <span className="input-group-text bg-light"><i className="bi bi-lock"></i></span>
                 <input
                   type="password"
+                  name="user_login_passcode"
                   className="form-control"
-                  placeholder="••••••••"
+                  placeholder="Enter password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="new-password"
+                  readOnly={!inputsReady}
+                  onFocus={() => setInputsReady(true)}
                   required
                 />
               </div>
