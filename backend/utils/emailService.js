@@ -587,6 +587,130 @@ Library Management System Team`;
   }
 };
 
+const sendRenewalDecisionEmail = async ({
+  studentName,
+  studentEmail,
+  bookTitle,
+  action,
+  extensionDays = 14,
+  newDueDate,
+  currentDueDate
+}) => {
+  try {
+    if (!studentEmail) return { success: false, reason: 'No email provided' };
+
+    const isApproved = action === 'approve';
+    const formattedDueDate = newDueDate
+      ? new Date(newDueDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+      : '';
+    const formattedCurrentDue = currentDueDate
+      ? new Date(currentDueDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+      : '';
+
+    const subject = isApproved
+      ? `Renewal Request Approved: "${bookTitle}" (+${extensionDays} days)`
+      : `Renewal Request Update: "${bookTitle}"`;
+
+    const text = isApproved
+      ? `Dear ${studentName || 'Student'},\n\nYour renewal request for "${bookTitle}" has been APPROVED by the librarian.\nExtension Granted: ${extensionDays} days\nNew Return Due Date: ${formattedDueDate}\n\nThank you,\nLibrary Management System`
+      : `Dear ${studentName || 'Student'},\n\nYour renewal request for "${bookTitle}" was not approved at this time.\nCurrent Due Date: ${formattedCurrentDue}\nPlease return the book on time to avoid overdue fines.\n\nThank you,\nLibrary Management System`;
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+        <div style="background: #111827; padding: 20px 24px; text-align: center;">
+          <h2 style="color: #ffffff; margin: 0; font-size: 20px; font-weight: 600;">Library Management System</h2>
+        </div>
+        <div style="padding: 24px; color: #374151; line-height: 1.6;">
+          <p style="font-size: 16px; margin-top: 0;">Hello <strong>${studentName || 'Student'}</strong>,</p>
+          <div style="background: ${isApproved ? '#ecfdf5' : '#fef2f2'}; border-left: 4px solid ${isApproved ? '#10b981' : '#ef4444'}; padding: 14px 18px; border-radius: 4px; margin: 16px 0;">
+            <p style="margin: 0; font-size: 15px; font-weight: bold; color: ${isApproved ? '#065f46' : '#991b1b'};">
+              ${isApproved ? `Renewal Request Approved (+${extensionDays} Days)` : 'Renewal Request Not Approved'}
+            </p>
+          </div>
+
+          <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 18px; margin: 20px 0;">
+            <p style="margin: 0 0 10px; font-weight: bold; font-size: 13px; text-transform: uppercase; color: #4b5563;">Book Loan Details:</p>
+            <p style="margin: 6px 0;"><strong>Book Title:</strong> ${bookTitle}</p>
+            <p style="margin: 6px 0;"><strong>Student Name:</strong> ${studentName || 'Student'}</p>
+            ${isApproved ? `<p style="margin: 6px 0;"><strong>Extension Period:</strong> ${extensionDays} days</p>` : ''}
+            <p style="margin: 6px 0; color: ${isApproved ? '#059669' : '#b45309'};">
+              <strong>${isApproved ? 'New Due Date:' : 'Current Due Date:'}</strong> <strong>${isApproved ? formattedDueDate : formattedCurrentDue}</strong>
+            </p>
+          </div>
+
+          <p style="color: #4b5563; font-size: 14px;">
+            ${isApproved
+              ? 'Your borrowed book due date has been updated in your student dashboard.'
+              : 'Please return the book to the library before the due date to prevent overdue fines.'}
+          </p>
+
+          <p style="margin: 24px 0 4px;">Thank you,</p>
+          <p style="margin: 0; font-weight: bold; color: #111827;">Library Management System</p>
+        </div>
+      </div>
+    `;
+
+    return await dispatchEmail({
+      to: resolveRecipients(studentEmail),
+      subject,
+      text,
+      html
+    });
+  } catch (error) {
+    console.error('[Email] Failed to send renewal decision email:', error.message);
+    return { success: false, error: error.message };
+  }
+};
+
+const sendReturnAcceptedEmail = async ({ studentName, studentEmail, bookTitle }) => {
+  try {
+    if (!studentEmail) return { success: false, reason: 'No email provided' };
+
+    const subject = `Book Return Accepted & Restocked: "${bookTitle}"`;
+    const text = `Dear ${studentName || 'Student'},\n\nYour return for "${bookTitle}" has been accepted by the librarian. The book is restocked and your active loan count has been updated.\n\nYou can now borrow another book from the library catalog.\n\nThank you,\nLibrary Management System`;
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+        <div style="background: #111827; padding: 20px 24px; text-align: center;">
+          <h2 style="color: #ffffff; margin: 0; font-size: 20px; font-weight: 600;">Library Management System</h2>
+        </div>
+        <div style="padding: 24px; color: #374151; line-height: 1.6;">
+          <p style="font-size: 16px; margin-top: 0;">Hello <strong>${studentName || 'Student'}</strong>,</p>
+          <div style="background: #ecfdf5; border-left: 4px solid #10b981; padding: 14px 18px; border-radius: 4px; margin: 16px 0;">
+            <p style="margin: 0; font-size: 15px; font-weight: bold; color: #065f46;">
+              Return Accepted &amp; Restocked
+            </p>
+          </div>
+
+          <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 18px; margin: 20px 0;">
+            <p style="margin: 0 0 10px; font-weight: bold; font-size: 13px; text-transform: uppercase; color: #4b5563;">Return Details:</p>
+            <p style="margin: 6px 0;"><strong>Book Title:</strong> ${bookTitle}</p>
+            <p style="margin: 6px 0;"><strong>Student Name:</strong> ${studentName || 'Student'}</p>
+            <p style="margin: 6px 0; color: #059669;"><strong>Status:</strong> Returned &amp; Completed</p>
+          </div>
+
+          <p style="color: #4b5563; font-size: 14px;">
+            Your active loan slot is now freed up. You can browse the book catalog and borrow another book anytime.
+          </p>
+
+          <p style="margin: 24px 0 4px;">Thank you,</p>
+          <p style="margin: 0; font-weight: bold; color: #111827;">Library Management System</p>
+        </div>
+      </div>
+    `;
+
+    return await dispatchEmail({
+      to: resolveRecipients(studentEmail),
+      subject,
+      text,
+      html
+    });
+  } catch (error) {
+    console.error('[Email] Failed to send return accepted email:', error.message);
+    return { success: false, error: error.message };
+  }
+};
+
 module.exports = {
   getTransporter,
   sendLoginAlertEmail,
@@ -594,5 +718,7 @@ module.exports = {
   sendOverdueFineEmail,
   sendDueDateReminderEmail,
   sendBookAvailableEmail,
-  sendReservationApprovedEmail
+  sendReservationApprovedEmail,
+  sendRenewalDecisionEmail,
+  sendReturnAcceptedEmail
 };

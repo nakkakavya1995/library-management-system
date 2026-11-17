@@ -6,7 +6,9 @@ const calculateFine = require('../utils/calculateFine');
 const {
   sendOverdueFineEmail,
   sendBookAvailableEmail,
-  sendReservationApprovedEmail
+  sendReservationApprovedEmail,
+  sendRenewalDecisionEmail,
+  sendReturnAcceptedEmail
 } = require('../utils/emailService');
 const { checkAndSendOverdueNotifications } = require('../services/overdueChecker');
 const {
@@ -203,6 +205,19 @@ const returnBook = async (req, res, next) => {
       }
     }
 
+    // Send return acceptance email to student
+    try {
+      if (issueRecord.student?.email) {
+        await sendReturnAcceptedEmail({
+          studentName: issueRecord.student.name,
+          studentEmail: issueRecord.student.email,
+          bookTitle: issueRecord.book?.title || 'Book'
+        });
+      }
+    } catch (emailErr) {
+      console.warn('[Return Acceptance Email Notice]:', emailErr.message);
+    }
+
     res.json({
       success: true,
       message: reservationNotified
@@ -369,13 +384,15 @@ const requestRenewal = async (req, res, next) => {
       });
     }
 
+    const extensionDays = parseInt(req.body.days, 10) || 14;
     issueRecord.renewalStatus = 'requested';
     issueRecord.renewalRequestDate = new Date();
+    issueRecord.requestedExtensionDays = extensionDays;
     await issueRecord.save();
 
     res.json({
       success: true,
-      message: 'Renewal request submitted successfully for librarian approval',
+      message: `Renewal request for ${extensionDays} days submitted successfully for librarian approval`,
       issue: issueRecord
     });
   } catch (error) {
@@ -388,7 +405,7 @@ const requestRenewal = async (req, res, next) => {
 // @access Private (Librarian, Admin)
 const handleRenewalRequest = async (req, res, next) => {
   try {
-    const { action } = req.body; // 'approve' or 'reject'
+    const { action, days } = req.body; // 'approve' or 'reject'
 
     if (!['approve', 'reject'].includes(action)) {
       return res.status(400).json({ message: 'Action must be approve or reject' });
@@ -406,22 +423,42 @@ const handleRenewalRequest = async (req, res, next) => {
       return res.status(400).json({ message: 'No renewal request pending for this record' });
     }
 
+    const previousDueDate = issueRecord.dueDate;
+    const extensionDays = parseInt(days, 10) || issueRecord.requestedExtensionDays || 14;
+
     if (action === 'approve') {
-      // Extend due date by RENEWAL_EXTENSION_DAYS
       const currentDue = new Date(issueRecord.dueDate);
-      currentDue.setDate(currentDue.getDate() + RENEWAL_EXTENSION_DAYS);
+      currentDue.setDate(currentDue.getDate() + extensionDays);
       issueRecord.dueDate = currentDue;
       issueRecord.renewalStatus = 'approved';
       issueRecord.renewalCount += 1;
+      issueRecord.requestedExtensionDays = extensionDays;
     } else {
       issueRecord.renewalStatus = 'rejected';
     }
 
     await issueRecord.save();
 
+    // Send email notification to registered student email
+    try {
+      if (issueRecord.student?.email) {
+        await sendRenewalDecisionEmail({
+          studentName: issueRecord.student.name,
+          studentEmail: issueRecord.student.email,
+          bookTitle: issueRecord.book?.title || 'Book',
+          action,
+          extensionDays,
+          newDueDate: issueRecord.dueDate,
+          currentDueDate: previousDueDate
+        });
+      }
+    } catch (emailErr) {
+      console.warn('[Renewal Decision Email Notice]:', emailErr.message);
+    }
+
     res.json({
       success: true,
-      message: `Renewal request ${action === 'approve' ? 'approved' : 'rejected'} successfully`,
+      message: `Renewal request ${action === 'approve' ? `approved (extended by ${extensionDays} days)` : 'rejected'} successfully`,
       issue: issueRecord
     });
   } catch (error) {
@@ -610,6 +647,19 @@ const acceptReturnRequest = async (req, res, next) => {
           studentEmail: pendingReservation.student.email
         };
       }
+    }
+
+    // Send return acceptance email to student
+    try {
+      if (issueRecord.student?.email) {
+        await sendReturnAcceptedEmail({
+          studentName: issueRecord.student.name,
+          studentEmail: issueRecord.student.email,
+          bookTitle: issueRecord.book?.title || 'Book'
+        });
+      }
+    } catch (emailErr) {
+      console.warn('[Return Acceptance Email Notice]:', emailErr.message);
     }
 
     res.json({

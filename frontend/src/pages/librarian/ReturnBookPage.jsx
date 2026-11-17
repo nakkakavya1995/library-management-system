@@ -52,10 +52,9 @@ const ReturnBookPage = () => {
       });
 
       setSuccess(
-        `${res.data.message} ${
-          res.data.fineAmount > 0
-            ? `Fine recorded: ₹${res.data.fineAmount} (${finePaid ? 'Paid' : 'Unpaid'}).`
-            : ''
+        `${res.data.message} ${res.data.fineAmount > 0
+          ? `Fine recorded: ₹${res.data.fineAmount} (${finePaid ? 'Paid' : 'Unpaid'}).`
+          : ''
         }`
       );
 

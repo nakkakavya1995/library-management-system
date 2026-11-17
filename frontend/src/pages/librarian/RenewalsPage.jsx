@@ -5,6 +5,7 @@ import AlertMessage from '../../components/AlertMessage';
 
 const RenewalsPage = () => {
   const [issues, setIssues] = useState([]);
+  const [extensionDaysMap, setExtensionDaysMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -25,10 +26,13 @@ const RenewalsPage = () => {
     fetchIssues();
   }, []);
 
-  const handleRenewalAction = async (id, action) => {
+  const handleRenewalAction = async (id, action, customDays) => {
     try {
-      await api.put(`/issues/${id}/handle-renewal`, { action });
-      setSuccess(`Renewal request ${action === 'approve' ? 'approved (+7 days extended)' : 'rejected'}`);
+      const selectedDays = customDays || extensionDaysMap[id] || 14;
+      await api.put(`/issues/${id}/handle-renewal`, { action, days: selectedDays });
+      setSuccess(
+        `Renewal request ${action === 'approve' ? `approved (extended by ${selectedDays} days)` : 'rejected'}`
+      );
       fetchIssues();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to process renewal');
@@ -58,71 +62,135 @@ const RenewalsPage = () => {
             <i className="bi bi-clock-history me-2"></i>Pending Renewals ({pendingRenewals.length})
           </span>
         </div>
-        <div className="card-body p-0">
+        <div className="card-body">
           {loading ? (
             <LoadingSpinner text="Checking renewal requests..." />
-          ) : (
-            <div className="table-responsive">
-              <table className="table table-hover align-middle mb-0">
-                <thead>
-                  <tr>
-                    <th>Book</th>
-                    <th>Student</th>
-                    <th>Current Due Date</th>
-                    <th>Renewals Used</th>
-                    <th>Request Date</th>
-                    <th className="text-end">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {pendingRenewals.length > 0 ? (
-                    pendingRenewals.map((item) => (
-                      <tr key={item._id}>
-                        <td>
-                          <div className="fw-semibold">{item.book?.title}</div>
-                        </td>
-                        <td>
-                          <div className="fw-semibold">{item.student?.name}</div>
-                          <small className="text-muted">
-                            {item.student?.studentId} • {item.student?.email}
-                          </small>
-                        </td>
-                        <td>
-                          <span className="fw-semibold">{new Date(item.dueDate).toLocaleDateString()}</span>
-                        </td>
-                        <td>{item.renewalCount || 0} of 1</td>
-                        <td>
-                          {item.renewalRequestDate
-                            ? new Date(item.renewalRequestDate).toLocaleDateString()
-                            : 'Recent'}
-                        </td>
-                        <td className="text-end">
-                          <div className="btn-group btn-group-sm">
-                            <button
-                              className="btn btn-dark"
-                              onClick={() => handleRenewalAction(item._id, 'approve')}
-                            >
-                              <i className="bi bi-check-lg me-1"></i> Approve
-                            </button>
-                            <button
-                              className="btn btn-outline-secondary"
-                              onClick={() => handleRenewalAction(item._id, 'reject')}
-                            >
-                              <i className="bi bi-x-lg me-1"></i> Reject
-                            </button>
+          ) : pendingRenewals.length > 0 ? (
+            <div className="row g-3">
+              {pendingRenewals.map((item) => {
+                const selectedDays = extensionDaysMap[item._id] || item.requestedExtensionDays || 14;
+                const formattedDate = new Date(item.dueDate).toLocaleDateString('en-GB', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric'
+                });
+
+                return (
+                  <div key={item._id} className="col-12 col-md-6 col-xl-5">
+                    <div
+                      className="p-4 shadow-sm"
+                      style={{
+                        backgroundColor: '#000000',
+                        color: '#ffffff',
+                        borderRadius: '12px',
+                        border: '1px solid #1f2937'
+                      }}
+                    >
+                      {/* Title & Badge */}
+                      <div className="mb-3">
+                        <div className="text-white fw-bold mb-2" style={{ fontSize: '1.15rem' }}>
+                          Renewal Requests
+                        </div>
+                        <span
+                          style={{
+                            backgroundColor: '#3b1700',
+                            color: '#f97316',
+                            border: '1px solid #7c2d12',
+                            borderRadius: '9999px',
+                            padding: '4px 14px',
+                            fontSize: '0.82rem',
+                            fontWeight: '600',
+                            display: 'inline-block'
+                          }}
+                        >
+                          Pending Request
+                        </span>
+                      </div>
+
+                      {/* Metadata items */}
+                      <div className="mb-4" style={{ fontSize: '0.98rem', lineHeight: '2' }}>
+                        <div>
+                          <span style={{ color: '#9ca3af' }}>Student: </span>
+                          <span className="fw-semibold text-white">{item.student?.name || 'Student'}</span>
+                        </div>
+                        <div>
+                          <span style={{ color: '#9ca3af' }}>Book: </span>
+                          <span className="fw-semibold text-white">{item.book?.title || 'Book'}</span>
+                        </div>
+                        <div>
+                          <span style={{ color: '#9ca3af' }}>Current Due Date: </span>
+                          <span className="text-white">{formattedDate}</span>
+                        </div>
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div>
+                            <span style={{ color: '#9ca3af' }}>Requested Extension: </span>
+                            <span className="fw-semibold text-white">{selectedDays} days</span>
                           </div>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="6" className="text-center py-4 text-muted">
-                        No pending loan renewal requests.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+                          <select
+                            className="form-select form-select-sm bg-black text-white border-secondary py-0 px-2"
+                            style={{ width: '95px', fontSize: '0.78rem', height: '28px' }}
+                            value={selectedDays}
+                            onChange={(e) =>
+                              setExtensionDaysMap({
+                                ...extensionDaysMap,
+                                [item._id]: parseInt(e.target.value, 10)
+                              })
+                            }
+                            title="Change extension days"
+                          >
+                            <option value={7}>7 days</option>
+                            <option value={14}>14 days</option>
+                            <option value={21}>21 days</option>
+                            <option value={30}>30 days</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      {/* Action Buttons matching screenshot */}
+                      <div className="d-flex gap-3">
+                        <button
+                          type="button"
+                          className="btn fw-semibold"
+                          style={{
+                            backgroundColor: '#059669',
+                            borderColor: '#059669',
+                            color: '#ffffff',
+                            borderRadius: '9999px',
+                            padding: '8px 24px',
+                            flex: 1,
+                            fontSize: '0.95rem'
+                          }}
+                          onClick={() => handleRenewalAction(item._id, 'approve', selectedDays)}
+                        >
+                          Approve
+                        </button>
+                        <button
+                          type="button"
+                          className="btn fw-semibold"
+                          style={{
+                            backgroundColor: 'transparent',
+                            borderColor: '#dc2626',
+                            color: '#ef4444',
+                            border: '1.5px solid #dc2626',
+                            borderRadius: '9999px',
+                            padding: '8px 24px',
+                            flex: 1,
+                            fontSize: '0.95rem'
+                          }}
+                          onClick={() => handleRenewalAction(item._id, 'reject')}
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-4 text-muted">
+              <i className="bi bi-clock-history fs-3 d-block mb-1 text-muted"></i>
+              No pending loan renewal requests.
             </div>
           )}
         </div>

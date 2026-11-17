@@ -53,8 +53,8 @@ const MyBorrowedBooksPage = () => {
       setError('');
       setSuccess('');
 
-      await api.post(`/issues/${issueId}/request-renewal`);
-      setSuccess('Renewal request submitted! Awaiting librarian approval.');
+      await api.post(`/issues/${issueId}/request-renewal`, { days: 14 });
+      setSuccess('Renewal request for 14 days submitted! Awaiting librarian approval.');
       fetchMyBorrowed();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to request renewal');
@@ -243,30 +243,38 @@ const MyBorrowedBooksPage = () => {
                         </td>
                         <td className="text-end">
                           <div className="d-flex justify-content-end align-items-center gap-2">
-                            {/* Extend / Renew button */}
+                            {/* Extend / Renew button matching user styling */}
                             {item.renewalStatus === 'none' && !item.isOverdue && item.renewalCount < 1 ? (
                               <button
-                                className="btn btn-outline-dark btn-sm rounded-pill px-3 text-nowrap fw-semibold"
+                                className="btn text-white btn-sm rounded-pill px-3 py-1 fw-medium text-nowrap"
+                                style={{ backgroundColor: '#111827', border: '1px solid #4b5563' }}
                                 onClick={() => handleRequestRenewal(item._id)}
                                 disabled={actionLoading}
-                                title="Request loan renewal"
+                                title="Request loan renewal (+14 days)"
                               >
                                 Extend / Renew
                               </button>
+                            ) : item.renewalStatus === 'requested' ? (
+                              <span
+                                className="badge rounded-pill bg-warning text-dark px-3 py-1 fw-semibold"
+                                title="Renewal request pending librarian review"
+                              >
+                                <i className="bi bi-hourglass-split me-1"></i>Renewal Pending
+                              </span>
                             ) : null}
 
-                            {/* Request Return button - styled exactly as requested */}
+                            {/* Request Return button matching user styling */}
                             {item.returnStatus === 'requested' ? (
                               <span
-                                className="badge rounded-pill bg-warning text-dark px-3 py-2 fw-semibold shadow-sm"
+                                className="badge rounded-pill bg-warning text-dark px-3 py-1 fw-semibold shadow-sm"
                                 title="Return request is awaiting librarian review"
                               >
                                 <i className="bi bi-clock-history me-1"></i>Return Requested
                               </span>
                             ) : (
                               <button
-                                className="btn text-white btn-sm rounded-pill px-3 text-nowrap fw-semibold shadow-sm"
-                                style={{ backgroundColor: '#10b981', borderColor: '#10b981' }}
+                                className="btn text-white btn-sm rounded-pill px-3 py-1 fw-medium text-nowrap shadow-sm"
+                                style={{ backgroundColor: '#059669', borderColor: '#059669' }}
                                 onClick={() => handleRequestReturn(item._id, item.book?.title)}
                                 disabled={actionLoading}
                                 title="Request return: send request to librarian to accept return and restock book"

@@ -13,6 +13,7 @@ const LibrarianDashboard = () => {
   const [returnRequests, setReturnRequests] = useState([]);
   const [pendingRenewals, setPendingRenewals] = useState([]);
   const [overdueList, setOverdueList] = useState([]);
+  const [extensionDaysMap, setExtensionDaysMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -75,13 +76,16 @@ const LibrarianDashboard = () => {
     }
   };
 
-  const handleQuickApproveRenewal = async (issueId) => {
+  const handleRenewalDecision = async (issueId, action, customDays) => {
     try {
-      await api.put(`/issues/${issueId}/handle-renewal`, { action: 'approve' });
-      setSuccess('Renewal approved successfully (extended by 7 days)');
+      const selectedDays = customDays || extensionDaysMap[issueId] || 14;
+      await api.put(`/issues/${issueId}/handle-renewal`, { action, days: selectedDays });
+      setSuccess(
+        `Renewal request ${action === 'approve' ? `approved (extended by ${selectedDays} days)` : 'rejected'}`
+      );
       fetchDashboardData();
     } catch (err) {
-      setError(err.response?.data?.message || 'Error approving renewal');
+      setError(err.response?.data?.message || 'Error processing renewal request');
     }
   };
 
@@ -311,50 +315,129 @@ const LibrarianDashboard = () => {
         </div>
       )}
 
-      {/* Pending Renewal Requests (if any) */}
+      {/* Renewal Requests Card Matching User Reference Screenshot */}
       {pendingRenewals.length > 0 && (
-        <div className="card shadow-sm border mb-4">
-          <div className="card-header bg-light d-flex justify-content-between align-items-center">
-            <span className="fw-semibold">
-              <i className="bi bi-arrow-repeat me-2"></i>Pending Renewal Requests ({pendingRenewals.length})
-            </span>
-          </div>
-          <div className="card-body p-0">
-            <div className="table-responsive">
-              <table className="table table-hover align-middle mb-0">
-                <thead>
-                  <tr>
-                    <th>Book</th>
-                    <th>Member</th>
-                    <th>Due Date</th>
-                    <th className="text-end">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {pendingRenewals.map((r) => (
-                    <tr key={r._id}>
-                      <td>
-                        <div className="fw-semibold">{r.book?.title}</div>
-                        <small className="text-muted">{r.book?.author}</small>
-                      </td>
-                      <td>
-                        <div>{r.student?.name}</div>
-                        <small className="text-muted">{r.student?.studentId || r.student?.email}</small>
-                      </td>
-                      <td>{new Date(r.dueDate).toLocaleDateString()}</td>
-                      <td className="text-end">
-                        <button
-                          className="btn btn-dark btn-sm"
-                          onClick={() => handleQuickApproveRenewal(r._id)}
+        <div className="mb-4">
+          <div className="row g-3">
+            {pendingRenewals.map((r) => {
+              const selectedDays = extensionDaysMap[r._id] || r.requestedExtensionDays || 14;
+              const formattedDate = new Date(r.dueDate).toLocaleDateString('en-GB', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+              });
+
+              return (
+                <div key={r._id} className="col-12 col-md-6 col-xl-5">
+                  <div
+                    className="p-4 shadow-sm"
+                    style={{
+                      backgroundColor: '#000000',
+                      color: '#ffffff',
+                      borderRadius: '12px',
+                      border: '1px solid #1f2937'
+                    }}
+                  >
+                    {/* Title & Badge */}
+                    <div className="mb-3">
+                      <div className="text-white fw-bold mb-2" style={{ fontSize: '1.15rem' }}>
+                        Renewal Requests
+                      </div>
+                      <span
+                        style={{
+                          backgroundColor: '#3b1700',
+                          color: '#f97316',
+                          border: '1px solid #7c2d12',
+                          borderRadius: '9999px',
+                          padding: '4px 14px',
+                          fontSize: '0.82rem',
+                          fontWeight: '600',
+                          display: 'inline-block'
+                        }}
+                      >
+                        Pending Request
+                      </span>
+                    </div>
+
+                    {/* Metadata items */}
+                    <div className="mb-4" style={{ fontSize: '0.98rem', lineHeight: '2' }}>
+                      <div>
+                        <span style={{ color: '#9ca3af' }}>Student: </span>
+                        <span className="fw-semibold text-white">{r.student?.name || 'Student'}</span>
+                      </div>
+                      <div>
+                        <span style={{ color: '#9ca3af' }}>Book: </span>
+                        <span className="fw-semibold text-white">{r.book?.title || 'Book'}</span>
+                      </div>
+                      <div>
+                        <span style={{ color: '#9ca3af' }}>Current Due Date: </span>
+                        <span className="text-white">{formattedDate}</span>
+                      </div>
+                      <div className="d-flex justify-content-between align-items-center">
+                        <div>
+                          <span style={{ color: '#9ca3af' }}>Requested Extension: </span>
+                          <span className="fw-semibold text-white">{selectedDays} days</span>
+                        </div>
+                        <select
+                          className="form-select form-select-sm bg-black text-white border-secondary py-0 px-2"
+                          style={{ width: '95px', fontSize: '0.78rem', height: '28px' }}
+                          value={selectedDays}
+                          onChange={(e) =>
+                            setExtensionDaysMap({
+                              ...extensionDaysMap,
+                              [r._id]: parseInt(e.target.value, 10)
+                            })
+                          }
+                          title="Change extension days"
                         >
-                          <i className="bi bi-check2 me-1"></i>Approve (+7d)
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                          <option value={7}>7 days</option>
+                          <option value={14}>14 days</option>
+                          <option value={21}>21 days</option>
+                          <option value={30}>30 days</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons matching screenshot */}
+                    <div className="d-flex gap-3">
+                      <button
+                        type="button"
+                        className="btn fw-semibold"
+                        style={{
+                          backgroundColor: '#059669',
+                          borderColor: '#059669',
+                          color: '#ffffff',
+                          borderRadius: '9999px',
+                          padding: '8px 24px',
+                          flex: 1,
+                          fontSize: '0.95rem'
+                        }}
+                        onClick={() => handleRenewalDecision(r._id, 'approve', selectedDays)}
+                      >
+                        Approve
+                      </button>
+                      <button
+                        type="button"
+                        className="btn fw-semibold"
+                        style={{
+                          backgroundColor: 'transparent',
+                          borderColor: '#dc2626',
+                          color: '#ef4444',
+                          border: '1.5px solid #dc2626',
+                          borderRadius: '9999px',
+                          padding: '8px 24px',
+                          flex: 1,
+                          fontSize: '0.95rem'
+                        }}
+                        onClick={() => handleRenewalDecision(r._id, 'reject')}
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

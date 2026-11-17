@@ -55,6 +55,10 @@ const issueRecordSchema = new mongoose.Schema(
       type: Date,
       default: null
     },
+    requestedExtensionDays: {
+      type: Number,
+      default: 14
+    },
     returnStatus: {
       type: String,
       enum: ['none', 'requested', 'accepted'],
