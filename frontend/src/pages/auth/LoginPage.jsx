@@ -80,7 +80,8 @@ const LoginPage = () => {
       if (errCode === 'auth/popup-blocked') {
         setError('Google Sign-In popup was blocked by your browser. Please allow popups for this site and try again.');
       } else if (errCode === 'auth/unauthorized-domain') {
-        setError('This domain is not authorized in Firebase Console. Please add localhost to Firebase Authentication -> Settings -> Authorized Domains.');
+        const currentHost = window.location.hostname;
+        setError(`This domain (${currentHost}) is not authorized in Firebase Console. Please add "${currentHost}" to Firebase Console -> Authentication -> Settings -> Authorized Domains.`);
       } else if (errCode === 'auth/network-request-failed') {
         setError('Network Error: Could not reach Google Authentication servers. Please check your internet connection.');
       } else if (err.code === 'ERR_NETWORK' || errMsg === 'Network Error' || errMsg.includes('Network Error')) {
