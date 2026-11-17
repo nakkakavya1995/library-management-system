@@ -10,7 +10,6 @@ const Sidebar = () => {
 
   const [usersMenuOpen, setUsersMenuOpen] = useState(false);
   const [booksMenuOpen, setBooksMenuOpen] = useState(false);
-  const [notificationCount, setNotificationCount] = useState(0);
 
   // Automatically keep submenus open if we are on those paths
   useEffect(() => {
@@ -22,29 +21,6 @@ const Sidebar = () => {
       setUsersMenuOpen(true);
     }
   }, [location.pathname]);
-
-  // Fetch live notifications count for admin
-  useEffect(() => {
-    if (user && user.role === 'admin') {
-      const fetchAlertsCount = async () => {
-        try {
-          const [issuesRes, resRes] = await Promise.all([
-            api.get('/issues'),
-            api.get('/reservations?status=pending')
-          ]);
-          const overdue = issuesRes.data.issues?.filter(
-            (i) => i.status === 'issued' && i.isOverdue
-          ).length || 0;
-          const pendingRes = resRes.data.reservations?.length || 0;
-          const total = overdue + pendingRes;
-          setNotificationCount(total);
-        } catch (e) {
-          setNotificationCount(0);
-        }
-      };
-      fetchAlertsCount();
-    }
-  }, [user]);
 
   if (!user) return null;
 
@@ -189,22 +165,7 @@ const Sidebar = () => {
           <span className="sidebar-item-text">Fines</span>
         </NavLink>
 
-        {/* 7. Notifications */}
-        <NavLink
-          to="/admin/notifications"
-          className={({ isActive }) => `sidebar-pill-item ${isActive ? 'active' : ''}`}
-        >
-          <span className="sidebar-item-icon">
-            <i className="bi bi-bell-fill"></i>
-          </span>
-          <span className="sidebar-item-text">Notifications</span>
-          {notificationCount > 0 && (
-            <span className="sidebar-red-badge">{notificationCount}</span>
-          )}
-        </NavLink>
-
-        {/* 8. Reports */}
-        {/* 8. Settings */}
+        {/* 7. Reports */}
         <NavLink
           to="/admin/reports"
           className={({ isActive }) => `sidebar-pill-item ${isActive ? 'active' : ''}`}

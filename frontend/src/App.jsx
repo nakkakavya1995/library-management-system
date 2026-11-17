@@ -85,7 +85,7 @@ function App() {
           <Route path="/admin/borrowings" element={<AdminActivityPage />} />
           <Route path="/admin/reservations" element={<AdminReservationsPage />} />
           <Route path="/admin/fines" element={<AdminFinesPage />} />
-          <Route path="/admin/notifications" element={<AdminNotificationsPage />} />
+          <Route path="/admin/notifications" element={<Navigate to="/admin" replace />} />
           <Route path="/admin/settings" element={<AdminSettingsPage />} />
         </Route>
       </Route>
