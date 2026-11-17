@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AlertMessage from '../../components/AlertMessage';
+import api from '../../services/api';
 
 const LibrarianSettingsPage = () => {
   const [settings, setSettings] = useState(() => {
@@ -22,6 +23,29 @@ const LibrarianSettingsPage = () => {
   });
 
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [testEmail, setTestEmail] = useState('nakkakavya801@gmail.com');
+  const [testingEmail, setTestingEmail] = useState(false);
+  const [testResult, setTestResult] = useState(null);
+  const [testError, setTestError] = useState('');
+
+  const handleSendTestEmail = async (e) => {
+    e.preventDefault();
+    setTestingEmail(true);
+    setTestResult(null);
+    setTestError('');
+    try {
+      const res = await api.get(`/auth/test-email?email=${encodeURIComponent(testEmail.trim())}&type=login`);
+      if (res.data?.success) {
+        setTestResult(res.data);
+      } else {
+        setTestError(res.data?.result?.error || 'Failed to dispatch email');
+      }
+    } catch (err) {
+      setTestError(err.response?.data?.error || err.message || 'Error communicating with email service');
+    } finally {
+      setTestingEmail(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -173,6 +197,68 @@ const LibrarianSettingsPage = () => {
           </button>
         </div>
       </form>
+
+      {/* Real-Time Email Diagnostic & Delivery Card */}
+      <div className="card shadow-sm border mt-4">
+        <div className="card-header bg-light d-flex justify-content-between align-items-center">
+          <span className="fw-semibold text-dark">
+            <i className="bi bi-envelope-check me-2"></i>Real-Time Email Notification Diagnostics
+          </span>
+          <span className="badge bg-success-subtle text-success border border-success">
+            SMTP &amp; Relay Active
+          </span>
+        </div>
+        <div className="card-body">
+          <p className="small text-muted mb-3">
+            Send a real-time login test email directly to verify instant email delivery via Nodemailer SMTP to your inbox (<code>nakkakavya801@gmail.com</code>).
+          </p>
+
+          {testResult && (
+            <div className="alert alert-success py-2 px-3 small mb-3">
+              <i className="bi bi-check-circle-fill me-2"></i>
+              <strong>Email Dispatched Successfully!</strong> Sent to <strong>{testResult.targetEmail}</strong> via <strong>{testResult.result?.via || 'SMTP'}</strong> (Message ID: <code>{testResult.result?.messageId || 'Delivered'}</code>). Check your inbox or spam folder!
+            </div>
+          )}
+
+          {testError && (
+            <div className="alert alert-danger py-2 px-3 small mb-3">
+              <i className="bi bi-exclamation-triangle-fill me-2"></i>
+              <strong>Email Delivery Issue:</strong> {testError}
+            </div>
+          )}
+
+          <form onSubmit={handleSendTestEmail} className="d-flex flex-wrap gap-2 align-items-center">
+            <div className="input-group input-group-sm" style={{ maxWidth: '340px' }}>
+              <span className="input-group-text bg-light"><i className="bi bi-envelope"></i></span>
+              <input
+                type="email"
+                className="form-control"
+                placeholder="Recipient Email"
+                value={testEmail}
+                onChange={(e) => setTestEmail(e.target.value)}
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              className="btn btn-success btn-sm px-3 fw-semibold rounded-pill"
+              disabled={testingEmail}
+              style={{ backgroundColor: '#059669', borderColor: '#059669' }}
+            >
+              {testingEmail ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                  Sending...
+                </>
+              ) : (
+                <>
+                  <i className="bi bi-send me-1"></i> Send Real-Time Test Email
+                </>
+              )}
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 };

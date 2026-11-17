@@ -387,32 +387,13 @@ const LibrarianDashboard = () => {
                           <span style={{ color: '#9ca3af' }}>Current Due Date: </span>
                           <span className="text-white">{formattedDate}</span>
                         </div>
-                        <div className="d-flex justify-content-between align-items-center">
-                          <div>
-                            <span style={{ color: '#9ca3af' }}>Requested Extension: </span>
-                            <span className="fw-semibold text-white">{selectedDays} days</span>
-                          </div>
-                          <select
-                            className="form-select form-select-sm bg-black text-white border-secondary py-0 px-2"
-                            style={{ width: '95px', fontSize: '0.78rem', height: '28px' }}
-                            value={selectedDays}
-                            onChange={(e) =>
-                              setExtensionDaysMap({
-                                ...extensionDaysMap,
-                                [r._id]: parseInt(e.target.value, 10)
-                              })
-                            }
-                            title="Change extension days"
-                          >
-                            <option value={7}>7 days</option>
-                            <option value={14}>14 days</option>
-                            <option value={21}>21 days</option>
-                            <option value={30}>30 days</option>
-                          </select>
+                        <div>
+                          <span style={{ color: '#9ca3af' }}>Requested Extension: </span>
+                          <span className="fw-semibold text-white">{selectedDays} days</span>
                         </div>
                       </div>
 
-                      {/* Action Buttons: Accept Renewal & Reject */}
+                      {/* Action Buttons: Approve & Reject matching Image 3 */}
                       <div className="d-flex gap-3">
                         <button
                           type="button"
@@ -424,12 +405,12 @@ const LibrarianDashboard = () => {
                             borderRadius: '9999px',
                             padding: '8px 20px',
                             flex: 1,
-                            fontSize: '0.92rem'
+                            fontSize: '0.95rem'
                           }}
                           onClick={() => handleRenewalDecision(r._id, 'approve', selectedDays)}
-                          title="Accept the renewal request from user"
+                          title="Approve renewal request (+14 days)"
                         >
-                          <i className="bi bi-check2-circle me-1"></i>Accept Renewal (+{selectedDays}d)
+                          Approve
                         </button>
                         <button
                           type="button"
@@ -442,12 +423,12 @@ const LibrarianDashboard = () => {
                             borderRadius: '9999px',
                             padding: '8px 20px',
                             flex: 1,
-                            fontSize: '0.92rem'
+                            fontSize: '0.95rem'
                           }}
                           onClick={() => handleRenewalDecision(r._id, 'reject')}
                           title="Reject renewal request"
                         >
-                          <i className="bi bi-x-circle me-1"></i>Reject
+                          Reject
                         </button>
                       </div>
                     </div>
