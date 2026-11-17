@@ -47,8 +47,7 @@ const AdminReservationsPage = () => {
     <div>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <h3 className="fw-bold mb-1">Reservations & Queue</h3>
-          <p className="text-muted small mb-0">Monitor reservation queue, book allocations, and pickup fulfillments.</p>
+          <h3 className="fw-bold mb-1">Reservations</h3>
         </div>
       </div>
 
@@ -127,7 +126,7 @@ const AdminReservationsPage = () => {
                         <td>{new Date(res.createdAt).toLocaleDateString()}</td>
                         <td>
                           <span className="badge bg-light text-dark border text-capitalize">
-                            {res.status === 'pending' ? 'In Queue' : res.status === 'approved' ? 'Ready for Pickup' : res.status}
+                            {res.status === 'pending' ? 'Pending' : res.status === 'approved' ? 'Ready for Pickup' : res.status}
                           </span>
                         </td>
                         <td>
