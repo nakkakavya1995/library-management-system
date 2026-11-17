@@ -244,7 +244,7 @@ const Sidebar = () => {
         </NavLink>
         <NavLink to="/librarian/circulation" className={({ isActive }) => `sidebar-pill-item ${isActive ? 'active' : ''}`}>
           <span className="sidebar-item-icon"><i className="bi bi-arrow-left-right"></i></span>
-          <span className="sidebar-item-text">Circulation</span>
+          <span className="sidebar-item-text">Issue & Return</span>
         </NavLink>
         <NavLink to="/librarian/reservations" className={({ isActive }) => `sidebar-pill-item ${isActive ? 'active' : ''}`}>
           <span className="sidebar-item-icon"><i className="bi bi-bookmark-fill"></i></span>

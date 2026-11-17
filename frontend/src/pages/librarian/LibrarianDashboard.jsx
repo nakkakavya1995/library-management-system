@@ -77,11 +77,11 @@ const LibrarianDashboard = () => {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h3 className="fw-bold mb-1">Dashboard</h3>
-          <p className="text-muted small mb-0">Overview of circulation, inventory, member activity, and transactions</p>
+          <p className="text-muted small mb-0">Overview of book issues and returns, inventory, member activity, and transactions</p>
         </div>
         <div className="d-flex gap-2">
           <Link to="/librarian/circulation" className="btn btn-dark btn-sm">
-            <i className="bi bi-arrow-left-right me-1"></i> Circulation Desk
+            <i className="bi bi-arrow-left-right me-1"></i> Issue & Return
           </Link>
           <Link to="/librarian/books" className="btn btn-outline-secondary btn-sm">
             <i className="bi bi-plus-circle me-1"></i> Manage Books

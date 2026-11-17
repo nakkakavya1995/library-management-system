@@ -78,8 +78,8 @@ const CirculationPage = () => {
     <div>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <h3 className="fw-bold mb-1">Circulation</h3>
-          <p className="text-muted small mb-0">Unified circulation desk for managing active checkouts, loan requests, and returns</p>
+          <h3 className="fw-bold mb-1">Issue & Return</h3>
+          <p className="text-muted small mb-0">Unified desk for managing book issues, loan requests, and returns</p>
         </div>
         <div className="d-flex gap-2">
           <Link to="/librarian/issue" className="btn btn-dark btn-sm">
