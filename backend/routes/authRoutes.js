@@ -32,5 +32,40 @@ router.get('/test-email', async (req, res) => {
   }
 });
 
+router.get('/test-ports', async (req, res) => {
+  const net = require('net');
+  const ports = [587, 465, 2525, 25, 80, 443];
+  const results = {};
+
+  const testPort = (port) => {
+    return new Promise((resolve) => {
+      const socket = new net.Socket();
+      socket.setTimeout(3000);
+      socket.on('connect', () => {
+        results[port] = 'OPEN / CONNECTED';
+        socket.destroy();
+        resolve();
+      });
+      socket.on('timeout', () => {
+        results[port] = 'TIMEOUT (Blocked by firewall)';
+        socket.destroy();
+        resolve();
+      });
+      socket.on('error', (err) => {
+        results[port] = `ERROR: ${err.message}`;
+        socket.destroy();
+        resolve();
+      });
+      socket.connect(port, 'smtp.gmail.com');
+    });
+  };
+
+  for (const p of ports) {
+    await testPort(p);
+  }
+
+  res.json({ results });
+});
+
 module.exports = router;
 
