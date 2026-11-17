@@ -35,11 +35,12 @@ if (process.env.NODE_ENV === 'production') {
   const distPath = path.resolve(__dirname, '../frontend/dist');
   app.use(express.static(distPath));
 
-  app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api')) {
-      return next();
+  // SPA fallback for all non-API GET requests (Express 5 compatible)
+  app.use((req, res, next) => {
+    if (req.method === 'GET' && !req.path.startsWith('/api')) {
+      return res.sendFile(path.resolve(distPath, 'index.html'));
     }
-    res.sendFile(path.resolve(distPath, 'index.html'));
+    next();
   });
 }
 
