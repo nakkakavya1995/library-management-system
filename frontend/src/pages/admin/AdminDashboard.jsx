@@ -241,7 +241,6 @@ const AdminDashboard = () => {
             value={totalBooksCount}
             icon="bi-book"
             color="info"
-            subtitle={`${stats?.totalCopies || 0} total copies`}
           />
         </div>
       </div>
