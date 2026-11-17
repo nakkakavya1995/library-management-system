@@ -7,7 +7,12 @@ import { signInWithGoogle, resetPasswordWithFirebase } from '../../services/fire
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [error, setError] = useState(() => {
+    if (typeof window !== 'undefined' && window.location.search.includes('expired=true')) {
+      return 'Your session has expired or database was reset. Please log in again with your credentials.';
+    }
+    return '';
+  });
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 

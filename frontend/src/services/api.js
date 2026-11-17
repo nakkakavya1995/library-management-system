@@ -38,9 +38,18 @@ api.interceptors.response.use(
     }
 
     if (error.response && error.response.status === 401) {
-      // Clear token and user if unauthorized
+      // Clear token and user if unauthorized or token expired
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+
+      // Auto-redirect to login page if user was on a protected page
+      if (
+        typeof window !== 'undefined' &&
+        !window.location.pathname.includes('/login') &&
+        !window.location.pathname.includes('/register')
+      ) {
+        window.location.href = '/login?expired=true';
+      }
     }
     return Promise.reject(error);
   }
