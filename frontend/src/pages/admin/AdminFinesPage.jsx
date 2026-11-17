@@ -93,7 +93,7 @@ const AdminFinesPage = () => {
         </div>
         <div className="col-12 col-sm-6 col-xl-4">
           <div className="card shadow-sm border p-3 bg-white">
-            <div className="text-muted small fw-semibold">Collected Revenue</div>
+            <div className="text-muted small fw-semibold">Collected Fines</div>
             <div className="h3 fw-bold mb-0 text-dark">₹{(stats?.totalCollectedFine || 0).toFixed(2)}</div>
             <small className="text-muted">Cleared fine records</small>
           </div>
