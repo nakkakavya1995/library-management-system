@@ -72,18 +72,6 @@ const MyFinesPage = () => {
         </div>
       </div>
 
-      {/* Fine Policy Banner */}
-      <div className="alert alert-secondary border mb-4">
-        <div className="d-flex align-items-center gap-2 mb-1">
-          <i className="bi bi-info-circle fs-5"></i>
-          <h6 className="fw-bold mb-0">Library Late Return Fine Policy</h6>
-        </div>
-        <p className="small mb-0">
-          Books not returned by their scheduled due date accrue a late fee of <strong>₹5.00 per day</strong>.
-          Fines can be paid directly to the librarian when returning the book. Outstanding fines over ₹50 may temporarily hold borrowing privileges.
-        </p>
-      </div>
-
       {/* Search Input */}
       <div className="card shadow-sm border mb-4">
         <div className="card-body p-3">
