@@ -224,14 +224,13 @@ const AdminDashboard = () => {
           />
         </div>
 
-        {/* 3. Overdue Fines */}
+        {/* 3. Total Fines */}
         <div className="col-12 col-sm-6 col-xl-3">
           <StatsCard
-            title="Overdue Fines"
+            title="Total Fines"
             value={`₹${overdueFines.toFixed(2)}`}
             icon="bi-cash-coin"
             color="danger"
-            subtitle="Fine rate: ₹5.00 / day"
           />
         </div>
 

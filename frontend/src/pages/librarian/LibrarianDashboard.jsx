@@ -116,14 +116,13 @@ const LibrarianDashboard = () => {
           />
         </div>
 
-        {/* 3. Overdue Fines */}
+        {/* 3. Total Fines */}
         <div className="col-12 col-sm-6 col-xl-3">
           <StatsCard
-            title="Overdue Fines"
+            title="Total Fines"
             value={`₹${(stats?.totalUnpaidFine || 0).toFixed(2)}`}
             icon="bi-cash-coin"
             color="danger"
-            subtitle="₹5.00 / overdue day"
           />
         </div>
 

@@ -65,27 +65,14 @@ const OverdueBooksPage = () => {
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
       <AlertMessage type="success" message={success} onClose={() => setSuccess('')} />
 
-      {/* Summary Box Matching Reference Image Screen 6 */}
+      {/* Summary Box */}
       <div className="row g-3 mb-4">
-        <div className="col-md-6">
+        <div className="col-12 col-md-6 col-xl-4">
           <div className="card bg-light border text-dark shadow-sm">
             <div className="card-body d-flex align-items-center justify-content-between p-3">
               <div>
-                <div className="small fw-semibold text-uppercase text-muted">Total Overdue Records</div>
-                <div className="h3 fw-bold mb-0">{issues.length}</div>
-                <small className="text-muted">Active loans past due date</small>
-              </div>
-              <i className="bi bi-clock-history fs-2 text-muted"></i>
-            </div>
-          </div>
-        </div>
-        <div className="col-md-6">
-          <div className="card bg-light border text-dark shadow-sm">
-            <div className="card-body d-flex align-items-center justify-content-between p-3">
-              <div>
-                <div className="small fw-semibold text-uppercase text-muted">Accumulated Late Fines</div>
+                <div className="small fw-semibold text-uppercase text-muted">Total Fines</div>
                 <div className="h3 fw-bold mb-0">₹{totalOverdueFines.toFixed(2)}</div>
-                <small className="text-muted">Calculated at ₹5.00 / overdue day</small>
               </div>
               <i className="bi bi-cash-coin fs-2 text-muted"></i>
             </div>
