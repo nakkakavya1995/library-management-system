@@ -99,7 +99,8 @@ const issueBook = async (req, res, next) => {
         studentName: student.name,
         studentEmail: student.email,
         bookTitle: book.title,
-        bookAuthor: book.author
+        bookAuthor: book.author,
+        dueDate: issueRecord.dueDate
       }).catch((err) => console.error('[Email Notification Error]:', err.message));
     }
 

@@ -373,11 +373,23 @@ Library Management System`;
   }
 };
 
-const sendReservationApprovedEmail = async ({ studentName, studentEmail, bookTitle, bookAuthor }) => {
+const sendReservationApprovedEmail = async ({ studentName, studentEmail, bookTitle, bookAuthor, dueDate }) => {
   try {
     if (!studentEmail) return { success: false, reason: 'No email provided' };
 
     const transporter = await getTransporter();
+    const formattedDueDate = dueDate
+      ? new Date(dueDate).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        })
+      : new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+
     const subject = `Reserved Book is Accepted - You Can Borrow: "${bookTitle}"`;
     const text = `Dear ${studentName || 'Student'},
 
@@ -387,6 +399,7 @@ Reservation Details:
 • Book Title: ${bookTitle}${bookAuthor ? `\n• Author: ${bookAuthor}` : ''}
 • Status: Reserved book is accepted (You can borrow)
 • Borrowing Duration: 14 Days
+• Return Due Date: ${formattedDueDate}
 
 The book is now active under your "Borrowed Books" section in the student dashboard. Please visit the library circulation desk to collect your physical copy.
 
@@ -405,11 +418,12 @@ Central Library Management System`;
           </p>
 
           <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 18px; margin: 20px 0;">
-            <p style="margin: 0 0 10px; font-weight: bold; font-size: 13px; text-transform: uppercase; color: #4b5563; letter-spacing: 0.5px;">Reservation & Loan Details:</p>
+            <p style="margin: 0 0 10px; font-weight: bold; font-size: 13px; text-transform: uppercase; color: #4b5563; letter-spacing: 0.5px;">Reservation &amp; Loan Details:</p>
             <p style="margin: 6px 0;"><strong>Book Title:</strong> ${bookTitle}</p>
             ${bookAuthor ? `<p style="margin: 6px 0;"><strong>Author:</strong> ${bookAuthor}</p>` : ''}
             <p style="margin: 6px 0;"><strong>Status:</strong> Reserved book is accepted (You can borrow)</p>
             <p style="margin: 6px 0;"><strong>Borrowing Duration:</strong> 14 Days</p>
+            <p style="margin: 6px 0; color: #b45309;"><strong>Return Due Date:</strong> <strong>${formattedDueDate}</strong></p>
             <p style="margin: 6px 0;"><strong>Registered Email:</strong> ${studentEmail}</p>
           </div>
 

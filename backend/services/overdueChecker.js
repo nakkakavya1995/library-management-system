@@ -60,16 +60,16 @@ const checkAndSendOverdueNotifications = async () => {
           overdueNotifiedCount++;
         }
       }
-      // Case 2: Book is due soon (within 24 hours) and hasn't yet exceeded due date
+      // Case 2: Book is due soon (within 48 hours) and hasn't yet exceeded due date
       else {
         const msRemaining = new Date(record.dueDate).getTime() - now.getTime();
         const hoursRemaining = msRemaining / (1000 * 60 * 60);
 
-        if (hoursRemaining > 0 && hoursRemaining <= 24) {
+        if (hoursRemaining > 0 && hoursRemaining <= 48) {
           const lastNotified = record.notificationDate ? new Date(record.notificationDate).getTime() : 0;
           const hoursSinceLastNotification = (now.getTime() - lastNotified) / (1000 * 60 * 60);
 
-          if (!record.notificationDate || hoursSinceLastNotification >= 48) {
+          if (!record.notificationDate || hoursSinceLastNotification >= 24) {
             console.log(`[Overdue Service] Book "${record.book?.title}" is due in ${Math.round(hoursRemaining)} hours for ${record.student?.email}. Dispatching due date reminder email...`);
 
             record.notificationDate = now;
