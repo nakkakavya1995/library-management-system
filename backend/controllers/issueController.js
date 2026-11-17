@@ -8,6 +8,7 @@ const {
   sendBookAvailableEmail,
   sendReservationApprovedEmail
 } = require('../utils/emailService');
+const { checkAndSendOverdueNotifications } = require('../services/overdueChecker');
 const {
   MAX_BORROW_LIMIT,
   DEFAULT_BORROW_DAYS,
@@ -243,6 +244,11 @@ const getAllBorrowings = async (req, res, next) => {
       return doc;
     });
 
+    // Trigger automated overdue notification check in background
+    checkAndSendOverdueNotifications().catch((err) => {
+      console.error('[Overdue Checker] Background scan error:', err.message);
+    });
+
     res.json({
       success: true,
       count: recordsWithFine.length,
@@ -282,6 +288,11 @@ const getMyBorrowings = async (req, res, next) => {
         doc.currentFine = doc.fineAmount;
       }
       return doc;
+    });
+
+    // Trigger automated overdue notification check in background
+    checkAndSendOverdueNotifications().catch((err) => {
+      console.error('[Overdue Checker] Background scan error:', err.message);
     });
 
     res.json({

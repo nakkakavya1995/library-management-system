@@ -49,6 +49,9 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 5000;
 const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : '::';
 
+const { startOverdueScheduler } = require('./services/overdueChecker');
+
 app.listen(PORT, HOST, () => {
   console.log(`Server running on port ${PORT}`);
+  startOverdueScheduler();
 });
