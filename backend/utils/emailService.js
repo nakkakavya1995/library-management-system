@@ -67,6 +67,46 @@ const resolveRecipients = (email) => {
 const resolveRecipient = resolveRecipients;
 
 /**
+ * Dispatch email via HTTPS Relay (Port 443 - works on Render Free Tier) or direct SMTP (Port 465)
+ */
+const dispatchEmail = async ({ to, subject, text, html }) => {
+  const relayUrl = (process.env.GMAIL_RELAY_URL || process.env.GOOGLE_SCRIPT_URL || '').trim();
+
+  // 1. Try HTTPS Relay first if configured (Bypasses Render Free Tier outbound SMTP port restrictions)
+  if (relayUrl && relayUrl.startsWith('http')) {
+    try {
+      const response = await fetch(relayUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to, subject, text, html })
+      });
+      const data = await response.json();
+      console.log(`[Email Service] Delivered via HTTPS Relay to ${to}`);
+      return { success: true, via: 'https_relay', data };
+    } catch (relayErr) {
+      console.error('[Email Service] HTTPS Relay error, trying direct SMTP:', relayErr.message);
+    }
+  }
+
+  // 2. Direct Nodemailer SMTP
+  const transporter = await getTransporter();
+  if (!transporter) {
+    return { success: false, error: 'No email transport configured' };
+  }
+
+  const info = await transporter.sendMail({
+    from: getSender(),
+    to,
+    subject,
+    text,
+    html
+  });
+
+  console.log(`[Email Service] Delivered via SMTP to ${to} (MessageId: ${info.messageId})`);
+  return { success: true, via: 'smtp', messageId: info.messageId };
+};
+
+/**
  * Send automatic login alert email
  */
 const sendLoginAlertEmail = async ({ userName, userEmail, role, loginDate, loginTime }) => {
@@ -147,20 +187,14 @@ Library Management System Team`;
       </div>
     `;
 
-    const info = await transporter.sendMail({
-      from: getSender(),
-      to: resolveRecipient(userEmail),
+    const result = await dispatchEmail({
+      to: resolveRecipients(userEmail),
       subject,
       text,
       html
     });
 
-    console.log(`[Email] Login alert sent to ${resolveRecipient(userEmail)} (original: ${userEmail})`);
-    const previewUrl = nodemailer.getTestMessageUrl(info);
-    if (previewUrl) {
-      console.log(`[Email] Preview URL: ${previewUrl}`);
-    }
-    return { success: true, messageId: info.messageId, previewUrl };
+    return result;
   } catch (error) {
     console.error(`[Email] Failed to send login alert to ${userEmail}:`, error.message);
     return { success: false, error: error.message };
@@ -256,16 +290,12 @@ Central Library Management System`;
       </div>
     `;
 
-    const info = await transporter.sendMail({
-      from: getSender(),
-      to: resolveRecipient(studentEmail),
+    return await dispatchEmail({
+      to: resolveRecipients(studentEmail),
       subject,
       text,
       html
     });
-
-    console.log(`[Email] Late fine overdue notification dispatched to ${resolveRecipient(studentEmail)} for "${bookTitle}"`);
-    return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('[Email] Failed to send overdue fine email:', error.message);
     return { success: false, error: error.message };
@@ -337,16 +367,12 @@ Central Library Management System`;
       </div>
     `;
 
-    const info = await transporter.sendMail({
-      from: getSender(),
-      to: resolveRecipient(studentEmail),
+    return await dispatchEmail({
+      to: resolveRecipients(studentEmail),
       subject,
       text,
       html
     });
-
-    console.log(`[Email] Due date reminder sent to ${resolveRecipient(studentEmail)} for "${bookTitle}"`);
-    return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('[Email] Failed to send due date reminder:', error.message);
     return { success: false, error: error.message };
@@ -379,16 +405,12 @@ Library Management System`;
       </div>
     `;
 
-    const info = await transporter.sendMail({
-      from: getSender(),
-      to: resolveRecipient(studentEmail),
+    return await dispatchEmail({
+      to: resolveRecipients(studentEmail),
       subject,
       text,
       html
     });
-
-    console.log(`[Email] Reservation notice sent to ${resolveRecipient(studentEmail)}`);
-    return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('[Email] Failed to send reservation email:', error.message);
     return { success: false, error: error.message };
@@ -459,16 +481,12 @@ Central Library Management System`;
       </div>
     `;
 
-    const info = await transporter.sendMail({
-      from: getSender(),
-      to: resolveRecipient(studentEmail),
+    return await dispatchEmail({
+      to: resolveRecipients(studentEmail),
       subject,
       text,
       html
     });
-
-    console.log(`[Email] "Reserved book is accepted you can borrow" sent to ${resolveRecipient(studentEmail)}`);
-    return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('[Email] Failed to send acceptance email:', error.message);
     return { success: false, error: error.message };
@@ -550,18 +568,12 @@ Library Management System Team`;
       </div>
     `;
 
-    const recipients = resolveRecipients(userEmail);
-
-    const info = await transporter.sendMail({
-      from: getSender(),
-      to: recipients,
+    return await dispatchEmail({
+      to: resolveRecipients(userEmail),
       subject,
       text,
       html
     });
-
-    console.log(`[Email] Registration welcome email sent to ${recipients}`);
-    return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error(`[Email] Failed to send registration email to ${userEmail}:`, error.message);
     return { success: false, error: error.message };
