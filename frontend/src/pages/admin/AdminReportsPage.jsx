@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import AlertMessage from '../../components/AlertMessage';
-import { exportToCsv } from '../../utils/exportCsv';
 
 const AdminReportsPage = () => {
   const [stats, setStats] = useState(null);
@@ -10,7 +9,6 @@ const AdminReportsPage = () => {
   const [issues, setIssues] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
 
   const fetchReports = async () => {
     try {
@@ -35,44 +33,6 @@ const AdminReportsPage = () => {
     fetchReports();
   }, []);
 
-  const handleExportInventoryCsv = () => {
-    if (!books.length) {
-      alert('No books available to export.');
-      return;
-    }
-    const formatted = books.map((b) => ({
-      Title: b.title,
-      Author: b.author,
-      Category: b.category,
-      'Total Copies': b.totalCopies,
-      'Available Copies': b.availableCopies,
-      'Borrowed Copies': b.totalCopies - b.availableCopies,
-      'Price (INR)': `₹${b.price || 0}`
-    }));
-    exportToCsv('admin_inventory_report', formatted);
-    setSuccess('Inventory CSV report downloaded successfully');
-  };
-
-  const handleExportCirculationCsv = () => {
-    if (!issues.length) {
-      alert('No circulation records available.');
-      return;
-    }
-    const formatted = issues.map((i) => ({
-      'Book Title': i.book?.title || '',
-      'Borrower Name': i.student?.name || '',
-      'Borrower ID': i.student?.studentId || '',
-      'Issue Date': new Date(i.issueDate).toLocaleDateString(),
-      'Due Date': new Date(i.dueDate).toLocaleDateString(),
-      Status: i.status,
-      'Overdue Days': i.daysOverdue || 0,
-      'Fine Amount (INR)': `₹${i.currentFine || i.fineAmount || 0}`,
-      'Fine Paid': i.finePaid ? 'Settled' : 'Unpaid'
-    }));
-    exportToCsv('admin_circulation_fines_report', formatted);
-    setSuccess('Circulation & Fines CSV report downloaded successfully');
-  };
-
   if (loading) return <LoadingSpinner text="Generating analytics..." />;
 
   // Category counts
@@ -90,24 +50,15 @@ const AdminReportsPage = () => {
 
   return (
     <div>
-      {/* Header Matching Screen 7 */}
-      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+      {/* Header */}
+      <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <h3 className="fw-bold mb-1">Admin Analytics & Reports</h3>
-          <p className="text-muted small mb-0">Library inventory performance, circulation velocity, and category distribution.</p>
-        </div>
-        <div className="d-flex gap-2">
-          <button className="btn btn-outline-secondary btn-sm" onClick={handleExportInventoryCsv}>
-            <i className="bi bi-file-earmark-arrow-down me-1"></i> Inventory CSV
-          </button>
-          <button className="btn btn-dark btn-sm" onClick={handleExportCirculationCsv}>
-            <i className="bi bi-download me-1"></i> Circulation CSV
-          </button>
+          <h3 className="fw-bold mb-1">Reports & Analytics</h3>
+          <p className="text-muted small mb-0">Overview of inventory distribution, circulation performance, and return trends.</p>
         </div>
       </div>
 
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
-      <AlertMessage type="success" message={success} onClose={() => setSuccess('')} />
 
       {/* Top 4 KPI Cards */}
       <div className="row g-3 mb-4">
@@ -136,12 +87,12 @@ const AdminReportsPage = () => {
           <div className="card shadow-sm border p-3 bg-white">
             <div className="text-muted small fw-semibold">Collected Fines</div>
             <div className="h3 fw-bold mb-0 text-dark">₹{(stats?.totalCollectedFine || 0).toFixed(2)}</div>
-            <small className="text-muted">Settled to library</small>
+            <small className="text-muted">Settled fine revenue</small>
           </div>
         </div>
       </div>
 
-      {/* Visual Analytics Grid Matching Screen 7 */}
+      {/* Visual Analytics Grid */}
       <div className="row g-4 mb-4">
         {/* Left: Issued / Returned Rate */}
         <div className="col-lg-6">
@@ -206,7 +157,7 @@ const AdminReportsPage = () => {
             </div>
             <div className="card-body">
               <p className="small text-muted mb-4">
-                Return compliance distribution across week intervals.
+                Return compliance distribution across weekly intervals.
               </p>
 
               <div className="d-flex align-items-end justify-content-between gap-2 px-3" style={{ height: '170px' }}>
@@ -247,80 +198,38 @@ const AdminReportsPage = () => {
         </div>
       </div>
 
-      {/* Popular Categories & 1-Click Data Triggers Grid */}
-      <div className="row g-4 mb-4">
-        {/* Popular Categories */}
-        <div className="col-lg-7">
-          <div className="card shadow-sm border h-100">
-            <div className="card-header bg-light d-flex justify-content-between align-items-center">
-              <span className="fw-semibold">Popular Categories</span>
-              <span className="badge bg-light text-dark border">{Object.keys(categoryCounts).length} Categories</span>
-            </div>
-            <div className="card-body">
-              {Object.keys(categoryCounts).length > 0 ? (
-                Object.entries(categoryCounts).map(([cat, count]) => {
-                  const percent = Math.round((count / totalTitles) * 100);
-                  return (
-                    <div key={cat} className="mb-3">
-                      <div className="d-flex justify-content-between small mb-1">
-                        <span className="fw-semibold">{cat}</span>
-                        <span className="text-muted">{count} titles ({percent}%)</span>
-                      </div>
-                      <div className="progress" style={{ height: '6px' }}>
-                        <div
-                          className="progress-bar bg-dark"
-                          role="progressbar"
-                          style={{ width: `${percent}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  );
-                })
-              ) : (
-                <div className="text-muted small">No category data recorded.</div>
-              )}
-            </div>
-          </div>
+      {/* Book Categories Distribution */}
+      <div className="card shadow-sm border mb-4">
+        <div className="card-header bg-light d-flex justify-content-between align-items-center">
+          <span className="fw-semibold">
+            <i className="bi bi-pie-chart me-2"></i>Book Categories Distribution
+          </span>
+          <span className="badge bg-light text-dark border">{Object.keys(categoryCounts).length} Categories</span>
         </div>
-
-        {/* 1-Click Data Triggers & Fines Collected */}
-        <div className="col-lg-5">
-          <div className="card shadow-sm border h-100">
-            <div className="card-header bg-light">
-              <span className="fw-semibold">One-Click Data Triggers</span>
-            </div>
-            <div className="card-body d-flex flex-column justify-content-between">
-              <div>
-                <p className="small text-muted mb-3">
-                  Generate instant CSV exports for audit logs, administrative reporting, and inventory audits.
-                </p>
-
-                <div className="d-grid gap-2 mb-4">
-                  <button className="btn btn-outline-dark btn-sm text-start py-2" onClick={handleExportInventoryCsv}>
-                    <i className="bi bi-file-earmark-spreadsheet me-2"></i>
-                    <strong>Download Inventory Report (CSV)</strong>
-                    <div className="small text-muted">All titles, copy numbers, shelf availability</div>
-                  </button>
-
-                  <button className="btn btn-outline-dark btn-sm text-start py-2" onClick={handleExportCirculationCsv}>
-                    <i className="bi bi-file-earmark-text me-2"></i>
-                    <strong>Download Circulation & Fines (CSV)</strong>
-                    <div className="small text-muted">Active loans, due dates, overdue fees & statuses</div>
-                  </button>
-                </div>
-              </div>
-
-              <div className="bg-light p-3 rounded border">
-                <div className="d-flex justify-content-between align-items-center mb-1">
-                  <span className="small fw-semibold">Fines Collected:</span>
-                  <span className="fw-bold text-dark">₹{(stats?.totalCollectedFine || 0).toFixed(2)}</span>
-                </div>
-                <div className="d-flex justify-content-between align-items-center">
-                  <span className="small text-muted">Pending Outstanding:</span>
-                  <span className="small text-muted">₹{(stats?.totalUnpaidFine || 0).toFixed(2)}</span>
-                </div>
-              </div>
-            </div>
+        <div className="card-body p-4">
+          <div className="row g-4">
+            {Object.keys(categoryCounts).length > 0 ? (
+              Object.entries(categoryCounts).map(([cat, count]) => {
+                const percent = Math.round((count / totalTitles) * 100);
+                return (
+                  <div key={cat} className="col-12 col-md-6">
+                    <div className="d-flex justify-content-between small mb-1">
+                      <span className="fw-semibold text-dark">{cat}</span>
+                      <span className="text-muted">{count} titles ({percent}%)</span>
+                    </div>
+                    <div className="progress" style={{ height: '8px' }}>
+                      <div
+                        className="progress-bar bg-dark"
+                        role="progressbar"
+                        style={{ width: `${percent}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="text-muted small">No category data recorded.</div>
+            )}
           </div>
         </div>
       </div>
