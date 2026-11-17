@@ -161,14 +161,6 @@ const MyBorrowedBooksPage = () => {
               style={{ width: `${Math.min(100, (issues.length / 3) * 100)}%` }}
             ></div>
           </div>
-          {issues.length >= 3 && (
-            <div className="alert alert-warning py-2 px-3 mt-3 mb-0 small d-flex align-items-center">
-              <i className="bi bi-info-circle-fill me-2 text-warning fs-5"></i>
-              <div>
-                <strong>Limit Reached:</strong> You have 3 of 3 allowed books borrowed. Click <strong>Request Return</strong> on any book below. Once the librarian accepts, your slot is freed up to borrow another book!
-              </div>
-            </div>
-          )}
         </div>
       </div>
 

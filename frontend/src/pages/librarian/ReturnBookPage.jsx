@@ -191,11 +191,10 @@ const ReturnBookPage = () => {
                         </td>
                         <td className="text-end">
                           <button
-                            className={`btn btn-sm ${
-                              record.returnStatus === 'requested'
-                                ? 'btn-success fw-semibold shadow-sm rounded-pill px-3'
-                                : 'btn-dark'
-                            }`}
+                            className={`btn btn-sm ${record.returnStatus === 'requested'
+                              ? 'btn-success fw-semibold shadow-sm rounded-pill px-3'
+                              : 'btn-dark'
+                              }`}
                             style={
                               record.returnStatus === 'requested'
                                 ? { backgroundColor: '#059669', borderColor: '#059669' }

@@ -229,14 +229,6 @@ const StudentDashboard = () => {
             <div className="card-body p-0">
               {borrowedBooks.length > 0 ? (
                 <div>
-                  {borrowedBooks.length >= 3 && (
-                    <div className="alert alert-warning py-2 px-3 m-3 mb-2 small d-flex align-items-center">
-                      <i className="bi bi-exclamation-triangle-fill fs-5 me-2 text-warning"></i>
-                      <div>
-                        <strong>Borrowing Limit Reached (3 of 3 Allowed):</strong> To borrow another book, click <strong>Request Return</strong> on any book below. Once the librarian accepts, your limit is freed up!
-                      </div>
-                    </div>
-                  )}
                   <ul className="list-group list-group-flush">
                     {borrowedBooks.map((item) => (
                       <li key={item._id} className="list-group-item d-flex justify-content-between align-items-center py-3">
