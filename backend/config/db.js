@@ -2,12 +2,29 @@ const mongoose = require('mongoose');
 
 // Connect to MongoDB
 const connectDB = async () => {
+  const uri =
+    process.env.MONGO_URI ||
+    (process.env.NODE_ENV === 'production'
+      ? null
+      : 'mongodb://localhost:27017/library_management_system');
+
+  if (!uri) {
+    console.warn('\n======================================================');
+    console.warn('[MongoDB] WARNING: MONGO_URI is not set in environment variables!');
+    console.warn('[MongoDB] In Render, please add MONGO_URI in your Environment tab:');
+    console.warn('[MongoDB] e.g., mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/library_db');
+    console.warn('======================================================\n');
+    return;
+  }
+
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/library_management_system');
+    const conn = await mongoose.connect(uri, {
+      serverSelectionTimeoutMS: 5000
+    });
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error(`MongoDB Connection Error: ${error.message}`);
-    process.exit(1);
+    console.error('[MongoDB] If using MongoDB Atlas, ensure Network Access allows 0.0.0.0/0 (Anywhere).');
   }
 };
 

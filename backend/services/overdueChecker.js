@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 require('../models/Book');
 require('../models/User');
 const IssueRecord = require('../models/IssueRecord');
@@ -9,6 +10,10 @@ const { sendOverdueFineEmail, sendDueDateReminderEmail } = require('../utils/ema
  */
 const checkAndSendOverdueNotifications = async () => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      return { checked: 0, reason: 'Database not connected yet' };
+    }
+
     const activeIssues = await IssueRecord.find({ status: 'issued' })
       .populate('book', 'title author isbn')
       .populate('student', 'name email');
