@@ -213,10 +213,10 @@ const AdminDashboard = () => {
           />
         </div>
 
-        {/* 2. Active Checkouts */}
+        {/* 2. Issued Books */}
         <div className="col-12 col-sm-6 col-xl-3">
           <StatsCard
-            title="Active Checkouts"
+            title="Issued Books"
             value={activeCheckouts}
             icon="bi-journal-arrow-up"
             color="warning"
