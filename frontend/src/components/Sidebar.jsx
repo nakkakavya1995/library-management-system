@@ -258,10 +258,6 @@ const Sidebar = () => {
           <span className="sidebar-item-icon fs-5 fw-bold" style={{ lineHeight: 1 }}>₹</span>
           <span className="sidebar-item-text">Fines & Penalties</span>
         </NavLink>
-        <NavLink to="/librarian/reports" className={({ isActive }) => `sidebar-pill-item ${isActive ? 'active' : ''}`}>
-          <span className="sidebar-item-icon"><i className="bi bi-bar-chart-fill"></i></span>
-          <span className="sidebar-item-text">Reports & Analytics</span>
-        </NavLink>
         <NavLink to="/librarian/settings" className={({ isActive }) => `sidebar-pill-item ${isActive ? 'active' : ''}`}>
           <span className="sidebar-item-icon"><i className="bi bi-gear-fill"></i></span>
           <span className="sidebar-item-text">Settings</span>

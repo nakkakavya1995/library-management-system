@@ -103,7 +103,7 @@ function App() {
           <Route path="/librarian/users" element={<LibrarianUserManagementPage />} />
           <Route path="/librarian/fines" element={<OverdueBooksPage />} />
           <Route path="/librarian/overdue" element={<OverdueBooksPage />} />
-          <Route path="/librarian/reports" element={<LibrarianReportsPage />} />
+          <Route path="/librarian/reports" element={<Navigate to="/librarian" replace />} />
           <Route path="/librarian/settings" element={<LibrarianSettingsPage />} />
           <Route path="/librarian/history" element={<BorrowingHistoryPage />} />
           <Route path="/librarian/reviews" element={<ManageReviewsPage />} />
