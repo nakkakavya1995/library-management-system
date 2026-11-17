@@ -208,6 +208,10 @@ const Sidebar = () => {
           <span className="sidebar-item-icon"><i className="bi bi-bookmark-fill"></i></span>
           <span className="sidebar-item-text">Reservations</span>
         </NavLink>
+        <NavLink to="/librarian/renewals" className={({ isActive }) => `sidebar-pill-item ${isActive ? 'active' : ''}`}>
+          <span className="sidebar-item-icon"><i className="bi bi-arrow-repeat"></i></span>
+          <span className="sidebar-item-text">Renewal Requests</span>
+        </NavLink>
         <NavLink to="/librarian/users" className={({ isActive }) => `sidebar-pill-item ${isActive ? 'active' : ''}`}>
           <span className="sidebar-item-icon"><i className="bi bi-people-fill"></i></span>
           <span className="sidebar-item-text">User Management</span>

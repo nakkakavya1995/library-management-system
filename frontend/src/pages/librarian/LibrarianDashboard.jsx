@@ -103,6 +103,9 @@ const LibrarianDashboard = () => {
           <Link to="/librarian/circulation" className="btn btn-dark btn-sm">
             <i className="bi bi-arrow-left-right me-1"></i> Issue & Return
           </Link>
+          <Link to="/librarian/renewals" className="btn btn-outline-dark btn-sm">
+            <i className="bi bi-arrow-repeat me-1"></i> Renewal Requests {pendingRenewals.length > 0 && <span className="badge bg-warning text-dark ms-1">{pendingRenewals.length}</span>}
+          </Link>
           <Link to="/librarian/books" className="btn btn-outline-secondary btn-sm">
             <i className="bi bi-plus-circle me-1"></i> Manage Books
           </Link>
@@ -315,132 +318,151 @@ const LibrarianDashboard = () => {
         </div>
       )}
 
-      {/* Renewal Requests Card Matching User Reference Screenshot */}
-      {pendingRenewals.length > 0 && (
-        <div className="mb-4">
-          <div className="row g-3">
-            {pendingRenewals.map((r) => {
-              const selectedDays = extensionDaysMap[r._id] || r.requestedExtensionDays || 14;
-              const formattedDate = new Date(r.dueDate).toLocaleDateString('en-GB', {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric'
-              });
+      {/* Renewal / Extension Requests Section */}
+      <div className="card shadow-sm border mb-4">
+        <div className="card-header bg-light d-flex justify-content-between align-items-center">
+          <span className="fw-semibold text-dark">
+            <i className="bi bi-arrow-repeat me-2"></i>Renewal &amp; Extension Requests ({pendingRenewals.length})
+          </span>
+          {pendingRenewals.length > 0 ? (
+            <span className="badge bg-warning text-dark fw-bold">Action Required</span>
+          ) : (
+            <span className="badge bg-light text-muted border">No Pending Requests</span>
+          )}
+        </div>
+        <div className="card-body">
+          {pendingRenewals.length > 0 ? (
+            <div className="row g-3">
+              {pendingRenewals.map((r) => {
+                const selectedDays = extensionDaysMap[r._id] || r.requestedExtensionDays || 14;
+                const formattedDate = new Date(r.dueDate).toLocaleDateString('en-GB', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric'
+                });
 
-              return (
-                <div key={r._id} className="col-12 col-md-6 col-xl-5">
-                  <div
-                    className="p-4 shadow-sm"
-                    style={{
-                      backgroundColor: '#000000',
-                      color: '#ffffff',
-                      borderRadius: '12px',
-                      border: '1px solid #1f2937'
-                    }}
-                  >
-                    {/* Title & Badge */}
-                    <div className="mb-3">
-                      <div className="text-white fw-bold mb-2" style={{ fontSize: '1.15rem' }}>
-                        Renewal Requests
-                      </div>
-                      <span
-                        style={{
-                          backgroundColor: '#3b1700',
-                          color: '#f97316',
-                          border: '1px solid #7c2d12',
-                          borderRadius: '9999px',
-                          padding: '4px 14px',
-                          fontSize: '0.82rem',
-                          fontWeight: '600',
-                          display: 'inline-block'
-                        }}
-                      >
-                        Pending Request
-                      </span>
-                    </div>
-
-                    {/* Metadata items */}
-                    <div className="mb-4" style={{ fontSize: '0.98rem', lineHeight: '2' }}>
-                      <div>
-                        <span style={{ color: '#9ca3af' }}>Student: </span>
-                        <span className="fw-semibold text-white">{r.student?.name || 'Student'}</span>
-                      </div>
-                      <div>
-                        <span style={{ color: '#9ca3af' }}>Book: </span>
-                        <span className="fw-semibold text-white">{r.book?.title || 'Book'}</span>
-                      </div>
-                      <div>
-                        <span style={{ color: '#9ca3af' }}>Current Due Date: </span>
-                        <span className="text-white">{formattedDate}</span>
-                      </div>
-                      <div className="d-flex justify-content-between align-items-center">
-                        <div>
-                          <span style={{ color: '#9ca3af' }}>Requested Extension: </span>
-                          <span className="fw-semibold text-white">{selectedDays} days</span>
+                return (
+                  <div key={r._id} className="col-12 col-md-6 col-xl-5">
+                    <div
+                      className="p-4 shadow-sm"
+                      style={{
+                        backgroundColor: '#000000',
+                        color: '#ffffff',
+                        borderRadius: '12px',
+                        border: '1px solid #1f2937'
+                      }}
+                    >
+                      {/* Title & Badge */}
+                      <div className="mb-3">
+                        <div className="text-white fw-bold mb-2" style={{ fontSize: '1.15rem' }}>
+                          Renewal Requests
                         </div>
-                        <select
-                          className="form-select form-select-sm bg-black text-white border-secondary py-0 px-2"
-                          style={{ width: '95px', fontSize: '0.78rem', height: '28px' }}
-                          value={selectedDays}
-                          onChange={(e) =>
-                            setExtensionDaysMap({
-                              ...extensionDaysMap,
-                              [r._id]: parseInt(e.target.value, 10)
-                            })
-                          }
-                          title="Change extension days"
+                        <span
+                          style={{
+                            backgroundColor: '#3b1700',
+                            color: '#f97316',
+                            border: '1px solid #7c2d12',
+                            borderRadius: '9999px',
+                            padding: '4px 14px',
+                            fontSize: '0.82rem',
+                            fontWeight: '600',
+                            display: 'inline-block'
+                          }}
                         >
-                          <option value={7}>7 days</option>
-                          <option value={14}>14 days</option>
-                          <option value={21}>21 days</option>
-                          <option value={30}>30 days</option>
-                        </select>
+                          Pending Request
+                        </span>
                       </div>
-                    </div>
 
-                    {/* Action Buttons matching screenshot */}
-                    <div className="d-flex gap-3">
-                      <button
-                        type="button"
-                        className="btn fw-semibold"
-                        style={{
-                          backgroundColor: '#059669',
-                          borderColor: '#059669',
-                          color: '#ffffff',
-                          borderRadius: '9999px',
-                          padding: '8px 24px',
-                          flex: 1,
-                          fontSize: '0.95rem'
-                        }}
-                        onClick={() => handleRenewalDecision(r._id, 'approve', selectedDays)}
-                      >
-                        Approve
-                      </button>
-                      <button
-                        type="button"
-                        className="btn fw-semibold"
-                        style={{
-                          backgroundColor: 'transparent',
-                          borderColor: '#dc2626',
-                          color: '#ef4444',
-                          border: '1.5px solid #dc2626',
-                          borderRadius: '9999px',
-                          padding: '8px 24px',
-                          flex: 1,
-                          fontSize: '0.95rem'
-                        }}
-                        onClick={() => handleRenewalDecision(r._id, 'reject')}
-                      >
-                        Reject
-                      </button>
+                      {/* Metadata items */}
+                      <div className="mb-4" style={{ fontSize: '0.98rem', lineHeight: '2' }}>
+                        <div>
+                          <span style={{ color: '#9ca3af' }}>Student: </span>
+                          <span className="fw-semibold text-white">{r.student?.name || 'Student'}</span>
+                        </div>
+                        <div>
+                          <span style={{ color: '#9ca3af' }}>Book: </span>
+                          <span className="fw-semibold text-white">{r.book?.title || 'Book'}</span>
+                        </div>
+                        <div>
+                          <span style={{ color: '#9ca3af' }}>Current Due Date: </span>
+                          <span className="text-white">{formattedDate}</span>
+                        </div>
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div>
+                            <span style={{ color: '#9ca3af' }}>Requested Extension: </span>
+                            <span className="fw-semibold text-white">{selectedDays} days</span>
+                          </div>
+                          <select
+                            className="form-select form-select-sm bg-black text-white border-secondary py-0 px-2"
+                            style={{ width: '95px', fontSize: '0.78rem', height: '28px' }}
+                            value={selectedDays}
+                            onChange={(e) =>
+                              setExtensionDaysMap({
+                                ...extensionDaysMap,
+                                [r._id]: parseInt(e.target.value, 10)
+                              })
+                            }
+                            title="Change extension days"
+                          >
+                            <option value={7}>7 days</option>
+                            <option value={14}>14 days</option>
+                            <option value={21}>21 days</option>
+                            <option value={30}>30 days</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      {/* Action Buttons: Accept Renewal & Reject */}
+                      <div className="d-flex gap-3">
+                        <button
+                          type="button"
+                          className="btn fw-semibold shadow-sm"
+                          style={{
+                            backgroundColor: '#059669',
+                            borderColor: '#059669',
+                            color: '#ffffff',
+                            borderRadius: '9999px',
+                            padding: '8px 20px',
+                            flex: 1,
+                            fontSize: '0.92rem'
+                          }}
+                          onClick={() => handleRenewalDecision(r._id, 'approve', selectedDays)}
+                          title="Accept the renewal request from user"
+                        >
+                          <i className="bi bi-check2-circle me-1"></i>Accept Renewal (+{selectedDays}d)
+                        </button>
+                        <button
+                          type="button"
+                          className="btn fw-semibold"
+                          style={{
+                            backgroundColor: 'transparent',
+                            borderColor: '#dc2626',
+                            color: '#ef4444',
+                            border: '1.5px solid #dc2626',
+                            borderRadius: '9999px',
+                            padding: '8px 20px',
+                            flex: 1,
+                            fontSize: '0.92rem'
+                          }}
+                          onClick={() => handleRenewalDecision(r._id, 'reject')}
+                          title="Reject renewal request"
+                        >
+                          <i className="bi bi-x-circle me-1"></i>Reject
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-4 text-muted small">
+              <i className="bi bi-arrow-repeat fs-3 d-block mb-1 text-muted"></i>
+              No pending book renewal or extension requests. When a student clicks <strong>Extend / Renew</strong>, their request will appear here for you to accept.
+            </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Overdue Checkouts */}
       <div className="card shadow-sm border mb-4">

@@ -37,6 +37,16 @@ const CirculationPage = () => {
     }
   };
 
+  const handleAcceptRenewal = async (issueId, days = 14) => {
+    try {
+      await api.put(`/issues/${issueId}/handle-renewal`, { action: 'approve', days });
+      setSuccess('Renewal request accepted! Loan extended by 14 days.');
+      fetchCirculationData();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to accept renewal');
+    }
+  };
+
   const filteredIssues = issues.filter((i) => {
     const t = i.book?.title?.toLowerCase() || '';
     const s = i.student?.name?.toLowerCase() || '';
@@ -137,36 +147,56 @@ const CirculationPage = () => {
                           </span>
                         </td>
                         <td>
-                          {item.returnStatus === 'requested' ? (
-                            <span
-                              className="badge text-white border-0 shadow-sm"
-                              style={{ backgroundColor: '#059669' }}
-                            >
-                              <i className="bi bi-bell-fill me-1"></i>Return Requested
-                            </span>
-                          ) : (
+                          <div className="d-flex flex-column gap-1">
+                            {item.returnStatus === 'requested' && (
+                              <span
+                                className="badge text-white border-0 shadow-sm"
+                                style={{ backgroundColor: '#059669' }}
+                              >
+                                <i className="bi bi-box-arrow-in-left me-1"></i>Return Requested
+                              </span>
+                            )}
+                            {item.renewalStatus === 'requested' && (
+                              <span
+                                className="badge bg-warning text-dark border-0 shadow-sm"
+                              >
+                                <i className="bi bi-clock-history me-1"></i>Renewal Requested (+14d)
+                              </span>
+                            )}
                             <span className="badge bg-light text-dark border">
                               {item.isOverdue ? `Overdue (${item.daysOverdue}d)` : 'On time'}
                             </span>
-                          )}
+                          </div>
                         </td>
                         <td className="text-end">
-                          <button
-                            className={`btn btn-sm ${
-                              item.returnStatus === 'requested'
-                                ? 'btn-success fw-semibold shadow-sm rounded-pill px-3'
-                                : 'btn-dark'
-                            }`}
-                            style={
-                              item.returnStatus === 'requested'
-                                ? { backgroundColor: '#059669', borderColor: '#059669' }
-                                : {}
-                            }
-                            onClick={() => handleReturn(item._id)}
-                            title="Return Book"
-                          >
-                            {item.returnStatus === 'requested' ? 'Accept Return' : 'Return'}
-                          </button>
+                          <div className="d-flex justify-content-end align-items-center gap-2">
+                            {item.renewalStatus === 'requested' && (
+                              <button
+                                className="btn btn-sm btn-success fw-semibold shadow-sm rounded-pill px-3"
+                                style={{ backgroundColor: '#059669', borderColor: '#059669' }}
+                                onClick={() => handleAcceptRenewal(item._id)}
+                                title="Accept Renewal: Extend loan by 14 days"
+                              >
+                                <i className="bi bi-arrow-repeat me-1"></i>Accept Renewal
+                              </button>
+                            )}
+                            <button
+                              className={`btn btn-sm ${
+                                item.returnStatus === 'requested'
+                                  ? 'btn-success fw-semibold shadow-sm rounded-pill px-3'
+                                  : 'btn-dark'
+                              }`}
+                              style={
+                                item.returnStatus === 'requested'
+                                  ? { backgroundColor: '#059669', borderColor: '#059669' }
+                                  : {}
+                              }
+                              onClick={() => handleReturn(item._id)}
+                              title="Return Book"
+                            >
+                              {item.returnStatus === 'requested' ? 'Accept Return' : 'Return'}
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))

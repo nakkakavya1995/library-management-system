@@ -150,19 +150,20 @@ const RenewalsPage = () => {
                       <div className="d-flex gap-3">
                         <button
                           type="button"
-                          className="btn fw-semibold"
+                          className="btn fw-semibold shadow-sm"
                           style={{
                             backgroundColor: '#059669',
                             borderColor: '#059669',
                             color: '#ffffff',
                             borderRadius: '9999px',
-                            padding: '8px 24px',
+                            padding: '8px 20px',
                             flex: 1,
-                            fontSize: '0.95rem'
+                            fontSize: '0.92rem'
                           }}
                           onClick={() => handleRenewalAction(item._id, 'approve', selectedDays)}
+                          title="Accept renewal request from user"
                         >
-                          Approve
+                          <i className="bi bi-check2-circle me-1"></i>Accept Renewal (+{selectedDays}d)
                         </button>
                         <button
                           type="button"
@@ -173,13 +174,14 @@ const RenewalsPage = () => {
                             color: '#ef4444',
                             border: '1.5px solid #dc2626',
                             borderRadius: '9999px',
-                            padding: '8px 24px',
+                            padding: '8px 20px',
                             flex: 1,
-                            fontSize: '0.95rem'
+                            fontSize: '0.92rem'
                           }}
                           onClick={() => handleRenewalAction(item._id, 'reject')}
+                          title="Reject renewal request"
                         >
-                          Reject
+                          <i className="bi bi-x-circle me-1"></i>Reject
                         </button>
                       </div>
                     </div>
