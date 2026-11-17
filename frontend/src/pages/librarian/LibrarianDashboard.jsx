@@ -9,7 +9,7 @@ const LibrarianDashboard = () => {
   const [stats, setStats] = useState(null);
   const [books, setBooks] = useState([]);
   const [students, setStudents] = useState([]);
-  const [pendingReservations, setPendingReservations] = useState([]);
+  const [reservations, setReservations] = useState([]);
   const [pendingRenewals, setPendingRenewals] = useState([]);
   const [overdueList, setOverdueList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,7 +21,7 @@ const LibrarianDashboard = () => {
       setLoading(true);
       const [statsRes, resRes, issuesRes, booksRes, usersRes] = await Promise.all([
         api.get('/reports/stats'),
-        api.get('/reservations?status=pending'),
+        api.get('/reservations'),
         api.get('/issues?status=issued'),
         api.get('/books'),
         api.get('/users?role=student')
@@ -30,7 +30,7 @@ const LibrarianDashboard = () => {
       setStats(statsRes.data.stats);
       setBooks(booksRes.data.books || []);
       setStudents(usersRes.data.users || []);
-      setPendingReservations(resRes.data.reservations?.slice(0, 5) || []);
+      setReservations(resRes.data.reservations?.slice(0, 10) || []);
 
       const activeIssues = issuesRes.data.issues || [];
       const renewals = activeIssues.filter((i) => i.renewalStatus === 'requested');
@@ -138,76 +138,131 @@ const LibrarianDashboard = () => {
         </div>
       </div>
 
-      {/* Action Required */}
+      {/* Reserved Books Section */}
       <div className="card shadow-sm border mb-4">
         <div className="card-header bg-light d-flex justify-content-between align-items-center">
           <span className="fw-semibold">
-            <i className="bi bi-bell me-2"></i>Action Required ({pendingReservations.length + pendingRenewals.length})
+            <i className="bi bi-bookmark-check me-2"></i>Reserved Books ({reservations.length})
           </span>
           <Link to="/librarian/reservations" className="btn btn-link btn-sm text-decoration-none p-0 text-dark">
-            Manage Reservations
+            View All Reservations
           </Link>
         </div>
         <div className="card-body p-0">
-          {pendingReservations.length > 0 || pendingRenewals.length > 0 ? (
+          {reservations.length > 0 ? (
             <div className="table-responsive">
               <table className="table table-hover align-middle mb-0">
                 <thead>
                   <tr>
-                    <th>Request Type</th>
-                    <th>Book</th>
-                    <th>Member</th>
-                    <th>Date</th>
+                    <th>Book Details</th>
+                    <th>Student Details</th>
+                    <th>Reserved On</th>
+                    <th>Availability</th>
+                    <th>Status</th>
                     <th className="text-end">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {pendingReservations.map((res) => (
+                  {reservations.map((res) => (
                     <tr key={res._id}>
                       <td>
-                        <span className="badge bg-light text-dark border">
-                          <i className="bi bi-bookmark me-1"></i>Reservation
-                        </span>
+                        <div className="d-flex align-items-center gap-2">
+                          <div
+                            className="bg-light border rounded d-flex align-items-center justify-content-center text-muted"
+                            style={{ width: '32px', height: '38px', flexShrink: 0 }}
+                          >
+                            <i className="bi bi-bookmark"></i>
+                          </div>
+                          <div>
+                            <div className="fw-semibold text-dark">{res.book?.title}</div>
+                            <small className="text-muted">{res.book?.author ? `by ${res.book?.author}` : (res.book?.category || '')}</small>
+                          </div>
+                        </div>
                       </td>
                       <td>
-                        <div className="fw-semibold">{res.book?.title}</div>
-                        <small className="text-muted">{res.book?.category || res.book?.author}</small>
-                      </td>
-                      <td>
-                        <div>{res.student?.name}</div>
-                        <small className="text-muted">{res.student?.studentId || res.student?.email}</small>
+                        <div className="fw-semibold text-dark">{res.student?.name}</div>
+                        <small className="text-muted">{res.student?.studentId ? `${res.student?.studentId} • ` : ''}{res.student?.email}</small>
                       </td>
                       <td>
                         <div className="small">{new Date(res.createdAt || res.reservationDate || Date.now()).toLocaleDateString()}</div>
                       </td>
-                      <td className="text-end">
-                        <button
-                          className="btn btn-dark btn-sm"
-                          onClick={() => handleQuickApproveReservation(res._id)}
-                        >
-                          <i className="bi bi-check2-circle me-1"></i>Accept & Allow Borrow
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                  {pendingRenewals.map((r) => (
-                    <tr key={r._id}>
                       <td>
                         <span className="badge bg-light text-dark border">
-                          <i className="bi bi-arrow-repeat me-1"></i>Renewal
+                          {res.book?.availableCopies ?? 0} copies in stock
                         </span>
                       </td>
                       <td>
+                        <span className="badge bg-light text-dark border text-capitalize">
+                          {res.status === 'approved' ? (
+                            <><i className="bi bi-check-circle-fill me-1"></i>Approved</>
+                          ) : res.status === 'completed' ? (
+                            'Borrowed & Collected'
+                          ) : res.status === 'rejected' ? (
+                            'Rejected'
+                          ) : (
+                            'Pending Hold'
+                          )}
+                        </span>
+                      </td>
+                      <td className="text-end">
+                        {res.status === 'pending' ? (
+                          <button
+                            className="btn btn-dark btn-sm"
+                            onClick={() => handleQuickApproveReservation(res._id)}
+                          >
+                            <i className="bi bi-check2-circle me-1"></i>Accept & Allow Borrow
+                          </button>
+                        ) : (
+                          <span className="text-muted small">
+                            {res.status === 'approved' ? 'Allowed to Borrow' : 'Processed'}
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="text-center py-4 text-muted small">
+              <i className="bi bi-check-circle fs-3 d-block mb-1 text-muted"></i>
+              No book reservations recorded yet.
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Pending Renewal Requests (if any) */}
+      {pendingRenewals.length > 0 && (
+        <div className="card shadow-sm border mb-4">
+          <div className="card-header bg-light d-flex justify-content-between align-items-center">
+            <span className="fw-semibold">
+              <i className="bi bi-arrow-repeat me-2"></i>Pending Renewal Requests ({pendingRenewals.length})
+            </span>
+          </div>
+          <div className="card-body p-0">
+            <div className="table-responsive">
+              <table className="table table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>Book</th>
+                    <th>Member</th>
+                    <th>Due Date</th>
+                    <th className="text-end">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pendingRenewals.map((r) => (
+                    <tr key={r._id}>
+                      <td>
                         <div className="fw-semibold">{r.book?.title}</div>
-                        <small className="text-muted">{r.book?.category || r.book?.author}</small>
+                        <small className="text-muted">{r.book?.author}</small>
                       </td>
                       <td>
                         <div>{r.student?.name}</div>
                         <small className="text-muted">{r.student?.studentId || r.student?.email}</small>
                       </td>
-                      <td>
-                        <div className="small">{new Date(r.dueDate).toLocaleDateString()}</div>
-                      </td>
+                      <td>{new Date(r.dueDate).toLocaleDateString()}</td>
                       <td className="text-end">
                         <button
                           className="btn btn-dark btn-sm"
@@ -221,14 +276,9 @@ const LibrarianDashboard = () => {
                 </tbody>
               </table>
             </div>
-          ) : (
-            <div className="text-center py-4 text-muted small">
-              <i className="bi bi-check-circle fs-3 d-block mb-1 text-muted"></i>
-              No pending reservations or renewal requests.
-            </div>
-          )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Overdue Checkouts */}
       <div className="card shadow-sm border mb-4">
@@ -280,7 +330,7 @@ const LibrarianDashboard = () => {
               </table>
             </div>
           ) : (
-            <div className="text-center py-4 text-muted small">
+            <div className="text-center py-3 text-muted small">
               <i className="bi bi-check-circle fs-3 d-block mb-1 text-muted"></i>
               All borrowed books are currently on time!
             </div>
