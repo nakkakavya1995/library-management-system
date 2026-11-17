@@ -84,7 +84,7 @@ const AdminActivityPage = () => {
     <div>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <h3 className="fw-bold mb-1">Circulation Desk</h3>
+          <h3 className="fw-bold mb-1">Issue & Return</h3>
           <p className="text-muted small mb-0">Monitor active loans, countdown due dates, and process reservation queue.</p>
         </div>
       </div>

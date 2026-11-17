@@ -156,7 +156,7 @@ const Sidebar = () => {
           )}
         </div>
 
-        {/* 4. Issue / Return */}
+        {/* 4. Issue & Return */}
         <NavLink
           to="/admin/activity"
           className={() => `sidebar-pill-item ${isActivityActive ? 'active' : ''}`}
@@ -164,7 +164,7 @@ const Sidebar = () => {
           <span className="sidebar-item-icon">
             <i className="bi bi-arrow-left-right"></i>
           </span>
-          <span className="sidebar-item-text">Issue / Return</span>
+          <span className="sidebar-item-text">Issue & Return</span>
         </NavLink>
 
         {/* 5. Reservations */}
