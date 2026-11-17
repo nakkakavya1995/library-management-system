@@ -121,7 +121,7 @@ const issueBook = async (req, res, next) => {
 
 // @desc   Return an issued book
 // @route  PUT /api/issues/:id/return
-// @access Private (Librarian, Admin)
+// @access Private (Librarian, Admin, Student)
 const returnBook = async (req, res, next) => {
   try {
     const { returnNotes, finePaid } = req.body;
@@ -137,6 +137,11 @@ const returnBook = async (req, res, next) => {
       return res.status(400).json({ message: 'Book has already been returned' });
     }
 
+    // If student is returning, ensure they only return their own borrowed book
+    if (req.user.role === 'student' && issueRecord.student._id.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized to return another student\'s book' });
+    }
+
     const returnDate = new Date();
     const { daysOverdue, fine } = calculateFine(issueRecord.dueDate, returnDate);
 
@@ -147,6 +152,12 @@ const returnBook = async (req, res, next) => {
     if (returnNotes) issueRecord.returnNotes = returnNotes;
 
     await issueRecord.save();
+
+    // Clean up any lingering reservations for this student and book
+    await Reservation.updateMany(
+      { book: issueRecord.book._id, student: issueRecord.student._id, status: { $in: ['pending', 'approved'] } },
+      { status: 'completed' }
+    );
 
     // Increment available copies on book
     const book = await Book.findById(issueRecord.book._id);

@@ -143,6 +143,18 @@ const updateReservationStatus = async (req, res, next) => {
       const bookId = reservation.book._id || reservation.book;
       const studentId = reservation.student._id || reservation.student;
 
+      // Ensure student has not already reached the maximum borrowing limit
+      const activeBorrowCount = await IssueRecord.countDocuments({
+        student: studentId,
+        status: 'issued'
+      });
+
+      if (activeBorrowCount >= 3) {
+        return res.status(400).json({
+          message: 'Student has already reached the maximum borrowing limit of 3 books. A borrowed book must be returned first.'
+        });
+      }
+
       const activeIssue = await IssueRecord.findOne({
         book: bookId,
         student: studentId,
@@ -170,6 +182,10 @@ const updateReservationStatus = async (req, res, next) => {
           await bookDoc.save();
         }
       }
+
+      // Mark reservation status as completed so it does not trigger duplicate issues
+      reservation.status = 'completed';
+      await reservation.save();
 
       // Notify student immediately via registered email
       if (reservation.student?.email) {

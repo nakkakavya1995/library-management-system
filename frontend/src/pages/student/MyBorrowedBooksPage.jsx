@@ -63,6 +63,25 @@ const MyBorrowedBooksPage = () => {
     }
   };
 
+  const handleReturnBook = async (issueId, bookTitle) => {
+    if (!window.confirm(`Are you sure you want to return "${bookTitle}"?`)) {
+      return;
+    }
+    try {
+      setActionLoading(true);
+      setError('');
+      setSuccess('');
+
+      await api.put(`/issues/${issueId}/return`, { finePaid: true });
+      setSuccess(`"${bookTitle}" has been returned successfully! You can now borrow another book.`);
+      fetchMyBorrowed();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to return book');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   const getStatusBadge = (item) => {
     if (item.isOverdue) {
       return (
@@ -200,19 +219,25 @@ const MyBorrowedBooksPage = () => {
                           )}
                         </td>
                         <td className="text-end">
-                          {item.renewalStatus === 'none' && !item.isOverdue && item.renewalCount < 1 ? (
+                          <div className="d-flex justify-content-end align-items-center gap-1">
                             <button
                               className="btn btn-outline-dark btn-sm text-nowrap"
-                              onClick={() => handleRequestRenewal(item._id)}
+                              onClick={() => handleReturnBook(item._id, item.book?.title)}
                               disabled={actionLoading}
+                              title="Return this book to free up your borrowing limit"
                             >
-                              <i className="bi bi-arrow-repeat me-1"></i> Extend / Renew
+                              <i className="bi bi-box-arrow-in-left me-1"></i> Return Book
                             </button>
-                          ) : item.isOverdue ? (
-                            <span className="small text-muted">Return to clear fine</span>
-                          ) : (
-                            <span className="small text-muted">Limit reached</span>
-                          )}
+                            {item.renewalStatus === 'none' && !item.isOverdue && item.renewalCount < 1 ? (
+                              <button
+                                className="btn btn-outline-secondary btn-sm text-nowrap"
+                                onClick={() => handleRequestRenewal(item._id)}
+                                disabled={actionLoading}
+                              >
+                                <i className="bi bi-arrow-repeat me-1"></i> Extend
+                              </button>
+                            ) : null}
+                          </div>
                         </td>
                       </tr>
                     ))

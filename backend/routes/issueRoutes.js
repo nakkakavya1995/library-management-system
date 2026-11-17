@@ -16,10 +16,10 @@ const { protect, authorizeRoles } = require('../middleware/authMiddleware');
 router.get('/my-borrowings', protect, authorizeRoles('student'), getMyBorrowings);
 router.post('/:id/request-renewal', protect, authorizeRoles('student'), requestRenewal);
 
-// Librarian & Admin routes
+// Issue & Return routes
 router.get('/', protect, authorizeRoles('librarian', 'admin'), getAllBorrowings);
 router.post('/', protect, authorizeRoles('librarian', 'admin'), issueBook);
-router.put('/:id/return', protect, authorizeRoles('librarian', 'admin'), returnBook);
+router.put('/:id/return', protect, authorizeRoles('librarian', 'admin', 'student'), returnBook);
 router.put('/:id/handle-renewal', protect, authorizeRoles('librarian', 'admin'), handleRenewalRequest);
 router.put('/:id/pay-fine', protect, authorizeRoles('librarian', 'admin'), payFine);
 router.post('/:id/notify', protect, authorizeRoles('librarian', 'admin'), sendOverdueNotification);

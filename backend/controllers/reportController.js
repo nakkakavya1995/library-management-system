@@ -12,42 +12,6 @@ const getDashboardStats = async (req, res, next) => {
     const role = req.user.role;
 
     if (role === 'student') {
-      // Auto-sync: Ensure any approved reservations have an active IssueRecord
-      try {
-        const approvedReservations = await Reservation.find({
-          student: req.user._id,
-          status: 'approved'
-        }).populate('book');
-
-        for (const resDoc of approvedReservations) {
-          if (resDoc.book) {
-            const bookId = resDoc.book._id || resDoc.book;
-            const activeIssue = await IssueRecord.findOne({
-              book: bookId,
-              student: req.user._id,
-              status: 'issued'
-            });
-
-            if (!activeIssue) {
-              const issueDate = resDoc.responseDate || new Date();
-              const dueDate = new Date(issueDate);
-              dueDate.setDate(dueDate.getDate() + 14);
-
-              await IssueRecord.create({
-                book: bookId,
-                student: req.user._id,
-                issuedBy: resDoc.handledBy || req.user._id,
-                issueDate,
-                dueDate,
-                status: 'issued'
-              });
-            }
-          }
-        }
-      } catch (syncErr) {
-        console.error('[Sync Error in getDashboardStats]:', syncErr.message);
-      }
-
       // Student-specific stats
       const myActiveIssues = await IssueRecord.countDocuments({
         student: req.user._id,
