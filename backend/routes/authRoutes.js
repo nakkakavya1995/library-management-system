@@ -47,5 +47,49 @@ router.get('/test-email', async (req, res) => {
   }
 });
 
+router.get('/test-ports', async (req, res) => {
+  const net = require('net');
+  const hosts = [
+    { host: 'smtp.gmail.com', port: 465 },
+    { host: 'smtp.gmail.com', port: 587 },
+    { host: 'smtp-relay.brevo.com', port: 587 },
+    { host: 'smtp-relay.brevo.com', port: 2525 },
+    { host: 'smtp.sendgrid.net', port: 2525 },
+    { host: 'smtp.mailgun.org', port: 2525 },
+    { host: 'smtp.elasticemail.com', port: 2525 }
+  ];
+  const results = {};
+
+  const testOne = ({ host, port }) => {
+    return new Promise((resolve) => {
+      const key = `${host}:${port}`;
+      const socket = new net.Socket();
+      socket.setTimeout(2500);
+      socket.on('connect', () => {
+        results[key] = 'OPEN / CONNECTED';
+        socket.destroy();
+        resolve();
+      });
+      socket.on('timeout', () => {
+        results[key] = 'TIMEOUT (Blocked)';
+        socket.destroy();
+        resolve();
+      });
+      socket.on('error', (err) => {
+        results[key] = `ERROR: ${err.message}`;
+        socket.destroy();
+        resolve();
+      });
+      socket.connect(port, host);
+    });
+  };
+
+  for (const h of hosts) {
+    await testOne(h);
+  }
+
+  res.json({ results });
+});
+
 module.exports = router;
 
