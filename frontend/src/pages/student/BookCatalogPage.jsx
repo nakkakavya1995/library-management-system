@@ -12,6 +12,7 @@ const BookCatalogPage = () => {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [search, setSearch] = useState(initialQuery);
+  const [activeBorrowCount, setActiveBorrowCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -55,8 +56,18 @@ const BookCatalogPage = () => {
     }
   };
 
+  const fetchMyBorrowCount = async () => {
+    try {
+      const res = await api.get('/issues/my-borrowings?status=issued');
+      setActiveBorrowCount((res.data.issues || []).length);
+    } catch (err) {
+      // ignore
+    }
+  };
+
   useEffect(() => {
     fetchCategories();
+    fetchMyBorrowCount();
   }, []);
 
   useEffect(() => {
@@ -125,6 +136,24 @@ const BookCatalogPage = () => {
 
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
       <AlertMessage type="success" message={success} onClose={() => setSuccess('')} />
+
+      {/* Borrow Limit Reached Notice with Action Button */}
+      {activeBorrowCount >= 3 && (
+        <div className="alert alert-warning border-warning shadow-sm d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2 mb-4">
+          <div className="d-flex align-items-center">
+            <i className="bi bi-exclamation-triangle-fill fs-4 me-3 text-warning"></i>
+            <div>
+              <div className="fw-bold">Borrowing Limit Reached (3 of 3 Allowed)</div>
+              <small className="text-dark">
+                You currently have 3 borrowed books. To borrow another book, please return one of your books. Once a librarian accepts the return, your slot is freed up!
+              </small>
+            </div>
+          </div>
+          <Link to="/student/borrowed" className="btn btn-dark btn-sm rounded-pill px-3 text-nowrap fw-semibold">
+            <i className="bi bi-box-arrow-in-left me-1"></i>Request Return on Books
+          </Link>
+        </div>
+      )}
 
       {/* Top Search Bar - Matching Reference Image */}
       <div className="card shadow-sm border mb-4">

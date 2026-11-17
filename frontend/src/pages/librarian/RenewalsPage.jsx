@@ -224,9 +224,8 @@ const RenewalsPage = () => {
                       <td>{new Date(item.dueDate).toLocaleDateString()}</td>
                       <td>
                         <span
-                          className={`badge ${
-                            item.renewalStatus === 'approved' ? 'bg-success' : 'bg-danger'
-                          } text-capitalize`}
+                          className={`badge ${item.renewalStatus === 'approved' ? 'bg-success' : 'bg-danger'
+                            } text-capitalize`}
                         >
                           {item.renewalStatus}
                         </span>
@@ -251,4 +250,5 @@ const RenewalsPage = () => {
 };
 
 export default RenewalsPage;
+
 

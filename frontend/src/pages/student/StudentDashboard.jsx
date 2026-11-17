@@ -13,6 +13,7 @@ const StudentDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [actionLoading, setActionLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   const fetchDashboardData = async (isBackground = false) => {
@@ -80,6 +81,28 @@ const StudentDashboard = () => {
       fetchDashboardData();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to cancel reservation');
+    }
+  };
+
+  const handleRequestReturn = async (issueId, bookTitle) => {
+    if (!window.confirm(`Do you want to submit a return request for "${bookTitle}" to the librarian?`)) {
+      return;
+    }
+    try {
+      setActionLoading(true);
+      setError('');
+      setSuccess('');
+
+      const res = await api.post(`/issues/${issueId}/request-return`);
+      setSuccess(
+        res.data.message ||
+          `Return request submitted for "${bookTitle}"! Once the librarian accepts, your borrowing limit will be freed up.`
+      );
+      fetchDashboardData();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to submit return request');
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -205,35 +228,65 @@ const StudentDashboard = () => {
             </div>
             <div className="card-body p-0">
               {borrowedBooks.length > 0 ? (
-                <ul className="list-group list-group-flush">
-                  {borrowedBooks.map((item) => (
-                    <li key={item._id} className="list-group-item d-flex justify-content-between align-items-center py-3">
-                      <div className="d-flex align-items-center gap-3">
-                        <div
-                          className="bg-light border rounded d-flex align-items-center justify-content-center text-muted"
-                          style={{ width: '42px', height: '48px', flexShrink: 0 }}
-                        >
-                          <i className="bi bi-book fs-4"></i>
-                        </div>
-                        <div>
-                          <div className="fw-semibold text-dark">{item.book?.title}</div>
-                          <small className="text-muted">by {item.book?.author} • {item.book?.category}</small>
-                          <div className="small text-muted">
-                            Due: {new Date(item.dueDate).toLocaleDateString()}
-                            {item.isOverdue && (
-                              <span className="ms-2 badge bg-light text-dark border">
-                                Overdue ({item.daysOverdue}d)
-                              </span>
-                            )}
+                <div>
+                  {borrowedBooks.length >= 3 && (
+                    <div className="alert alert-warning py-2 px-3 m-3 mb-2 small d-flex align-items-center">
+                      <i className="bi bi-exclamation-triangle-fill fs-5 me-2 text-warning"></i>
+                      <div>
+                        <strong>Borrowing Limit Reached (3 of 3 Allowed):</strong> To borrow another book, click <strong>Request Return</strong> on any book below. Once the librarian accepts, your limit is freed up!
+                      </div>
+                    </div>
+                  )}
+                  <ul className="list-group list-group-flush">
+                    {borrowedBooks.map((item) => (
+                      <li key={item._id} className="list-group-item d-flex justify-content-between align-items-center py-3">
+                        <div className="d-flex align-items-center gap-3">
+                          <div
+                            className="bg-light border rounded d-flex align-items-center justify-content-center text-muted"
+                            style={{ width: '42px', height: '48px', flexShrink: 0 }}
+                          >
+                            <i className="bi bi-book fs-4"></i>
+                          </div>
+                          <div>
+                            <div className="fw-semibold text-dark">{item.book?.title}</div>
+                            <small className="text-muted">by {item.book?.author} • {item.book?.category}</small>
+                            <div className="small text-muted">
+                              Due: {new Date(item.dueDate).toLocaleDateString()}
+                              {item.isOverdue && (
+                                <span className="ms-2 badge bg-danger text-white">
+                                  Overdue ({item.daysOverdue}d)
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      <Link to="/student/borrowed" className="btn btn-outline-dark btn-sm text-nowrap">
-                        Details
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+                        <div className="d-flex align-items-center gap-2">
+                          {item.returnStatus === 'requested' ? (
+                            <span
+                              className="badge rounded-pill bg-warning text-dark px-3 py-2 fw-semibold shadow-sm"
+                              title="Return request is awaiting librarian review"
+                            >
+                              <i className="bi bi-clock-history me-1"></i>Return Requested
+                            </span>
+                          ) : (
+                            <button
+                              className="btn text-white btn-sm rounded-pill px-3 py-1 fw-medium text-nowrap shadow-sm"
+                              style={{ backgroundColor: '#059669', borderColor: '#059669' }}
+                              onClick={() => handleRequestReturn(item._id, item.book?.title)}
+                              disabled={actionLoading}
+                              title="Request Return: Send return request to librarian to restock book and free up your limit"
+                            >
+                              Request Return
+                            </button>
+                          )}
+                          <Link to="/student/borrowed" className="btn btn-outline-dark btn-sm text-nowrap rounded-pill px-2">
+                            Details
+                          </Link>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               ) : (
                 <div className="text-center py-5 text-muted">
                   <i className="bi bi-journal-x fs-2 d-block mb-2 text-muted"></i>
