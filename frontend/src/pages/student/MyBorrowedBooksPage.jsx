@@ -11,12 +11,15 @@ const MyBorrowedBooksPage = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const fetchMyBorrowed = async () => {
+  const fetchMyBorrowed = async (isBackground = false) => {
     try {
-      setLoading(true);
+      if (!isBackground && issues.length === 0) {
+        setLoading(true);
+      }
       const res = await api.get('/issues/my-borrowings?status=issued');
       setIssues(res.data.issues || []);
     } catch (err) {
+      if (err.response?.status === 401) return;
       setError(err.response?.data?.message || 'Failed to fetch borrowed books');
     } finally {
       setLoading(false);
@@ -24,18 +27,18 @@ const MyBorrowedBooksPage = () => {
   };
 
   useEffect(() => {
-    fetchMyBorrowed();
+    fetchMyBorrowed(false);
 
-    // Auto-refresh when tab gains focus or becomes visible
-    const handleSync = () => fetchMyBorrowed();
+    // Auto-refresh silently when tab gains focus or becomes visible
+    const handleSync = () => fetchMyBorrowed(true);
     window.addEventListener('focus', handleSync);
     const handleVisibility = () => {
       if (document.visibilityState === 'visible') handleSync();
     };
     document.addEventListener('visibilitychange', handleVisibility);
 
-    // Auto-sync interval to catch new issues in real-time
-    const interval = setInterval(handleSync, 5000);
+    // Silent sync interval (10s)
+    const interval = setInterval(handleSync, 10000);
 
     return () => {
       window.removeEventListener('focus', handleSync);

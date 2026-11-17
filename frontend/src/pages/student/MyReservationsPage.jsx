@@ -10,12 +10,15 @@ const MyReservationsPage = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const fetchMyReservations = async () => {
+  const fetchMyReservations = async (isBackground = false) => {
     try {
-      setLoading(true);
+      if (!isBackground && reservations.length === 0) {
+        setLoading(true);
+      }
       const res = await api.get('/reservations/my-reservations');
       setReservations(res.data.reservations || []);
     } catch (err) {
+      if (err.response?.status === 401) return;
       setError(err.response?.data?.message || 'Failed to load reservations');
     } finally {
       setLoading(false);
@@ -23,18 +26,18 @@ const MyReservationsPage = () => {
   };
 
   useEffect(() => {
-    fetchMyReservations();
+    fetchMyReservations(false);
 
-    // Auto-refresh when tab gains focus or becomes visible
-    const handleSync = () => fetchMyReservations();
+    // Auto-refresh silently when tab gains focus or becomes visible
+    const handleSync = () => fetchMyReservations(true);
     window.addEventListener('focus', handleSync);
     const handleVisibility = () => {
       if (document.visibilityState === 'visible') handleSync();
     };
     document.addEventListener('visibilitychange', handleVisibility);
 
-    // Auto-sync interval to catch status updates in real-time
-    const interval = setInterval(handleSync, 5000);
+    // Silent sync interval (10s)
+    const interval = setInterval(handleSync, 10000);
 
     return () => {
       window.removeEventListener('focus', handleSync);

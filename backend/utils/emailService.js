@@ -78,9 +78,16 @@ const dispatchEmail = async ({ to, subject, text, html }) => {
       const response = await fetch(relayUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ to, subject, text, html })
+        body: JSON.stringify({ to, subject, text, html }),
+        redirect: 'follow'
       });
-      const data = await response.json();
+      const textResponse = await response.text();
+      let data = {};
+      try {
+        data = JSON.parse(textResponse);
+      } catch (parseErr) {
+        data = { raw: textResponse };
+      }
       console.log(`[Email Service] Delivered via HTTPS Relay to ${to}`);
       return { success: true, via: 'https_relay', data };
     } catch (relayErr) {

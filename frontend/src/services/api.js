@@ -34,9 +34,14 @@ api.interceptors.response.use(
     return response;
   },
   async (error) => {
-    // If request failed due to proxy drop or Network Error, automatically failover to direct backend port 5000
+    // If running on local machine and request failed due to proxy drop, failover to direct backend port 5000
     const config = error.config;
+    const isLocalhost =
+      typeof window !== 'undefined' &&
+      (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
     if (
+      isLocalhost &&
       (error.code === 'ERR_NETWORK' || error.message === 'Network Error') &&
       config &&
       !config._retryDirect

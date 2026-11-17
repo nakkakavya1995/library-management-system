@@ -15,19 +15,31 @@ const StudentDashboard = () => {
   const [success, setSuccess] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = async (isBackground = false) => {
     try {
-      setLoading(true);
+      if (!isBackground && !stats) {
+        setLoading(true);
+      }
       const [statsRes, issuesRes, resRes] = await Promise.all([
-        api.get('/reports/stats'),
-        api.get('/issues/my-borrowings?status=issued'),
-        api.get('/reservations/my-reservations')
+        api.get('/reports/stats').catch((err) => {
+          console.warn('[StudentDashboard] stats fetch notice:', err.message);
+          return { data: { stats: null } };
+        }),
+        api.get('/issues/my-borrowings?status=issued').catch((err) => {
+          console.warn('[StudentDashboard] borrowings fetch notice:', err.message);
+          return { data: { issues: [] } };
+        }),
+        api.get('/reservations/my-reservations').catch((err) => {
+          console.warn('[StudentDashboard] reservations fetch notice:', err.message);
+          return { data: { reservations: [] } };
+        })
       ]);
 
-      setStats(statsRes.data.stats);
-      setBorrowedBooks(issuesRes.data.issues || []);
-      setReservations(resRes.data.reservations || []);
+      if (statsRes.data?.stats) setStats(statsRes.data.stats);
+      if (issuesRes.data?.issues !== undefined) setBorrowedBooks(issuesRes.data.issues || []);
+      if (resRes.data?.reservations !== undefined) setReservations(resRes.data.reservations || []);
     } catch (err) {
+      if (err.response?.status === 401) return;
       setError(err.response?.data?.message || 'Failed to load student dashboard');
     } finally {
       setLoading(false);
@@ -35,20 +47,26 @@ const StudentDashboard = () => {
   };
 
   useEffect(() => {
-    fetchDashboardData();
+    // Safety fallback: Never keep student dashboard locked on full-screen loading spinner
+    const safetyTimer = setTimeout(() => {
+      setLoading(false);
+    }, 2500);
 
-    // Auto-refresh when student tab gains focus or becomes visible
-    const handleSync = () => fetchDashboardData();
+    fetchDashboardData(false);
+
+    // Auto-refresh silently when student tab gains focus or becomes visible
+    const handleSync = () => fetchDashboardData(true);
     window.addEventListener('focus', handleSync);
     const handleVisibility = () => {
       if (document.visibilityState === 'visible') handleSync();
     };
     document.addEventListener('visibilitychange', handleVisibility);
 
-    // Auto-sync interval to catch librarian approvals in real-time
-    const interval = setInterval(handleSync, 5000);
+    // Silent background sync interval (15s) without tearing down dashboard with a spinner
+    const interval = setInterval(handleSync, 15000);
 
     return () => {
+      clearTimeout(safetyTimer);
       window.removeEventListener('focus', handleSync);
       document.removeEventListener('visibilitychange', handleVisibility);
       clearInterval(interval);
@@ -84,7 +102,10 @@ const StudentDashboard = () => {
 
   const totalUnpaidFine = borrowedBooks.reduce((sum, b) => sum + (b.isOverdue ? b.currentFine || 0 : 0), 0);
 
-  if (loading) return <LoadingSpinner text="Loading Student Dashboard..." />;
+  // Only show full-page loading spinner on initial load before any data is available
+  if (loading && !stats && borrowedBooks.length === 0 && reservations.length === 0) {
+    return <LoadingSpinner text="Loading Student Dashboard..." />;
+  }
 
   return (
     <div>
