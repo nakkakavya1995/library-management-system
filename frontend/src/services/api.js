@@ -23,7 +23,16 @@ api.interceptors.request.use(
 
 // Response interceptor to handle session expiration or auth errors
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // If backend provided a self-healed or refreshed token, save it automatically
+    const refreshedToken = response.headers
+      ? (response.headers['x-refreshed-token'] || response.headers['X-Refreshed-Token'])
+      : null;
+    if (refreshedToken) {
+      localStorage.setItem('token', refreshedToken);
+    }
+    return response;
+  },
   async (error) => {
     // If request failed due to proxy drop or Network Error, automatically failover to direct backend port 5000
     const config = error.config;

@@ -36,6 +36,9 @@ const UserManagementPage = () => {
       const res = await api.get('/users', { params });
       setUsers(res.data.users);
     } catch (err) {
+      if (err.response?.status === 401) {
+        return;
+      }
       setError(err.response?.data?.message || 'Failed to fetch users');
     } finally {
       setLoading(false);

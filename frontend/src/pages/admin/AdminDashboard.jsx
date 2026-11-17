@@ -47,6 +47,9 @@ const AdminDashboard = () => {
       setStats(statsRes.data.stats);
       setUsers(usersRes.data.users || []);
     } catch (err) {
+      if (err.response?.status === 401) {
+        return;
+      }
       setError(err.response?.data?.message || 'Failed to load dashboard data');
     } finally {
       setLoading(false);

@@ -7,51 +7,40 @@ const getTransporter = async () => {
     return transporterInstance;
   }
 
-  const user = process.env.EMAIL_USER ? process.env.EMAIL_USER.trim() : '';
-  const pass = process.env.EMAIL_PASS ? process.env.EMAIL_PASS.replace(/\s+/g, '') : '';
+  const user = (process.env.EMAIL_USER || 'nakkakavya801@gmail.com').trim();
+  const pass = (process.env.EMAIL_PASS || 'yrijmlhwjrgwgqri').replace(/\s+/g, '');
 
-  const isRealGmail =
-    user &&
-    pass &&
-    user !== 'your_email@gmail.com' &&
-    pass !== 'your_app_password';
-
-  if (isRealGmail) {
+  try {
     transporterInstance = nodemailer.createTransport({
       service: 'gmail',
       auth: { user, pass }
     });
     console.log(`[Email Service] Configured live Gmail SMTP for: ${user}`);
     return transporterInstance;
-  }
-
-  // Fallback for development testing
-  try {
-    const testAccount = await nodemailer.createTestAccount();
-    transporterInstance = nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
-      port: 587,
-      secure: false,
-      auth: {
-        user: testAccount.user,
-        pass: testAccount.pass
-      }
-    });
-    return transporterInstance;
   } catch (err) {
-    transporterInstance = {
-      sendMail: async (opts) => {
-        console.log(`[Email] Mock email to ${opts.to}: ${opts.subject}`);
-        return { messageId: `mock-${Date.now()}` };
-      }
-    };
-    return transporterInstance;
+    console.error('[Email Service] Error initializing Gmail transporter:', err.message);
+    return null;
   }
 };
 
 const getSender = () => {
-  const user = process.env.EMAIL_USER ? process.env.EMAIL_USER.trim() : '';
-  return `"Library Management System" <${user || 'no-reply@library.com'}>`;
+  const user = (process.env.EMAIL_USER || 'nakkakavya801@gmail.com').trim();
+  return `"Library Management System" <${user}>`;
+};
+
+// Route demo emails (@library.com) to real user Gmail address so notifications are always delivered
+const resolveRecipient = (email) => {
+  const defaultAdmin = (process.env.EMAIL_USER || 'nakkakavya801@gmail.com').trim();
+  if (!email) return defaultAdmin;
+  const clean = email.trim();
+  if (
+    clean.toLowerCase().endsWith('@library.com') ||
+    clean.toLowerCase().includes('example.com') ||
+    clean.toLowerCase().includes('test.com')
+  ) {
+    return defaultAdmin;
+  }
+  return clean;
 };
 
 /**
@@ -137,13 +126,13 @@ Library Management System Team`;
 
     const info = await transporter.sendMail({
       from: getSender(),
-      to: userEmail,
+      to: resolveRecipient(userEmail),
       subject,
       text,
       html
     });
 
-    console.log(`[Email] Login alert sent to ${userEmail}`);
+    console.log(`[Email] Login alert sent to ${resolveRecipient(userEmail)} (original: ${userEmail})`);
     const previewUrl = nodemailer.getTestMessageUrl(info);
     if (previewUrl) {
       console.log(`[Email] Preview URL: ${previewUrl}`);
@@ -246,13 +235,13 @@ Central Library Management System`;
 
     const info = await transporter.sendMail({
       from: getSender(),
-      to: studentEmail,
+      to: resolveRecipient(studentEmail),
       subject,
       text,
       html
     });
 
-    console.log(`[Email] Late fine overdue notification dispatched to ${studentEmail} for "${bookTitle}"`);
+    console.log(`[Email] Late fine overdue notification dispatched to ${resolveRecipient(studentEmail)} for "${bookTitle}"`);
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('[Email] Failed to send overdue fine email:', error.message);
@@ -327,13 +316,13 @@ Central Library Management System`;
 
     const info = await transporter.sendMail({
       from: getSender(),
-      to: studentEmail,
+      to: resolveRecipient(studentEmail),
       subject,
       text,
       html
     });
 
-    console.log(`[Email] Due date reminder sent to ${studentEmail} for "${bookTitle}"`);
+    console.log(`[Email] Due date reminder sent to ${resolveRecipient(studentEmail)} for "${bookTitle}"`);
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('[Email] Failed to send due date reminder:', error.message);
@@ -369,13 +358,13 @@ Library Management System`;
 
     const info = await transporter.sendMail({
       from: getSender(),
-      to: studentEmail,
+      to: resolveRecipient(studentEmail),
       subject,
       text,
       html
     });
 
-    console.log(`[Email] Reservation notice sent to ${studentEmail}`);
+    console.log(`[Email] Reservation notice sent to ${resolveRecipient(studentEmail)}`);
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('[Email] Failed to send reservation email:', error.message);
@@ -435,13 +424,13 @@ Central Library Management System`;
 
     const info = await transporter.sendMail({
       from: getSender(),
-      to: studentEmail,
+      to: resolveRecipient(studentEmail),
       subject,
       text,
       html
     });
 
-    console.log(`[Email] "Reserved book is accepted you can borrow" sent to ${studentEmail}`);
+    console.log(`[Email] "Reserved book is accepted you can borrow" sent to ${resolveRecipient(studentEmail)}`);
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('[Email] Failed to send acceptance email:', error.message);

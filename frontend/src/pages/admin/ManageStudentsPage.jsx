@@ -30,6 +30,9 @@ const ManageStudentsPage = () => {
       const res = await api.get('/users', { params });
       setStudents(res.data.users);
     } catch (err) {
+      if (err.response?.status === 401) {
+        return;
+      }
       setError(err.response?.data?.message || 'Failed to fetch students');
     } finally {
       setLoading(false);

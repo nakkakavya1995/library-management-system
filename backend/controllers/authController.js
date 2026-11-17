@@ -2,10 +2,22 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { sendLoginAlertEmail } = require('../utils/emailService');
 
-// Helper to generate JWT token
-const generateToken = (id) => {
+// Helper to generate JWT token with user identity context
+const generateToken = (userOrId) => {
+  let id = '';
+  let email = '';
+  let role = 'student';
+
+  if (typeof userOrId === 'object' && userOrId !== null) {
+    id = userOrId._id ? userOrId._id.toString() : (userOrId.id || '');
+    email = (userOrId.email || '').toLowerCase();
+    role = userOrId.role || 'student';
+  } else {
+    id = userOrId ? userOrId.toString() : '';
+  }
+
   return jwt.sign(
-    { id },
+    { id, email, role },
     process.env.JWT_SECRET || 'lms_secret_jwt_key_2026_super_secure',
     { expiresIn: '30d' }
   );
@@ -37,7 +49,7 @@ const register = async (req, res, next) => {
       phone: phone || ''
     });
 
-    const token = generateToken(user._id);
+    const token = generateToken(user);
 
     // Send welcome email on registration in background (non-blocking)
     sendLoginAlertEmail({
@@ -90,7 +102,7 @@ const login = async (req, res, next) => {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    const token = generateToken(user._id);
+    const token = generateToken(user);
 
     // Send automatic login notification email in background (non-blocking)
     sendLoginAlertEmail({
@@ -225,7 +237,7 @@ const googleAuth = async (req, res, next) => {
       });
     }
 
-    const token = generateToken(user._id);
+    const token = generateToken(user);
 
     // Send automatic login notification email in background (non-blocking)
     sendLoginAlertEmail({

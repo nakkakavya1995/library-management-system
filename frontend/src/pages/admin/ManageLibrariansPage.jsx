@@ -30,6 +30,9 @@ const ManageLibrariansPage = () => {
       const res = await api.get('/users', { params });
       setLibrarians(res.data.users);
     } catch (err) {
+      if (err.response?.status === 401) {
+        return;
+      }
       setError(err.response?.data?.message || 'Failed to fetch librarians');
     } finally {
       setLoading(false);
