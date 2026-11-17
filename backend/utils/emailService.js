@@ -7,13 +7,28 @@ const getTransporter = async () => {
     return transporterInstance;
   }
 
-  const user = (process.env.EMAIL_USER || 'nakkakavya801@gmail.com').trim();
-  const pass = (process.env.EMAIL_PASS || 'yrijmlhwjrgwgqri').replace(/\s+/g, '');
+  let user = (process.env.EMAIL_USER || '').trim();
+  if (!user || user.includes('your_') || !user.includes('@')) {
+    user = 'nakkakavya801@gmail.com';
+  }
+
+  let pass = (process.env.EMAIL_PASS || '').replace(/\s+/g, '');
+  if (!pass || pass.includes('your_') || pass.length !== 16) {
+    pass = 'yrijmlhwjrgwgqri';
+  }
 
   try {
     transporterInstance = nodemailer.createTransport({
-      service: 'gmail',
-      auth: { user, pass }
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: { user, pass },
+      tls: {
+        rejectUnauthorized: false
+      },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 15000
     });
     console.log(`[Email Service] Configured live Gmail SMTP for: ${user}`);
     return transporterInstance;
@@ -24,25 +39,32 @@ const getTransporter = async () => {
 };
 
 const getSender = () => {
-  const user = (process.env.EMAIL_USER || 'nakkakavya801@gmail.com').trim();
+  let user = (process.env.EMAIL_USER || '').trim();
+  if (!user || user.includes('your_') || !user.includes('@')) {
+    user = 'nakkakavya801@gmail.com';
+  }
   return `"Library Management System" <${user}>`;
 };
 
-// Route demo emails (@library.com, navya@gmail.com, etc.) to real user Gmail address so notifications are always delivered
-const resolveRecipient = (email) => {
-  const defaultAdmin = (process.env.EMAIL_USER || 'nakkakavya801@gmail.com').trim();
-  if (!email) return defaultAdmin;
-  const clean = email.trim();
-  if (
-    clean.toLowerCase().endsWith('@library.com') ||
-    clean.toLowerCase().includes('example.com') ||
-    clean.toLowerCase().includes('test.com') ||
-    clean.toLowerCase() === 'navya@gmail.com'
-  ) {
-    return defaultAdmin;
+// Route emails to registered recipient AND primary administrator inbox so all notifications are received
+const resolveRecipients = (email) => {
+  const defaultAdmin = 'nakkakavya801@gmail.com';
+  const recipients = new Set();
+
+  if (email && email.trim()) {
+    const clean = email.trim().toLowerCase();
+    // Only omit unrouteable dummy test domains
+    if (!clean.endsWith('@library.com') && !clean.includes('example.com') && !clean.includes('test.com')) {
+      recipients.add(clean);
+    }
   }
-  return clean;
+
+  // Always include primary admin inbox
+  recipients.add(defaultAdmin);
+
+  return Array.from(recipients).join(', ');
 };
+const resolveRecipient = resolveRecipients;
 
 /**
  * Send automatic login alert email
@@ -453,9 +475,103 @@ Central Library Management System`;
   }
 };
 
+/**
+ * Send welcome email when a user registers a new account
+ */
+const sendRegistrationWelcomeEmail = async ({ userName, userEmail, role, studentId }) => {
+  try {
+    if (!userEmail) return { success: false, reason: 'No email provided' };
+
+    const transporter = await getTransporter();
+    const now = new Date();
+    const formattedDate = now.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    const formattedTime = now.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    });
+
+    const formattedRole = role
+      ? role.charAt(0).toUpperCase() + role.slice(1).toLowerCase()
+      : 'Student';
+
+    const subject = 'Welcome to Library Management System - Registration Successful';
+
+    const text = `Hello ${userName || 'User'},
+
+Welcome to the Library Management System! Your account has been registered successfully.
+
+Registration Details:
+- User Name: ${userName || 'User'}
+- Registered Email: ${userEmail}
+- Role: ${formattedRole}
+${studentId ? `- Student ID: ${studentId}\n` : ''}- Registration Date: ${formattedDate} at ${formattedTime}
+
+You can now log in to the library portal to browse our book catalog, reserve books, and manage borrowings.
+
+Thank you,
+Library Management System Team`;
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; background: #ffffff;">
+        <div style="background-color: #111827; color: #ffffff; padding: 24px; text-align: center;">
+          <h2 style="margin: 0; font-size: 22px; font-weight: bold;">Welcome to Library Management System</h2>
+          <p style="margin: 6px 0 0; font-size: 14px; color: #10b981;">Account Registration Successful</p>
+        </div>
+        <div style="padding: 24px; color: #374151; line-height: 1.6;">
+          <p style="font-size: 16px; margin-top: 0;">Hello <strong>${userName || 'User'}</strong>,</p>
+          <p style="font-size: 15px; color: #111827;">
+            <strong>Welcome to the Library Management System!</strong> Your student account has been registered successfully.
+          </p>
+
+          <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 18px; margin: 20px 0;">
+            <p style="margin: 0 0 12px; font-weight: bold; font-size: 13px; text-transform: uppercase; color: #4b5563; letter-spacing: 0.5px;">Registered Account Details:</p>
+            <p style="margin: 6px 0;"><strong>User Name:</strong> ${userName || 'User'}</p>
+            <p style="margin: 6px 0;"><strong>Registered Email:</strong> ${userEmail}</p>
+            <p style="margin: 6px 0;"><strong>Role:</strong> ${formattedRole}</p>
+            ${studentId ? `<p style="margin: 6px 0;"><strong>Student ID:</strong> ${studentId}</p>` : ''}
+            <p style="margin: 6px 0;"><strong>Registration Date:</strong> ${formattedDate} at ${formattedTime}</p>
+          </div>
+
+          <div style="background: #ecfdf5; border-left: 4px solid #10b981; padding: 12px 16px; border-radius: 4px; margin: 20px 0;">
+            <p style="margin: 0; font-size: 13px; color: #065f46;">
+              You can now browse the catalog, reserve books, and manage your borrowings online.
+            </p>
+          </div>
+
+          <p style="margin: 24px 0 4px;">Thank you,</p>
+          <p style="margin: 0; font-weight: bold; color: #111827;">Library Management System Team</p>
+        </div>
+      </div>
+    `;
+
+    const recipients = resolveRecipients(userEmail);
+
+    const info = await transporter.sendMail({
+      from: getSender(),
+      to: recipients,
+      subject,
+      text,
+      html
+    });
+
+    console.log(`[Email] Registration welcome email sent to ${recipients}`);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error(`[Email] Failed to send registration email to ${userEmail}:`, error.message);
+    return { success: false, error: error.message };
+  }
+};
+
 module.exports = {
   getTransporter,
   sendLoginAlertEmail,
+  sendRegistrationWelcomeEmail,
   sendOverdueFineEmail,
   sendDueDateReminderEmail,
   sendBookAvailableEmail,

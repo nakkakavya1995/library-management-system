@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const { sendLoginAlertEmail } = require('../utils/emailService');
+const { sendLoginAlertEmail, sendRegistrationWelcomeEmail } = require('../utils/emailService');
 
 // Helper to generate JWT token with user identity context
 const generateToken = (userOrId) => {
@@ -52,10 +52,11 @@ const register = async (req, res, next) => {
     const token = generateToken(user);
 
     // Send welcome email on registration in background (non-blocking)
-    sendLoginAlertEmail({
+    sendRegistrationWelcomeEmail({
       userName: user.name,
       userEmail: user.email,
-      role: user.role
+      role: user.role,
+      studentId: user.studentId
     }).catch((emailErr) => {
       console.error('[Auth Controller] Error dispatching registration welcome email:', emailErr.message);
     });
