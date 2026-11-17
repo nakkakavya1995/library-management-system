@@ -55,14 +55,25 @@ const LibrarianDashboard = () => {
 
   const handleAcceptReturn = async (issueId, bookTitle, studentName) => {
     try {
+      setError('');
+      setSuccess('');
       const res = await api.put(`/issues/${issueId}/accept-return`, { finePaid: true });
+      setError('');
       setSuccess(
         res.data.message ||
           `Return accepted for "${bookTitle}" (${studentName})! The book has been restocked and the student can now borrow again.`
       );
       fetchDashboardData();
     } catch (err) {
-      setError(err.response?.data?.message || 'Error accepting return request');
+      const msg = err.response?.data?.message || '';
+      if (msg.toLowerCase().includes('already been returned')) {
+        setError('');
+        setSuccess(`"${bookTitle}" has already been returned and restocked.`);
+        fetchDashboardData();
+      } else {
+        setSuccess('');
+        setError(msg || 'Error accepting return request');
+      }
     }
   };
 

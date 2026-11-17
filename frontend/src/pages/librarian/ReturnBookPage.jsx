@@ -46,13 +46,16 @@ const ReturnBookPage = () => {
 
     try {
       setProcessing(true);
+      setError('');
+      setSuccess('');
       const res = await api.put(`/issues/${selectedRecord._id}/return`, {
         returnNotes,
         finePaid
       });
 
+      setError('');
       setSuccess(
-        `${res.data.message} ${res.data.fineAmount > 0
+        `${res.data.message || 'Book returned successfully'} ${res.data.fineAmount > 0
           ? `Fine recorded: ₹${res.data.fineAmount} (${finePaid ? 'Paid' : 'Unpaid'}).`
           : ''
         }`
@@ -61,7 +64,16 @@ const ReturnBookPage = () => {
       setSelectedRecord(null);
       fetchActiveIssues();
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to process return');
+      const msg = err.response?.data?.message || '';
+      if (msg.toLowerCase().includes('already been returned')) {
+        setError('');
+        setSuccess('Book has already been returned and restocked');
+        setSelectedRecord(null);
+        fetchActiveIssues();
+      } else {
+        setSuccess('');
+        setError(msg || 'Failed to process return');
+      }
     } finally {
       setProcessing(false);
     }

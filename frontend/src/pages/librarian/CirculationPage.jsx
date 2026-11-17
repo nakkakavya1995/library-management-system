@@ -7,6 +7,7 @@ import AlertMessage from '../../components/AlertMessage';
 const CirculationPage = () => {
   const [issues, setIssues] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [returningId, setReturningId] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [search, setSearch] = useState('');
@@ -29,11 +30,25 @@ const CirculationPage = () => {
 
   const handleReturn = async (issueId) => {
     try {
-      await api.put(`/issues/${issueId}/return`, { finePaid: true });
-      setSuccess('Book successfully returned and restocked');
+      setReturningId(issueId);
+      setError('');
+      setSuccess('');
+      const res = await api.put(`/issues/${issueId}/return`, { finePaid: true });
+      setError('');
+      setSuccess(res.data?.message || 'Book successfully returned and restocked');
       fetchCirculationData();
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to process return');
+      const msg = err.response?.data?.message || '';
+      if (msg.toLowerCase().includes('already been returned')) {
+        setError('');
+        setSuccess('Book successfully returned and restocked');
+        fetchCirculationData();
+      } else {
+        setSuccess('');
+        setError(msg || 'Failed to process return');
+      }
+    } finally {
+      setReturningId(null);
     }
   };
 
@@ -192,9 +207,19 @@ const CirculationPage = () => {
                                   : {}
                               }
                               onClick={() => handleReturn(item._id)}
+                              disabled={returningId === item._id}
                               title="Return Book"
                             >
-                              {item.returnStatus === 'requested' ? 'Accept Return' : 'Return'}
+                              {returningId === item._id ? (
+                                <>
+                                  <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                                  Returning...
+                                </>
+                              ) : item.returnStatus === 'requested' ? (
+                                'Accept Return'
+                              ) : (
+                                'Return'
+                              )}
                             </button>
                           </div>
                         </td>

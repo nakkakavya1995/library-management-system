@@ -136,7 +136,11 @@ const returnBook = async (req, res, next) => {
     }
 
     if (issueRecord.status === 'returned') {
-      return res.status(400).json({ message: 'Book has already been returned' });
+      return res.json({
+        success: true,
+        message: 'Book has already been returned and restocked',
+        issue: issueRecord
+      });
     }
 
     // If student is returning, ensure they only return their own borrowed book
@@ -585,7 +589,11 @@ const acceptReturnRequest = async (req, res, next) => {
     }
 
     if (issueRecord.status === 'returned') {
-      return res.status(400).json({ message: 'Book has already been returned' });
+      return res.json({
+        success: true,
+        message: 'Book has already been returned and restocked',
+        issue: issueRecord
+      });
     }
 
     const returnDate = new Date();
