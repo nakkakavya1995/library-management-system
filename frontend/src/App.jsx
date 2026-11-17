@@ -79,10 +79,10 @@ function App() {
           <Route path="/admin/librarians" element={<ManageLibrariansPage />} />
           <Route path="/admin/students" element={<ManageStudentsPage />} />
           <Route path="/admin/books" element={<AdminBookManagementPage />} />
-          <Route path="/admin/activity" element={<AdminActivityPage />} />
+          <Route path="/admin/activity" element={<Navigate to="/admin" replace />} />
           <Route path="/admin/reports" element={<AdminReportsPage />} />
           <Route path="/admin/users" element={<UserManagementPage />} />
-          <Route path="/admin/borrowings" element={<AdminActivityPage />} />
+          <Route path="/admin/borrowings" element={<Navigate to="/admin" replace />} />
           <Route path="/admin/reservations" element={<AdminReservationsPage />} />
           <Route path="/admin/fines" element={<AdminFinesPage />} />
           <Route path="/admin/notifications" element={<Navigate to="/admin" replace />} />

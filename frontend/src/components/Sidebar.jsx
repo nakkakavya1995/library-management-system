@@ -37,10 +37,6 @@ const Sidebar = () => {
   const isBooksActive =
     location.pathname === '/admin/books';
 
-  const isActivityActive =
-    location.pathname === '/admin/activity' ||
-    location.pathname === '/admin/borrowings';
-
   // Admin Navigation strictly matching reference design
   const renderAdminNav = () => (
     <>
@@ -132,18 +128,7 @@ const Sidebar = () => {
           )}
         </div>
 
-        {/* 4. Issue & Return */}
-        <NavLink
-          to="/admin/activity"
-          className={() => `sidebar-pill-item ${isActivityActive ? 'active' : ''}`}
-        >
-          <span className="sidebar-item-icon">
-            <i className="bi bi-arrow-left-right"></i>
-          </span>
-          <span className="sidebar-item-text">Issue & Return</span>
-        </NavLink>
-
-        {/* 5. Reservations */}
+        {/* 4. Reservations */}
         <NavLink
           to="/admin/reservations"
           className={({ isActive }) => `sidebar-pill-item ${isActive ? 'active' : ''}`}
