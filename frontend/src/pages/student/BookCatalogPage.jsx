@@ -198,11 +198,6 @@ const BookCatalogPage = () => {
               ))}
             </div>
           </div>
-
-          <div className="alert alert-secondary border py-3 small">
-            <div className="fw-bold mb-1"><i className="bi bi-info-circle me-1"></i>Borrowing Guide</div>
-            <div>To borrow an available book, visit the library desk with your Student ID. If a book is borrowed or out of stock, click <strong>Reserve</strong> to get in queue.</div>
-          </div>
         </div>
 
         {/* Right Column: Books in Category Grid */}
