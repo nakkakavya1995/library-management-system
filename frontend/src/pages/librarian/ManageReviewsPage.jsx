@@ -41,7 +41,6 @@ const ManageReviewsPage = () => {
     }
   };
 
-  // Filter reviews
   const filteredReviews = reviews.filter((r) => {
     const bookTitle = r.book?.title?.toLowerCase() || '';
     const studentName = r.student?.name?.toLowerCase() || '';
@@ -70,7 +69,6 @@ const ManageReviewsPage = () => {
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
       <AlertMessage type="success" message={success} onClose={() => setSuccess('')} />
 
-      {/* Summary Cards */}
       <div className="row g-3 mb-4">
         <div className="col-md-4">
           <div className="card shadow-sm border p-3">
@@ -99,7 +97,6 @@ const ManageReviewsPage = () => {
         </div>
       </div>
 
-      {/* Filter and Search Bar */}
       <div className="card mb-4 shadow-sm">
         <div className="card-body p-3">
           <div className="row g-2 align-items-center">
@@ -144,7 +141,6 @@ const ManageReviewsPage = () => {
         </div>
       </div>
 
-      {/* Reviews Table */}
       <div className="card shadow-sm">
         <div className="card-header bg-light d-flex justify-content-between align-items-center">
           <span className="fw-semibold">
@@ -219,4 +215,3 @@ const ManageReviewsPage = () => {
 };
 
 export default ManageReviewsPage;
-

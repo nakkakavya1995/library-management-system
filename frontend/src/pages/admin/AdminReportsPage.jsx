@@ -35,7 +35,6 @@ const AdminReportsPage = () => {
 
   if (loading) return <LoadingSpinner text="Generating analytics..." />;
 
-  // Category counts
   const categoryCounts = books.reduce((acc, b) => {
     const cat = b.category || 'General';
     acc[cat] = (acc[cat] || 0) + 1;
@@ -50,7 +49,7 @@ const AdminReportsPage = () => {
 
   return (
     <div>
-      {/* Header */}
+
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h3 className="fw-bold mb-1">Reports & Analytics</h3>
@@ -60,7 +59,6 @@ const AdminReportsPage = () => {
 
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
 
-      {/* Top 4 KPI Cards */}
       <div className="row g-3 mb-4">
         <div className="col-12 col-sm-6 col-xl-3">
           <div className="card shadow-sm border p-3 bg-white">
@@ -92,9 +90,8 @@ const AdminReportsPage = () => {
         </div>
       </div>
 
-      {/* Visual Analytics Grid */}
       <div className="row g-4 mb-4">
-        {/* Left: Issued / Returned Rate */}
+
         <div className="col-lg-6">
           <div className="card shadow-sm border h-100">
             <div className="card-header bg-light d-flex justify-content-between align-items-center">
@@ -148,7 +145,6 @@ const AdminReportsPage = () => {
           </div>
         </div>
 
-        {/* Right: Returned Rate Velocity Trend */}
         <div className="col-lg-6">
           <div className="card shadow-sm border h-100">
             <div className="card-header bg-light d-flex justify-content-between align-items-center">
@@ -198,7 +194,6 @@ const AdminReportsPage = () => {
         </div>
       </div>
 
-      {/* Book Categories Distribution */}
       <div className="card shadow-sm border mb-4">
         <div className="card-header bg-light d-flex justify-content-between align-items-center">
           <span className="fw-semibold">

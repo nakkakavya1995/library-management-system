@@ -1,8 +1,5 @@
 const User = require('../models/User');
 
-// @desc   Get all users (with optional role filter or search)
-// @route  GET /api/users
-// @access Private (Admin, Librarian)
 const getUsers = async (req, res, next) => {
   try {
     const { role, search } = req.query;
@@ -27,9 +24,6 @@ const getUsers = async (req, res, next) => {
   }
 };
 
-// @desc   Get single user by ID
-// @route  GET /api/users/:id
-// @access Private (Admin)
 const getUserById = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id).select('-password');
@@ -42,9 +36,6 @@ const getUserById = async (req, res, next) => {
   }
 };
 
-// @desc   Create a user (Admin only, can create Librarian or Student)
-// @route  POST /api/users
-// @access Private (Admin)
 const createUser = async (req, res, next) => {
   try {
     const { name, email, password, role, studentId, phone, status, permissions } = req.body;
@@ -96,9 +87,6 @@ const createUser = async (req, res, next) => {
   }
 };
 
-// @desc   Update user details
-// @route  PUT /api/users/:id
-// @access Private (Admin)
 const updateUser = async (req, res, next) => {
   try {
     const { name, email, role, studentId, phone, status, password, permissions } = req.body;
@@ -123,7 +111,7 @@ const updateUser = async (req, res, next) => {
     }
 
     if (password && password.trim() !== '') {
-      user.password = password; // Will be hashed by pre('save') hook
+      user.password = password;
     }
 
     const updatedUser = await user.save();
@@ -146,9 +134,6 @@ const updateUser = async (req, res, next) => {
   }
 };
 
-// @desc   Delete a user
-// @route  DELETE /api/users/:id
-// @access Private (Admin)
 const deleteUser = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
@@ -156,7 +141,6 @@ const deleteUser = async (req, res, next) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Prevent admin from deleting themselves
     if (user._id.toString() === req.user._id.toString()) {
       return res.status(400).json({ message: 'You cannot delete your own admin account' });
     }
@@ -175,4 +159,3 @@ module.exports = {
   updateUser,
   deleteUser
 };
-

@@ -10,7 +10,6 @@ router.post('/google', googleAuth);
 router.get('/me', protect, getMe);
 router.put('/profile', protect, updateProfile);
 
-// Diagnostic test endpoint to test email delivery in real-time
 router.get('/test-email', async (req, res) => {
   const targetEmail = req.query.email || 'nakkakavya801@gmail.com';
   const type = req.query.type || 'login';
@@ -48,4 +47,3 @@ router.get('/test-email', async (req, res) => {
 });
 
 module.exports = router;
-

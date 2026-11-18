@@ -13,9 +13,7 @@ router.get('/book/:bookId', protect, getBookReviews);
 router.get('/my-reviews', protect, authorizeRoles('student'), getMyReviews);
 router.post('/', protect, authorizeRoles('student'), addReview);
 
-// Librarian & Admin review management routes
 router.get('/', protect, authorizeRoles('librarian', 'admin'), getAllReviews);
 router.delete('/:id', protect, authorizeRoles('librarian', 'admin'), deleteReview);
 
 module.exports = router;
-

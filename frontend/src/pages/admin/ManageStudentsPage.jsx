@@ -10,7 +10,6 @@ const ManageStudentsPage = () => {
   const [success, setSuccess] = useState('');
   const [search, setSearch] = useState('');
 
-  // Modal State
   const [showModal, setShowModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState(null);
   const [formData, setFormData] = useState({
@@ -149,7 +148,6 @@ const ManageStudentsPage = () => {
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
       <AlertMessage type="success" message={success} onClose={() => setSuccess('')} />
 
-      {/* Search Bar */}
       <div className="card mb-4 shadow-sm">
         <div className="card-body p-3">
           <form onSubmit={handleSearchSubmit} className="d-flex gap-2" style={{ maxWidth: '450px' }}>
@@ -179,7 +177,6 @@ const ManageStudentsPage = () => {
         </div>
       </div>
 
-      {/* Students Table */}
       <div className="card shadow-sm">
         <div className="card-header bg-light d-flex justify-content-between align-items-center">
           <span className="fw-semibold">
@@ -262,7 +259,6 @@ const ManageStudentsPage = () => {
         </div>
       </div>
 
-      {/* Add / Edit Student Modal */}
       {showModal && (
         <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
           <div className="modal-dialog modal-dialog-centered">
@@ -372,4 +368,3 @@ const ManageStudentsPage = () => {
 };
 
 export default ManageStudentsPage;
-

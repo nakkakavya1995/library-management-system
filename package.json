@@ -1,6 +1,7 @@
 {
   "name": "library-management-system",
   "version": "1.0.0",
+  "private": true,
   "description": "Full-stack Library Management System with React, Express, MongoDB, and Firebase",
   "main": "server.js",
   "scripts": {

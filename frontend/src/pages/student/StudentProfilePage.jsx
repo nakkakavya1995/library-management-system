@@ -120,7 +120,7 @@ const StudentProfilePage = () => {
       <AlertMessage type="success" message={success} onClose={() => setSuccess('')} />
 
       <div className="row g-4">
-        {/* Left Column: Account Overview */}
+
         <div className="col-lg-4">
           <div className="card shadow-sm h-100 border">
             <div className="card-body text-center p-4">
@@ -164,10 +164,9 @@ const StudentProfilePage = () => {
           </div>
         </div>
 
-        {/* Right Column: Settings Form */}
         <div className="col-lg-8">
           <form onSubmit={handleUpdateProfile}>
-            {/* Section 1: Personal Information */}
+
             <div className="card shadow-sm border mb-4">
               <div className="card-header bg-light">
                 <i className="bi bi-person-lines-fill me-2"></i>Personal Information
@@ -225,7 +224,6 @@ const StudentProfilePage = () => {
               </div>
             </div>
 
-            {/* Section 2: Notification Preferences (Reference Image Feature) */}
             <div className="card shadow-sm border mb-4">
               <div className="card-header bg-light">
                 <i className="bi bi-bell me-2"></i>Notification Preferences
@@ -235,7 +233,6 @@ const StudentProfilePage = () => {
                   Choose which automatic email updates you would like to receive from the library:
                 </p>
 
-                {/* 1. Due Dates Notification */}
                 <div className="d-flex justify-content-between align-items-center py-2 border-bottom">
                   <div>
                     <div className="fw-semibold text-dark">Due Date Alerts</div>
@@ -255,7 +252,6 @@ const StudentProfilePage = () => {
                   </div>
                 </div>
 
-                {/* 2. Fines Notification */}
                 <div className="d-flex justify-content-between align-items-center py-2 border-bottom">
                   <div>
                     <div className="fw-semibold text-dark">Overdue Fines & Fee Updates</div>
@@ -275,7 +271,6 @@ const StudentProfilePage = () => {
                   </div>
                 </div>
 
-                {/* 3. Available Books Notification after Reservation (Highlighted Requirement) */}
                 <div className="d-flex justify-content-between align-items-center py-2">
                   <div>
                     <div className="fw-semibold text-dark">
@@ -299,7 +294,6 @@ const StudentProfilePage = () => {
               </div>
             </div>
 
-            {/* Section 3: Change Password */}
             <div className="card shadow-sm border mb-4">
               <div className="card-header bg-light">
                 <i className="bi bi-shield-lock me-2"></i>Change Password

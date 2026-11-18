@@ -13,7 +13,6 @@ const BookManagementPage = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  // Modal State
   const [showModal, setShowModal] = useState(false);
   const [editingBook, setEditingBook] = useState(null);
   const [formData, setFormData] = useState({
@@ -167,7 +166,6 @@ const BookManagementPage = () => {
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
       <AlertMessage type="success" message={success} onClose={() => setSuccess('')} />
 
-      {/* Filter and Search Bar */}
       <div className="card mb-4 border">
         <div className="card-body p-3">
           <div className="row g-2 align-items-center">
@@ -215,7 +213,6 @@ const BookManagementPage = () => {
         </div>
       </div>
 
-      {/* Books Table */}
       <div className="card border">
         <div className="card-body p-0">
           {loading ? (
@@ -309,7 +306,6 @@ const BookManagementPage = () => {
         </div>
       </div>
 
-      {/* Add / Edit Book Modal */}
       {showModal && (
         <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
           <div className="modal-dialog modal-dialog-centered">
@@ -416,4 +412,3 @@ const BookManagementPage = () => {
 };
 
 export default BookManagementPage;
-

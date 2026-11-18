@@ -14,10 +14,8 @@ router.get('/categories', protect, getCategories);
 router.get('/', protect, getBooks);
 router.get('/:id', protect, getBookById);
 
-// Restricted book mutation endpoints (Librarian, Admin)
 router.post('/', protect,  authorizeRoles('librarian', 'admin'), createBook);
 router.put('/:id', protect, authorizeRoles('librarian', 'admin'), updateBook);
 router.delete('/:id', protect, authorizeRoles('librarian', 'admin'), deleteBook);
 
 module.exports = router;
-

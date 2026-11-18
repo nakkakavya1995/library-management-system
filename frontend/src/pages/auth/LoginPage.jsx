@@ -10,7 +10,7 @@ const LoginPage = () => {
   const [inputsReady, setInputsReady] = useState(false);
 
   useEffect(() => {
-    // Delay removing readonly state slightly to prevent aggressive browser autofill
+
     const timer = setTimeout(() => {
       setInputsReady(true);
     }, 250);
@@ -25,7 +25,6 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
-  // Forgot Password modal state (Firebase)
   const [showForgotModal, setShowForgotModal] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [resetLoading, setResetLoading] = useState(false);
@@ -157,7 +156,7 @@ const LoginPage = () => {
         }}
       >
         <div className="row g-0">
-          {/* Left Side: Vibrant Blue Project Description (matching reference design) */}
+
           <div
             className="col-12 col-md-6 d-flex flex-column justify-content-center align-items-center text-center p-4 p-lg-5 text-white"
             style={{
@@ -186,7 +185,6 @@ const LoginPage = () => {
                 A centralized, full-stack digital platform engineered for automated book circulation, real-time catalog management, reservations, and instant email notifications across Admin, Librarian, and Student roles.
               </p>
 
-              {/* Feature Highlights */}
               <div
                 className="d-flex flex-column gap-2 mb-4 text-start w-100 px-3 py-3 rounded-3"
                 style={{
@@ -213,7 +211,6 @@ const LoginPage = () => {
                 </div>
               </div>
 
-              {/* Pill Button matching reference */}
               <Link
                 to="/register"
                 className="btn text-white text-decoration-none shadow-sm"
@@ -233,7 +230,6 @@ const LoginPage = () => {
             </div>
           </div>
 
-          {/* Right Side: White Sign-In Form (matching reference design) */}
           <div className="col-12 col-md-6 d-flex flex-column justify-content-center p-4 p-lg-5 bg-white">
             <div style={{ maxWidth: '380px', width: '100%', margin: '0 auto' }}>
               <h2 className="fw-bold text-dark text-center mb-4" style={{ letterSpacing: '-0.02em', fontSize: '2rem' }}>
@@ -243,7 +239,7 @@ const LoginPage = () => {
               <AlertMessage type="danger" message={error} onClose={() => setError('')} />
 
               <form onSubmit={handleSubmit} autoComplete="off">
-                {/* Dummy hidden inputs to absorb browser autofill */}
+
                 <input type="text" style={{ display: 'none' }} tabIndex="-1" autoComplete="off" />
                 <input type="password" style={{ display: 'none' }} tabIndex="-1" autoComplete="new-password" />
 
@@ -328,12 +324,10 @@ const LoginPage = () => {
                 </button>
               </form>
 
-              {/* Social login divider matching reference: "or signup with" -> "or sign in with" */}
               <div className="text-center my-3">
                 <span className="text-muted small">or sign in with</span>
               </div>
 
-              {/* Continue with Google Button */}
               <button
                 type="button"
                 className="btn w-100 py-2 d-flex align-items-center justify-content-center gap-2 shadow-sm"
@@ -378,7 +372,6 @@ const LoginPage = () => {
         </div>
       </div>
 
-      {/* Forgot Password Modal (Firebase Auth) */}
       {showForgotModal && (
         <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
           <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: '420px' }}>
@@ -447,4 +440,3 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
-

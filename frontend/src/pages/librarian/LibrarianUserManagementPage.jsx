@@ -10,7 +10,6 @@ const LibrarianUserManagementPage = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  // Add / Edit Modal
   const [showModal, setShowModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState(null);
   const [formData, setFormData] = useState({
@@ -114,7 +113,6 @@ const LibrarianUserManagementPage = () => {
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
       <AlertMessage type="success" message={success} onClose={() => setSuccess('')} />
 
-      {/* Search Input Matching Reference Image Screen 4 */}
       <div className="card shadow-sm border mb-4">
         <div className="card-body p-3">
           <div className="input-group input-group-sm" style={{ maxWidth: '400px' }}>
@@ -135,7 +133,6 @@ const LibrarianUserManagementPage = () => {
         </div>
       </div>
 
-      {/* Students Table */}
       <div className="card shadow-sm border">
         <div className="card-header bg-light fw-bold text-dark d-flex justify-content-between align-items-center">
           <span>
@@ -210,7 +207,6 @@ const LibrarianUserManagementPage = () => {
         </div>
       </div>
 
-      {/* Add / Edit Student Modal */}
       {showModal && (
         <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
           <div className="modal-dialog modal-dialog-centered">
@@ -300,4 +296,3 @@ const LibrarianUserManagementPage = () => {
 };
 
 export default LibrarianUserManagementPage;
-

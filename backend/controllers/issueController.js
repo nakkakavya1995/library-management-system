@@ -18,9 +18,6 @@ const {
   MAX_RENEWALS_ALLOWED
 } = require('../config/constants');
 
-// @desc   Issue a book to a student
-// @route  POST /api/issues
-// @access Private (Librarian, Admin)
 const issueBook = async (req, res, next) => {
   try {
     const { bookId, studentId } = req.body;
@@ -29,7 +26,6 @@ const issueBook = async (req, res, next) => {
       return res.status(400).json({ message: 'Please provide both bookId and studentId' });
     }
 
-    // 1. Verify Student
     const student = await User.findById(studentId);
     if (!student || student.role !== 'student') {
       return res.status(404).json({ message: 'Valid student not found' });
@@ -38,7 +34,6 @@ const issueBook = async (req, res, next) => {
       return res.status(400).json({ message: 'Student account is deactivated' });
     }
 
-    // 2. Check student's current active borrowed count
     const activeBorrows = await IssueRecord.countDocuments({
       student: studentId,
       status: 'issued'
@@ -49,7 +44,6 @@ const issueBook = async (req, res, next) => {
       });
     }
 
-    // 3. Check if student currently already has an active issue of this book
     const alreadyHasBook = await IssueRecord.findOne({
       book: bookId,
       student: studentId,
@@ -61,7 +55,6 @@ const issueBook = async (req, res, next) => {
       });
     }
 
-    // 4. Verify Book and copy availability
     const book = await Book.findById(bookId);
     if (!book) {
       return res.status(404).json({ message: 'Book not found' });
@@ -70,12 +63,10 @@ const issueBook = async (req, res, next) => {
       return res.status(400).json({ message: 'No available copies left for this book' });
     }
 
-    // 5. Calculate issue and due dates
     const issueDate = new Date();
     const dueDate = new Date();
     dueDate.setDate(dueDate.getDate() + DEFAULT_BORROW_DAYS);
 
-    // 6. Create issue record
     const issueRecord = await IssueRecord.create({
       book: bookId,
       student: studentId,
@@ -85,17 +76,14 @@ const issueBook = async (req, res, next) => {
       status: 'issued'
     });
 
-    // 7. Decrement available copies
     book.availableCopies -= 1;
     await book.save();
 
-    // 8. If student had an approved or pending reservation for this book, mark it completed
     await Reservation.findOneAndUpdate(
       { book: bookId, student: studentId, status: { $in: ['pending', 'approved'] } },
       { status: 'completed' }
     );
 
-    // 9. Notify student immediately via registered email that book is accepted and issued
     if (student.email) {
       sendReservationApprovedEmail({
         studentName: student.name,
@@ -121,9 +109,6 @@ const issueBook = async (req, res, next) => {
   }
 };
 
-// @desc   Return an issued book
-// @route  PUT /api/issues/:id/return
-// @access Private (Librarian, Admin, Student)
 const returnBook = async (req, res, next) => {
   try {
     const { returnNotes, finePaid } = req.body;
@@ -143,7 +128,6 @@ const returnBook = async (req, res, next) => {
       });
     }
 
-    // If student is returning, ensure they only return their own borrowed book
     if (req.user.role === 'student' && issueRecord.student._id.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: 'Not authorized to return another student\'s book' });
     }
@@ -159,13 +143,11 @@ const returnBook = async (req, res, next) => {
 
     await issueRecord.save();
 
-    // Clean up any lingering reservations for this student and book
     await Reservation.updateMany(
       { book: issueRecord.book._id, student: issueRecord.student._id, status: { $in: ['pending', 'approved'] } },
       { status: 'completed' }
     );
 
-    // Increment available copies on book
     const book = await Book.findById(issueRecord.book._id);
     let reservationNotified = null;
 
@@ -173,7 +155,6 @@ const returnBook = async (req, res, next) => {
       book.availableCopies = Math.min(book.totalCopies, book.availableCopies + 1);
       await book.save();
 
-      // Check if any student has a pending reservation for this now-available book
       const pendingReservation = await Reservation.findOne({
         book: book._id,
         status: 'pending'
@@ -188,7 +169,6 @@ const returnBook = async (req, res, next) => {
         pendingReservation.responseDate = new Date();
         await pendingReservation.save();
 
-        // Send email notification to waiting student via Nodemailer if student enabled notification
         if (pendingReservation.student?.notificationPreferences?.reservations !== false) {
           sendBookAvailableEmail({
             studentName: pendingReservation.student.name,
@@ -209,7 +189,6 @@ const returnBook = async (req, res, next) => {
       }
     }
 
-    // Send return acceptance email to student
     try {
       if (issueRecord.student?.email) {
         await sendReturnAcceptedEmail({
@@ -237,9 +216,6 @@ const returnBook = async (req, res, next) => {
   }
 };
 
-// @desc   Get all borrowing records (Filter by status, overdue, student)
-// @route  GET /api/issues
-// @access Private (Librarian, Admin)
 const getAllBorrowings = async (req, res, next) => {
   try {
     const { status, studentId, search } = req.query;
@@ -259,7 +235,6 @@ const getAllBorrowings = async (req, res, next) => {
       .populate('issuedBy', 'name email')
       .sort({ createdAt: -1 });
 
-    // Compute live fine and overdue status for currently active issued books
     const recordsWithFine = issues.map((record) => {
       const doc = record.toObject();
       if (doc.status === 'issued') {
@@ -275,7 +250,6 @@ const getAllBorrowings = async (req, res, next) => {
       return doc;
     });
 
-    // Trigger automated overdue notification check in background
     checkAndSendOverdueNotifications().catch((err) => {
       console.error('[Overdue Checker] Background scan error:', err.message);
     });
@@ -290,9 +264,6 @@ const getAllBorrowings = async (req, res, next) => {
   }
 };
 
-// @desc   Get logged-in student's borrowings (active or history)
-// @route  GET /api/issues/my-borrowings
-// @access Private (Student)
 const getMyBorrowings = async (req, res, next) => {
   try {
     const { status } = req.query;
@@ -321,7 +292,6 @@ const getMyBorrowings = async (req, res, next) => {
       return doc;
     });
 
-    // Trigger automated overdue notification check in background
     checkAndSendOverdueNotifications().catch((err) => {
       console.error('[Overdue Checker] Background scan error:', err.message);
     });
@@ -336,9 +306,6 @@ const getMyBorrowings = async (req, res, next) => {
   }
 };
 
-// @desc   Student requests book renewal
-// @route  POST /api/issues/:id/request-renewal
-// @access Private (Student)
 const requestRenewal = async (req, res, next) => {
   try {
     const issueRecord = await IssueRecord.findById(req.params.id);
@@ -347,7 +314,6 @@ const requestRenewal = async (req, res, next) => {
       return res.status(404).json({ message: 'Borrowing record not found' });
     }
 
-    // Ensure student owns this record
     if (issueRecord.student.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: 'You can only request renewal for your own borrowed books' });
     }
@@ -356,7 +322,6 @@ const requestRenewal = async (req, res, next) => {
       return res.status(400).json({ message: 'Only currently borrowed books can be renewed' });
     }
 
-    // Rule: Do not allow renewal when book is already overdue
     const { daysOverdue } = calculateFine(issueRecord.dueDate);
     if (daysOverdue > 0) {
       return res.status(400).json({
@@ -364,19 +329,16 @@ const requestRenewal = async (req, res, next) => {
       });
     }
 
-    // Rule: Check max renewals allowed
     if (issueRecord.renewalCount >= MAX_RENEWALS_ALLOWED) {
       return res.status(400).json({
         message: `Maximum renewal limit (${MAX_RENEWALS_ALLOWED}) reached for this borrowing.`
       });
     }
 
-    // Rule: Do not allow duplicate renewal requests
     if (issueRecord.renewalStatus === 'requested') {
       return res.status(400).json({ message: 'A renewal request is already pending review' });
     }
 
-    // Rule: Do not allow renewal if book is reserved by another student
     const activeReservation = await Reservation.findOne({
       book: issueRecord.book,
       student: { $ne: req.user._id },
@@ -404,12 +366,9 @@ const requestRenewal = async (req, res, next) => {
   }
 };
 
-// @desc   Librarian/Admin approves or rejects renewal request
-// @route  PUT /api/issues/:id/handle-renewal
-// @access Private (Librarian, Admin)
 const handleRenewalRequest = async (req, res, next) => {
   try {
-    const { action, days } = req.body; // 'approve' or 'reject'
+    const { action, days } = req.body;
 
     if (!['approve', 'reject'].includes(action)) {
       return res.status(400).json({ message: 'Action must be approve or reject' });
@@ -443,7 +402,6 @@ const handleRenewalRequest = async (req, res, next) => {
 
     await issueRecord.save();
 
-    // Send email notification to registered student email
     try {
       if (issueRecord.student?.email) {
         await sendRenewalDecisionEmail({
@@ -470,9 +428,6 @@ const handleRenewalRequest = async (req, res, next) => {
   }
 };
 
-// @desc   Update fine payment status
-// @route  PUT /api/issues/:id/pay-fine
-// @access Private (Librarian, Admin)
 const payFine = async (req, res, next) => {
   try {
     const issueRecord = await IssueRecord.findById(req.params.id);
@@ -489,9 +444,6 @@ const payFine = async (req, res, next) => {
   }
 };
 
-// @desc   Send overdue return notification to student
-// @route  POST /api/issues/:id/notify
-// @access Private (Librarian, Admin)
 const sendOverdueNotification = async (req, res, next) => {
   try {
     const issueRecord = await IssueRecord.findById(req.params.id)
@@ -512,7 +464,6 @@ const sendOverdueNotification = async (req, res, next) => {
 
     await issueRecord.save();
 
-    // Send email using Nodemailer
     const emailResult = await sendOverdueFineEmail({
       studentName: issueRecord.student?.name,
       studentEmail: issueRecord.student?.email,
@@ -537,9 +488,6 @@ const sendOverdueNotification = async (req, res, next) => {
   }
 };
 
-// @desc   Student requests book return
-// @route  POST /api/issues/:id/request-return
-// @access Private (Student)
 const requestReturn = async (req, res, next) => {
   try {
     const issueRecord = await IssueRecord.findById(req.params.id);
@@ -574,9 +522,6 @@ const requestReturn = async (req, res, next) => {
   }
 };
 
-// @desc   Librarian/Admin accepts student's return request
-// @route  PUT /api/issues/:id/accept-return
-// @access Private (Librarian, Admin)
 const acceptReturnRequest = async (req, res, next) => {
   try {
     const { returnNotes, finePaid } = req.body;
@@ -608,13 +553,11 @@ const acceptReturnRequest = async (req, res, next) => {
 
     await issueRecord.save();
 
-    // Mark associated reservations completed
     await Reservation.updateMany(
       { book: issueRecord.book._id, student: issueRecord.student._id, status: { $in: ['pending', 'approved'] } },
       { status: 'completed' }
     );
 
-    // Restock book available copies
     const book = await Book.findById(issueRecord.book._id);
     let reservationNotified = null;
 
@@ -622,7 +565,6 @@ const acceptReturnRequest = async (req, res, next) => {
       book.availableCopies = Math.min(book.totalCopies, book.availableCopies + 1);
       await book.save();
 
-      // Notify any waiting student in reservation queue
       const pendingReservation = await Reservation.findOne({
         book: book._id,
         status: 'pending'
@@ -657,7 +599,6 @@ const acceptReturnRequest = async (req, res, next) => {
       }
     }
 
-    // Send return acceptance email to student
     try {
       if (issueRecord.student?.email) {
         await sendReturnAcceptedEmail({
@@ -695,4 +636,3 @@ module.exports = {
   payFine,
   sendOverdueNotification
 };
-

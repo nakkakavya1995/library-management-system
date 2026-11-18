@@ -29,7 +29,6 @@ const MyBorrowedBooksPage = () => {
   useEffect(() => {
     fetchMyBorrowed(false);
 
-    // Auto-refresh silently when tab gains focus or becomes visible
     const handleSync = () => fetchMyBorrowed(true);
     window.addEventListener('focus', handleSync);
     const handleVisibility = () => {
@@ -37,7 +36,6 @@ const MyBorrowedBooksPage = () => {
     };
     document.addEventListener('visibilitychange', handleVisibility);
 
-    // Silent sync interval (10s)
     const interval = setInterval(handleSync, 10000);
 
     return () => {
@@ -143,7 +141,6 @@ const MyBorrowedBooksPage = () => {
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
       <AlertMessage type="success" message={success} onClose={() => setSuccess('')} />
 
-      {/* Borrowing Limit Meter Card */}
       <div className="card shadow-sm border mb-4 bg-white">
         <div className="card-body p-3">
           <div className="d-flex justify-content-between align-items-center mb-1">
@@ -164,7 +161,6 @@ const MyBorrowedBooksPage = () => {
         </div>
       </div>
 
-      {/* Borrowed Books Table Matching Reference Image Screen 3 */}
       <div className="card shadow-sm border">
         <div className="card-header bg-light fw-bold text-dark d-flex justify-content-between align-items-center">
           <span>
@@ -193,7 +189,7 @@ const MyBorrowedBooksPage = () => {
                   {issues.length > 0 ? (
                     issues.map((item) => (
                       <tr key={item._id}>
-                        {/* Cover thumbnail */}
+
                         <td>
                           <div
                             className="bg-light border rounded d-flex align-items-center justify-content-center text-muted"
@@ -243,7 +239,7 @@ const MyBorrowedBooksPage = () => {
                         </td>
                         <td className="text-end">
                           <div className="d-flex justify-content-end align-items-center gap-2">
-                            {/* Extend / Renew button matching user styling */}
+
                             {item.renewalStatus === 'none' && !item.isOverdue && item.renewalCount < 1 ? (
                               <button
                                 className="btn text-white btn-sm rounded-pill px-3 py-1 fw-medium text-nowrap"
@@ -263,7 +259,6 @@ const MyBorrowedBooksPage = () => {
                               </span>
                             ) : null}
 
-                            {/* Request Return button matching user styling */}
                             {item.returnStatus === 'requested' ? (
                               <span
                                 className="badge rounded-pill bg-warning text-dark px-3 py-1 fw-semibold shadow-sm"

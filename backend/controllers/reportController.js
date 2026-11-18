@@ -4,15 +4,12 @@ const IssueRecord = require('../models/IssueRecord');
 const Reservation = require('../models/Reservation');
 const calculateFine = require('../utils/calculateFine');
 
-// @desc   Get overall statistics for Admin & Librarian dashboards
-// @route  GET /api/reports/stats
-// @access Private (Admin, Librarian, Student - Student gets tailored stats)
 const getDashboardStats = async (req, res, next) => {
   try {
     const role = req.user.role;
 
     if (role === 'student') {
-      // Student-specific stats
+
       const myActiveIssues = await IssueRecord.countDocuments({
         student: req.user._id,
         status: 'issued'
@@ -26,7 +23,6 @@ const getDashboardStats = async (req, res, next) => {
         status: 'pending'
       });
 
-      // Calculate my overdue books & unpaid fines
       const activeRecords = await IssueRecord.find({
         student: req.user._id,
         status: 'issued'
@@ -43,7 +39,6 @@ const getDashboardStats = async (req, res, next) => {
         }
       });
 
-      // Also add unpaid fines from returned books
       const unpaidReturned = await IssueRecord.find({
         student: req.user._id,
         status: 'returned',
@@ -66,7 +61,6 @@ const getDashboardStats = async (req, res, next) => {
       });
     }
 
-    // Admin & Librarian overall stats
     const totalBooks = await Book.countDocuments();
     const books = await Book.find().select('totalCopies availableCopies');
     const totalCopies = books.reduce((sum, b) => sum + (b.totalCopies || 0), 0);
@@ -80,7 +74,6 @@ const getDashboardStats = async (req, res, next) => {
     const totalReturned = await IssueRecord.countDocuments({ status: 'returned' });
     const pendingReservations = await Reservation.countDocuments({ status: 'pending' });
 
-    // Calculate live overdue count and fine totals
     const activeRecords = await IssueRecord.find({ status: 'issued' });
     let overdueCount = 0;
     let totalUnpaidFine = 0;
@@ -126,19 +119,15 @@ const getDashboardStats = async (req, res, next) => {
   }
 };
 
-// @desc   Get comprehensive library activity report
-// @route  GET /api/reports/activity
-// @access Private (Admin, Librarian)
 const getActivityReports = async (req, res, next) => {
   try {
-    // Recent 10 issues
+
     const recentIssues = await IssueRecord.find()
       .populate('book', 'title author isbn')
       .populate('student', 'name email studentId')
       .sort({ createdAt: -1 })
       .limit(10);
 
-    // Current overdue list
     const activeIssues = await IssueRecord.find({ status: 'issued' })
       .populate('book', 'title author isbn')
       .populate('student', 'name email studentId phone');
@@ -168,4 +157,3 @@ module.exports = {
   getDashboardStats,
   getActivityReports
 };
-

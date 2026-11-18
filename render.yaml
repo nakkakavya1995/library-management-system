@@ -35,3 +35,4 @@ services:
         value: "1:600965688597:web:029bcf28ca922dae724d1c"
       - key: VITE_FIREBASE_MEASUREMENT_ID
         value: "G-1H8YGFD870"
+

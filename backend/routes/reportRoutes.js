@@ -7,4 +7,3 @@ router.get('/stats', protect, getDashboardStats);
 router.get('/activity', protect, authorizeRoles('admin', 'librarian'), getActivityReports);
 
 module.exports = router;
-

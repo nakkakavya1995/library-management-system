@@ -11,7 +11,6 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(() => localStorage.getItem('token') || null);
   const [loading, setLoading] = useState(true);
 
-  // Verify stored token on app start
   useEffect(() => {
     const verifyUser = async () => {
       const storedToken = localStorage.getItem('token');
@@ -35,7 +34,6 @@ export const AuthProvider = ({ children }) => {
     verifyUser();
   }, []);
 
-  // Common Login
   const login = async (email, password) => {
     const res = await api.post('/auth/login', { email, password });
     const { user: userData, token: jwtToken } = res.data;
@@ -48,7 +46,6 @@ export const AuthProvider = ({ children }) => {
     return userData;
   };
 
-  // Google Sign-In with Firebase payload
   const loginWithGoogle = async (googlePayload) => {
     const res = await api.post('/auth/google', googlePayload);
     const { user: userData, token: jwtToken } = res.data;
@@ -61,7 +58,6 @@ export const AuthProvider = ({ children }) => {
     return userData;
   };
 
-  // Student Registration
   const register = async (userData) => {
     const res = await api.post('/auth/register', userData);
     const { user: newUser, token: jwtToken } = res.data;
@@ -74,7 +70,6 @@ export const AuthProvider = ({ children }) => {
     return newUser;
   };
 
-  // Logout
   const logout = () => {
     setUser(null);
     setToken(null);
@@ -100,7 +95,6 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Custom hook to consume auth context
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -108,4 +102,3 @@ export const useAuth = () => {
   }
   return context;
 };
-

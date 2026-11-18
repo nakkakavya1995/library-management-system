@@ -2,7 +2,6 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { sendLoginAlertEmail, sendRegistrationWelcomeEmail } = require('../utils/emailService');
 
-// Helper to generate JWT token with user identity context
 const generateToken = (userOrId) => {
   let id = '';
   let email = '';
@@ -23,9 +22,6 @@ const generateToken = (userOrId) => {
   );
 };
 
-// @desc   Register a new student
-// @route  POST /api/auth/register
-// @access Public
 const register = async (req, res, next) => {
   try {
     const { name, email, password, studentId, phone } = req.body;
@@ -39,7 +35,6 @@ const register = async (req, res, next) => {
       return res.status(400).json({ message: 'User already exists with this email' });
     }
 
-    // Students can only register with role 'student'
     const user = await User.create({
       name,
       email,
@@ -51,7 +46,6 @@ const register = async (req, res, next) => {
 
     const token = generateToken(user);
 
-    // Send welcome email on registration in background (non-blocking)
     sendRegistrationWelcomeEmail({
       userName: user.name,
       userEmail: user.email,
@@ -78,9 +72,6 @@ const register = async (req, res, next) => {
   }
 };
 
-// @desc   Login user (Admin, Librarian, Student)
-// @route  POST /api/auth/login
-// @access Public
 const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -113,7 +104,6 @@ const login = async (req, res, next) => {
 
     const token = generateToken(user);
 
-    // Automatically send real-time login notification email to registered user
     console.log(`[Auth] User ${user.email} (${user.name}) logged in. Dispatching real-time login email notification...`);
     sendLoginAlertEmail({
       userName: user.name,
@@ -142,9 +132,6 @@ const login = async (req, res, next) => {
   }
 };
 
-// @desc   Get current logged-in user profile
-// @route  GET /api/auth/me
-// @access Private
 const getMe = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id).select('-password');
@@ -154,9 +141,6 @@ const getMe = async (req, res, next) => {
   }
 };
 
-// @desc   Update current logged-in user profile (Name, Phone, Student ID, Password)
-// @route  PUT /api/auth/profile
-// @access Private
 const updateProfile = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id);
@@ -181,7 +165,7 @@ const updateProfile = async (req, res, next) => {
       if (password.length < 6) {
         return res.status(400).json({ message: 'Password must be at least 6 characters' });
       }
-      user.password = password; // Hashed by pre-save hook
+      user.password = password;
     }
 
     const updatedUser = await user.save();
@@ -205,9 +189,6 @@ const updateProfile = async (req, res, next) => {
   }
 };
 
-// @desc   Google Sign-In / Sign-Up with Firebase
-// @route  POST /api/auth/google
-// @access Public
 const googleAuth = async (req, res, next) => {
   try {
     const { email, name, googleId, photoUrl } = req.body;
@@ -224,7 +205,6 @@ const googleAuth = async (req, res, next) => {
         return res.status(403).json({ message: 'Account is deactivated. Please contact admin.' });
       }
 
-      // Link googleId or photoUrl if missing
       if (!user.googleId && googleId) {
         user.googleId = googleId;
         user.authProvider = 'google';
@@ -232,7 +212,7 @@ const googleAuth = async (req, res, next) => {
         await user.save();
       }
     } else {
-      // Automatically register new user as student
+
       const crypto = require('crypto');
       const randomPassword = crypto.randomBytes(16).toString('hex') + 'A1!';
 
@@ -251,7 +231,6 @@ const googleAuth = async (req, res, next) => {
 
     const token = generateToken(user);
 
-    // Automatically send real-time login notification email to registered user
     console.log(`[Google Auth] User ${user.email} (${user.name}) logged in via Google. Dispatching real-time login email notification...`);
     sendLoginAlertEmail({
       userName: user.name,
@@ -289,4 +268,3 @@ module.exports = {
   getMe,
   updateProfile
 };
-

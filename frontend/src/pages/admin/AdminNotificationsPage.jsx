@@ -9,7 +9,7 @@ const AdminNotificationsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [filter, setFilter] = useState('all'); // all, overdue, reservations
+  const [filter, setFilter] = useState('all');
 
   const fetchData = async () => {
     try {
@@ -72,7 +72,6 @@ const AdminNotificationsPage = () => {
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
       <AlertMessage type="success" message={success} onClose={() => setSuccess('')} />
 
-      {/* Summary KPI Badges */}
       <div className="row g-3 mb-4">
         <div className="col-md-4">
           <div className="card shadow-sm border p-3 bg-white">
@@ -96,7 +95,6 @@ const AdminNotificationsPage = () => {
         </div>
       </div>
 
-      {/* Filter Tabs */}
       <ul className="nav nav-pills mb-3">
         <li className="nav-item">
           <button
@@ -124,7 +122,6 @@ const AdminNotificationsPage = () => {
         </li>
       </ul>
 
-      {/* Overdue Alerts Section */}
       {(filter === 'all' || filter === 'overdue') && (
         <div className="card shadow-sm border-0 mb-4">
           <div className="card-header bg-white py-3 d-flex justify-content-between align-items-center">
@@ -205,7 +202,6 @@ const AdminNotificationsPage = () => {
         </div>
       )}
 
-      {/* Pending Reservations Section */}
       {(filter === 'all' || filter === 'reservations') && (
         <div className="card shadow-sm border-0 mb-4">
           <div className="card-header bg-white py-3 d-flex justify-content-between align-items-center">
@@ -268,4 +264,3 @@ const AdminNotificationsPage = () => {
 };
 
 export default AdminNotificationsPage;
-

@@ -13,7 +13,6 @@ const seedData = async () => {
     await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/library_management_system');
     console.log('MongoDB connected for seeding with Indian names and Indian Rupees (₹)...');
 
-    // Clear existing data
     await User.deleteMany();
     await Book.deleteMany();
     await IssueRecord.deleteMany();
@@ -21,7 +20,6 @@ const seedData = async () => {
     await Review.deleteMany();
     console.log('Cleared existing records.');
 
-    // 1. Create Default Users (Admin, Librarian, Students) with Indian names
     const admin = await User.create({
       name: 'Rajesh Sharma',
       email: 'admin@library.com',
@@ -62,7 +60,6 @@ const seedData = async () => {
 
     console.log('Seeded users: Admin, Librarian, 2 Students with Indian names.');
 
-    // 2. Create Sample Books with popular Indian & Academic titles
     const sampleBooks = [
       {
         title: 'Wings of Fire: An Autobiography',
@@ -141,8 +138,6 @@ const seedData = async () => {
     const books = await Book.insertMany(sampleBooks);
     console.log(`Seeded ${books.length} sample books.`);
 
-    // 3. Create Sample Issue Records
-    // Active issue: Wings of Fire to Aarav Patel (due in 8 days)
     const activeDueDate = new Date();
     activeDueDate.setDate(activeDueDate.getDate() + 8);
     await IssueRecord.create({
@@ -154,7 +149,6 @@ const seedData = async () => {
       status: 'issued'
     });
 
-    // Overdue issue: Data Structures to Aarav Patel (issued 20 days ago, due 6 days ago -> 6 days * ₹5 = ₹30 fine)
     const pastIssueDate = new Date();
     pastIssueDate.setDate(pastIssueDate.getDate() - 20);
     const pastDueDate = new Date();
@@ -168,7 +162,6 @@ const seedData = async () => {
       status: 'issued'
     });
 
-    // Returned issue: The White Tiger to Aarav Patel (returned on time)
     const returnedIssueDate = new Date();
     returnedIssueDate.setDate(returnedIssueDate.getDate() - 25);
     const returnedDueDate = new Date();
@@ -188,7 +181,6 @@ const seedData = async () => {
       returnNotes: 'Returned in excellent condition'
     });
 
-    // 4. Create Sample Review
     await Review.create({
       book: books[6]._id,
       student: student1._id,
@@ -196,7 +188,6 @@ const seedData = async () => {
       comment: 'An enthralling, razor-sharp novel about ambition and perseverance. Highly recommended for every university student.'
     });
 
-    // 5. Create Sample Reservation
     await Reservation.create({
       book: books[0]._id,
       student: student2._id,

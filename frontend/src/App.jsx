@@ -2,18 +2,14 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 
-// Layouts
 import DashboardLayout from './layouts/DashboardLayout';
 
-// Components
 import ProtectedRoute from './components/ProtectedRoute';
 
-// Auth Pages
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import NotFoundPage from './pages/NotFoundPage';
 
-// Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
 import ManageLibrariansPage from './pages/admin/ManageLibrariansPage';
 import ManageStudentsPage from './pages/admin/ManageStudentsPage';
@@ -26,7 +22,6 @@ import AdminFinesPage from './pages/admin/AdminFinesPage';
 import AdminNotificationsPage from './pages/admin/AdminNotificationsPage';
 import AdminSettingsPage from './pages/admin/AdminSettingsPage';
 
-// Librarian Pages
 import LibrarianDashboard from './pages/librarian/LibrarianDashboard';
 import BookManagementPage from './pages/librarian/BookManagementPage';
 import IssueBookPage from './pages/librarian/IssueBookPage';
@@ -41,7 +36,6 @@ import LibrarianUserManagementPage from './pages/librarian/LibrarianUserManageme
 import LibrarianReportsPage from './pages/librarian/LibrarianReportsPage';
 import LibrarianSettingsPage from './pages/librarian/LibrarianSettingsPage';
 
-// Student Pages
 import StudentDashboard from './pages/student/StudentDashboard';
 import BookCatalogPage from './pages/student/BookCatalogPage';
 import MyBorrowedBooksPage from './pages/student/MyBorrowedBooksPage';
@@ -51,7 +45,6 @@ import MyFinesPage from './pages/student/MyFinesPage';
 import StudentReviewsPage from './pages/student/StudentReviewsPage';
 import StudentProfilePage from './pages/student/StudentProfilePage';
 
-// Redirect helper for root path
 const RootRedirect = () => {
   const { user, isAuthenticated } = useAuth();
   if (!isAuthenticated || !user) {
@@ -65,14 +58,12 @@ const RootRedirect = () => {
 function App() {
   return (
     <Routes>
-      {/* Root redirect */}
+
       <Route path="/" element={<RootRedirect />} />
 
-      {/* Public Auth Routes */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
 
-      {/* Admin Routes */}
       <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
         <Route element={<DashboardLayout />}>
           <Route path="/admin" element={<AdminDashboard />} />
@@ -90,7 +81,6 @@ function App() {
         </Route>
       </Route>
 
-      {/* Librarian Routes */}
       <Route element={<ProtectedRoute allowedRoles={['librarian']} />}>
         <Route element={<DashboardLayout />}>
           <Route path="/librarian" element={<LibrarianDashboard />} />
@@ -110,7 +100,6 @@ function App() {
         </Route>
       </Route>
 
-      {/* Student Routes */}
       <Route element={<ProtectedRoute allowedRoles={['student']} />}>
         <Route element={<DashboardLayout />}>
           <Route path="/student" element={<StudentDashboard />} />
@@ -125,7 +114,6 @@ function App() {
         </Route>
       </Route>
 
-      {/* Catch-all 404 */}
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

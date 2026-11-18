@@ -10,7 +10,6 @@ const StudentReviewsPage = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  // Write Review Modal state
   const [reviewBook, setReviewBook] = useState(null);
   const [rating, setRating] = useState('5');
   const [comment, setComment] = useState('');
@@ -78,7 +77,7 @@ const StudentReviewsPage = () => {
         <LoadingSpinner text="Loading your reviews..." />
       ) : (
         <div className="row g-4">
-          {/* Left Column: My Reviews */}
+
           <div className="col-lg-7">
             <div className="card shadow-sm border mb-4">
               <div className="card-header bg-light d-flex justify-content-between align-items-center">
@@ -117,7 +116,6 @@ const StudentReviewsPage = () => {
             </div>
           </div>
 
-          {/* Right Column: Pending Reviews */}
           <div className="col-lg-5">
             <div className="card shadow-sm border mb-4">
               <div className="card-header bg-light d-flex justify-content-between align-items-center">
@@ -164,7 +162,6 @@ const StudentReviewsPage = () => {
         </div>
       )}
 
-      {/* Review Modal */}
       {reviewBook && (
         <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
           <div className="modal-dialog modal-dialog-centered">
@@ -224,4 +221,3 @@ const StudentReviewsPage = () => {
 };
 
 export default StudentReviewsPage;
-

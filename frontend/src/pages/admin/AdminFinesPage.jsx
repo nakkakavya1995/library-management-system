@@ -67,7 +67,7 @@ const AdminFinesPage = () => {
 
   return (
     <div>
-      {/* Header */}
+
       <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
         <div>
           <h3 className="fw-bold mb-1">Fines & Penalties</h3>
@@ -82,7 +82,6 @@ const AdminFinesPage = () => {
 
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
 
-      {/* Top Summary Cards */}
       <div className="row g-3 mb-4">
         <div className="col-12 col-sm-6 col-xl-4">
           <div className="card shadow-sm border p-3 bg-white">
@@ -107,7 +106,6 @@ const AdminFinesPage = () => {
         </div>
       </div>
 
-      {/* Transaction Tracking Sheet Card */}
       <div className="card shadow-sm border mb-4">
         <div className="card-header bg-light d-flex justify-content-between align-items-center">
           <span className="fw-semibold">Transaction Tracking Sheet</span>

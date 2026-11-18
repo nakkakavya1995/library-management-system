@@ -56,7 +56,6 @@ const IssueBookPage = () => {
       setSuccess('Book has been successfully issued to the student!');
       setIssuedRecord(res.data.issue);
 
-      // Reset selection and refresh book availability
       setSelectedBookId('');
       setSelectedStudentId('');
       fetchData();
@@ -70,7 +69,6 @@ const IssueBookPage = () => {
   const selectedBook = books.find((b) => b._id === selectedBookId);
   const selectedStudent = students.find((s) => s._id === selectedStudentId);
 
-  // Calculate default due date (14 days from now)
   const defaultDueDate = new Date();
   defaultDueDate.setDate(defaultDueDate.getDate() + 14);
 
@@ -96,7 +94,7 @@ const IssueBookPage = () => {
             </div>
             <div className="card-body p-4">
               <form onSubmit={handleIssueBook}>
-                {/* Book Selection */}
+
                 <div className="mb-4">
                   <label className="form-label small fw-semibold">Select Book *</label>
                   <select
@@ -119,7 +117,6 @@ const IssueBookPage = () => {
                   </select>
                 </div>
 
-                {/* Student Selection */}
                 <div className="mb-4">
                   <label className="form-label small fw-semibold">Select Student *</label>
                   <select
@@ -137,7 +134,6 @@ const IssueBookPage = () => {
                   </select>
                 </div>
 
-                {/* Loan Term Information */}
                 <div className="bg-light p-3 rounded border mb-4">
                   <div className="row text-center">
                     <div className="col-6">
@@ -167,7 +163,6 @@ const IssueBookPage = () => {
           </div>
         </div>
 
-        {/* Selected Summary Card */}
         <div className="col-lg-5">
           <div className="card mb-4">
             <div className="card-header bg-light">
@@ -224,4 +219,3 @@ const IssueBookPage = () => {
 };
 
 export default IssueBookPage;
-

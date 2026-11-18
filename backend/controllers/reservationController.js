@@ -3,9 +3,6 @@ const Book = require('../models/Book');
 const IssueRecord = require('../models/IssueRecord');
 const { sendReservationApprovedEmail } = require('../utils/emailService');
 
-// @desc   Student creates a book reservation
-// @route  POST /api/reservations
-// @access Private (Student)
 const createReservation = async (req, res, next) => {
   try {
     const { bookId, notes } = req.body;
@@ -19,7 +16,6 @@ const createReservation = async (req, res, next) => {
       return res.status(404).json({ message: 'Book not found' });
     }
 
-    // Check if student currently has this book actively borrowed
     const activelyBorrowed = await IssueRecord.findOne({
       book: bookId,
       student: req.user._id,
@@ -31,7 +27,6 @@ const createReservation = async (req, res, next) => {
       });
     }
 
-    // Prevent duplicate active reservation for the same book by this student
     const existingReservation = await Reservation.findOne({
       book: bookId,
       student: req.user._id,
@@ -63,9 +58,6 @@ const createReservation = async (req, res, next) => {
   }
 };
 
-// @desc   Get logged-in student's reservations
-// @route  GET /api/reservations/my-reservations
-// @access Private (Student)
 const getMyReservations = async (req, res, next) => {
   try {
     const reservations = await Reservation.find({ student: req.user._id })
@@ -82,9 +74,6 @@ const getMyReservations = async (req, res, next) => {
   }
 };
 
-// @desc   Get all reservations
-// @route  GET /api/reservations
-// @access Private (Librarian, Admin)
 const getAllReservations = async (req, res, next) => {
   try {
     const { status } = req.query;
@@ -110,9 +99,6 @@ const getAllReservations = async (req, res, next) => {
   }
 };
 
-// @desc   Update reservation status (Approve or Reject)
-// @route  PUT /api/reservations/:id/status
-// @access Private (Librarian, Admin)
 const updateReservationStatus = async (req, res, next) => {
   try {
     const { status, notes } = req.body;
@@ -138,12 +124,10 @@ const updateReservationStatus = async (req, res, next) => {
 
     await reservation.save();
 
-    // If reservation is approved, give permission to borrow and automatically issue the book to the student
     if (status === 'approved' && reservation.book && reservation.student) {
       const bookId = reservation.book._id || reservation.book;
       const studentId = reservation.student._id || reservation.student;
 
-      // Ensure student has not already reached the maximum borrowing limit
       const activeBorrowCount = await IssueRecord.countDocuments({
         student: studentId,
         status: 'issued'
@@ -175,7 +159,6 @@ const updateReservationStatus = async (req, res, next) => {
           status: 'issued'
         });
 
-        // Decrement available copies if in stock
         const bookDoc = await Book.findById(bookId);
         if (bookDoc && bookDoc.availableCopies > 0) {
           bookDoc.availableCopies -= 1;
@@ -183,11 +166,9 @@ const updateReservationStatus = async (req, res, next) => {
         }
       }
 
-      // Mark reservation status as completed so it does not trigger duplicate issues
       reservation.status = 'completed';
       await reservation.save();
 
-      // Notify student immediately via registered email
       if (reservation.student?.email) {
         sendReservationApprovedEmail({
           studentName: reservation.student.name,
@@ -210,9 +191,6 @@ const updateReservationStatus = async (req, res, next) => {
   }
 };
 
-// @desc   Student cancels pending reservation
-// @route  PUT /api/reservations/:id/cancel
-// @access Private (Student)
 const cancelReservation = async (req, res, next) => {
   try {
     const reservation = await Reservation.findById(req.params.id);
@@ -249,4 +227,3 @@ module.exports = {
   updateReservationStatus,
   cancelReservation
 };
-

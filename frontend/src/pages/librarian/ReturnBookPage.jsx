@@ -12,7 +12,6 @@ const ReturnBookPage = () => {
   const [search, setSearch] = useState('');
   const [showCalculator, setShowCalculator] = useState(false);
 
-  // Return Process Modal
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [finePaid, setFinePaid] = useState(false);
   const [returnNotes, setReturnNotes] = useState('');
@@ -111,7 +110,6 @@ const ReturnBookPage = () => {
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
       <AlertMessage type="success" message={success} onClose={() => setSuccess('')} />
 
-      {/* Search Input */}
       <div className="card mb-4">
         <div className="card-body p-3">
           <div className="input-group input-group-sm" style={{ maxWidth: '400px' }}>
@@ -127,7 +125,6 @@ const ReturnBookPage = () => {
         </div>
       </div>
 
-      {/* Active Borrowings Table */}
       <div className="card">
         <div className="card-header bg-light d-flex justify-content-between align-items-center">
           <span className="fw-semibold">
@@ -222,7 +219,6 @@ const ReturnBookPage = () => {
         </div>
       </div>
 
-      {/* Return Modal */}
       {selectedRecord && (
         <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
           <div className="modal-dialog modal-dialog-centered">
@@ -319,4 +315,3 @@ const ReturnBookPage = () => {
 };
 
 export default ReturnBookPage;
-

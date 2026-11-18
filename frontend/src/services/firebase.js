@@ -6,7 +6,6 @@ import {
   sendPasswordResetEmail
 } from 'firebase/auth';
 
-// Firebase configuration with environment variables and safe defaults
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || 'AIzaSyBEt973l5rVKlkkzQEIKNyfRleIyUgkMZQ',
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || 'project-ff09712e-91d9-434f-807.firebaseapp.com',
@@ -17,24 +16,16 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || 'G-1H8YGFD870'
 };
 
-// Initialize Firebase App & Auth
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 
-// Configure Google Provider
 const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: 'select_account' });
 
-/**
- * Trigger Firebase Google Authentication Popup
- */
 export const signInWithGoogle = async () => {
   return await signInWithPopup(auth, googleProvider);
 };
 
-/**
- * Send password reset email using Firebase Auth
- */
 export const resetPasswordWithFirebase = async (email) => {
   return await sendPasswordResetEmail(auth, email);
 };

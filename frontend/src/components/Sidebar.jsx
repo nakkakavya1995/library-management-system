@@ -11,7 +11,6 @@ const Sidebar = () => {
   const [usersMenuOpen, setUsersMenuOpen] = useState(false);
   const [booksMenuOpen, setBooksMenuOpen] = useState(false);
 
-  // Automatically keep submenus open if we are on those paths
   useEffect(() => {
     if (
       location.pathname.startsWith('/admin/users') ||
@@ -37,11 +36,10 @@ const Sidebar = () => {
   const isBooksActive =
     location.pathname === '/admin/books';
 
-  // Admin Navigation strictly matching reference design
   const renderAdminNav = () => (
     <>
       <div className="sidebar-menu-list">
-        {/* 1. Dashboard */}
+
         <NavLink
           to="/admin"
           end
@@ -53,7 +51,6 @@ const Sidebar = () => {
           <span className="sidebar-item-text">Dashboard</span>
         </NavLink>
 
-        {/* 2. Books */}
         <div>
           <div
             className={`sidebar-pill-item ${isBooksActive ? 'active' : ''}`}
@@ -75,7 +72,6 @@ const Sidebar = () => {
           </div>
         </div>
 
-        {/* 3. Users */}
         <div>
           <div
             className={`sidebar-pill-item ${isUsersActive ? 'active' : ''}`}
@@ -96,7 +92,6 @@ const Sidebar = () => {
             ></i>
           </div>
 
-          {/* Submenu for Users */}
           {usersMenuOpen && (
             <div className="sidebar-submenu">
               <NavLink
@@ -128,7 +123,6 @@ const Sidebar = () => {
           )}
         </div>
 
-        {/* 4. Reservations */}
         <NavLink
           to="/admin/reservations"
           className={({ isActive }) => `sidebar-pill-item ${isActive ? 'active' : ''}`}
@@ -139,7 +133,6 @@ const Sidebar = () => {
           <span className="sidebar-item-text">Reservations</span>
         </NavLink>
 
-        {/* 6. Fines */}
         <NavLink
           to="/admin/fines"
           className={({ isActive }) => `sidebar-pill-item ${isActive ? 'active' : ''}`}
@@ -150,7 +143,6 @@ const Sidebar = () => {
           <span className="sidebar-item-text">Fines</span>
         </NavLink>
 
-        {/* 7. Reports */}
         <NavLink
           to="/admin/reports"
           className={({ isActive }) => `sidebar-pill-item ${isActive ? 'active' : ''}`}
@@ -161,7 +153,6 @@ const Sidebar = () => {
           <span className="sidebar-item-text">Reports</span>
         </NavLink>
 
-        {/* 9. Settings */}
         <NavLink
           to="/admin/settings"
           className={({ isActive }) => `sidebar-pill-item ${isActive ? 'active' : ''}`}
@@ -173,7 +164,6 @@ const Sidebar = () => {
         </NavLink>
       </div>
 
-      {/* 10. Logout at bottom */}
       <div className="sidebar-bottom-action">
         <button
           onClick={handleLogout}
@@ -188,7 +178,6 @@ const Sidebar = () => {
     </>
   );
 
-  // Librarian Navigation matching reference design
   const renderLibrarianNav = () => (
     <>
       <div className="sidebar-menu-list">
@@ -235,7 +224,6 @@ const Sidebar = () => {
     </>
   );
 
-  // Student Navigation strictly matching reference design
   const renderStudentNav = () => (
     <>
       <div className="sidebar-menu-list">
@@ -284,7 +272,7 @@ const Sidebar = () => {
 
   return (
     <aside className="custom-theme-sidebar">
-      {/* Brand Logo Header */}
+
       <div className="sidebar-brand-container">
         <div className="sidebar-brand-icon">
           <i className="bi bi-book-half"></i>
@@ -295,7 +283,6 @@ const Sidebar = () => {
         </div>
       </div>
 
-      {/* Navigation Body */}
       <nav className="sidebar-nav-container">
         {user.role === 'admin' && renderAdminNav()}
         {user.role === 'librarian' && renderLibrarianNav()}

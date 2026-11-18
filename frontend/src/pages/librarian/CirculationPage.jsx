@@ -90,7 +90,6 @@ const CirculationPage = () => {
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
       <AlertMessage type="success" message={success} onClose={() => setSuccess('')} />
 
-      {/* Search Bar */}
       <div className="card shadow-sm border mb-4">
         <div className="card-body p-3">
           <div className="input-group input-group-sm" style={{ maxWidth: '400px' }}>
@@ -114,7 +113,7 @@ const CirculationPage = () => {
       {loading ? (
         <LoadingSpinner text="Loading circulation data..." />
       ) : (
-        /* Issued Books Table */
+
         <div className="card shadow-sm border">
           <div className="card-header bg-light fw-bold text-dark d-flex justify-content-between align-items-center">
             <span>

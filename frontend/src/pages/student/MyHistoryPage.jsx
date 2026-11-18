@@ -11,7 +11,6 @@ const MyHistoryPage = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  // Review Modal State
   const [reviewBook, setReviewBook] = useState(null);
   const [rating, setRating] = useState('5');
   const [comment, setComment] = useState('');
@@ -83,7 +82,6 @@ const MyHistoryPage = () => {
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
       <AlertMessage type="success" message={success} onClose={() => setSuccess('')} />
 
-      {/* Search Bar Matching Reference Image Screen 5 */}
       <div className="card shadow-sm border mb-4">
         <div className="card-body p-3">
           <div className="input-group input-group-sm" style={{ maxWidth: '400px' }}>
@@ -104,7 +102,6 @@ const MyHistoryPage = () => {
         </div>
       </div>
 
-      {/* History Table Matching Reference Image */}
       <div className="card shadow-sm border">
         <div className="card-header bg-light fw-bold text-dark d-flex justify-content-between align-items-center">
           <span>
@@ -132,7 +129,7 @@ const MyHistoryPage = () => {
                   {filteredHistory.length > 0 ? (
                     filteredHistory.map((record) => (
                       <tr key={record._id}>
-                        {/* Book thumbnail cover icon */}
+
                         <td>
                           <div
                             className="bg-light border rounded d-flex align-items-center justify-content-center text-muted"
@@ -196,7 +193,6 @@ const MyHistoryPage = () => {
         </div>
       </div>
 
-      {/* Review Modal */}
       {reviewBook && (
         <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
           <div className="modal-dialog modal-dialog-centered">

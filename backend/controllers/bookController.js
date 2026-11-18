@@ -1,8 +1,5 @@
 const Book = require('../models/Book');
 
-// @desc   Get all books with search and category filters
-// @route  GET /api/books
-// @access Private (All authenticated users)
 const getBooks = async (req, res, next) => {
   try {
     const { search, category } = req.query;
@@ -28,9 +25,6 @@ const getBooks = async (req, res, next) => {
   }
 };
 
-// @desc   Get single book by ID
-// @route  GET /api/books/:id
-// @access Private (All authenticated users)
 const getBookById = async (req, res, next) => {
   try {
     const book = await Book.findById(req.params.id);
@@ -43,9 +37,6 @@ const getBookById = async (req, res, next) => {
   }
 };
 
-// @desc   Add a new book
-// @route  POST /api/books
-// @access Private (Librarian, Admin)
 const createBook = async (req, res, next) => {
   try {
     const { title, author, isbn, category, description, totalCopies, price } = req.body;
@@ -83,9 +74,6 @@ const createBook = async (req, res, next) => {
   }
 };
 
-// @desc   Update a book
-// @route  PUT /api/books/:id
-// @access Private (Librarian, Admin)
 const updateBook = async (req, res, next) => {
   try {
     const { title, author, isbn, category, description, totalCopies, price } = req.body;
@@ -109,7 +97,6 @@ const updateBook = async (req, res, next) => {
         return res.status(400).json({ message: 'Total copies must be at least 1' });
       }
 
-      // Calculate how many books are currently issued
       const currentlyIssued = book.totalCopies - book.availableCopies;
       if (newTotal < currentlyIssued) {
         return res.status(400).json({
@@ -134,9 +121,6 @@ const updateBook = async (req, res, next) => {
   }
 };
 
-// @desc   Delete a book
-// @route  DELETE /api/books/:id
-// @access Private (Librarian, Admin)
 const deleteBook = async (req, res, next) => {
   try {
     const book = await Book.findById(req.params.id);
@@ -144,7 +128,6 @@ const deleteBook = async (req, res, next) => {
       return res.status(404).json({ message: 'Book not found' });
     }
 
-    // Check if copies are currently issued
     const issuedCopies = book.totalCopies - book.availableCopies;
     if (issuedCopies > 0) {
       return res.status(400).json({
@@ -159,9 +142,6 @@ const deleteBook = async (req, res, next) => {
   }
 };
 
-// @desc   Get list of unique categories
-// @route  GET /api/books/categories
-// @access Private
 const getCategories = async (req, res, next) => {
   try {
     const categories = await Book.distinct('category');
@@ -179,4 +159,3 @@ module.exports = {
   deleteBook,
   getCategories
 };
-

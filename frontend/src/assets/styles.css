@@ -1,7 +1,4 @@
-/* ==========================================================
-   Library Management System - Custom Styles
-   Clean, Professional, Student-Friendly Dashboard
-   ========================================================== */
+
 
 :root {
   --primary-color: #1e293b;
@@ -25,15 +22,11 @@ body {
   padding: 0;
 }
 
-/* Dashboard Layout */
 .dashboard-wrapper {
   display: flex;
   min-height: 100vh;
 }
 
-/* ==========================================================
-   Modern Dark Navy Sidebar (Refined Reference Design)
-   ========================================================== */
 .custom-theme-sidebar {
   width: 270px;
   background-color: #0b1329;
@@ -217,7 +210,6 @@ body {
   color: #f87171;
 }
 
-/* Sidebar legacy fallback */
 .dashboard-sidebar {
   width: var(--sidebar-width);
   background-color: var(--sidebar-bg);
@@ -282,7 +274,6 @@ body {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Main Content Area */
 .dashboard-main {
   flex: 1;
   display: flex;
@@ -291,7 +282,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Top Navbar */
 .dashboard-navbar {
   background-color: #ffffff;
   border-bottom: 1px solid #e2e8f0;
@@ -306,7 +296,6 @@ body {
   flex: 1;
 }
 
-/* Stat Cards */
 .stat-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
@@ -334,7 +323,6 @@ body {
   font-size: 1.5rem;
 }
 
-/* Standard Card Styles */
 .card {
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
@@ -348,7 +336,6 @@ body {
   font-weight: 600;
 }
 
-/* Tables */
 .table th {
   font-size: 0.825rem;
   text-transform: uppercase;
@@ -363,13 +350,11 @@ body {
   font-size: 0.925rem;
 }
 
-/* Star rating */
 .star-rating i {
   color: #f59e0b;
   margin-right: 2px;
 }
 
-/* Responsive adjustments */
 @media (max-width: 992px) {
   .dashboard-wrapper {
     flex-direction: column;

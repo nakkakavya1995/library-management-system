@@ -14,7 +14,7 @@ const MyFinesPage = () => {
     try {
       setLoading(true);
       const res = await api.get('/issues/my-borrowings');
-      // Filter records that have a fine or late return
+
       const finedRecords = (res.data.issues || []).filter(
         (i) => i.currentFine > 0 || i.fineAmount > 0
       );
@@ -56,7 +56,6 @@ const MyFinesPage = () => {
 
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
 
-      {/* Summary Card */}
       <div className="row g-3 mb-4">
         <div className="col-md-6 col-lg-4">
           <div className="card bg-light border text-dark shadow-sm">
@@ -72,7 +71,6 @@ const MyFinesPage = () => {
         </div>
       </div>
 
-      {/* Search Input */}
       <div className="card shadow-sm border mb-4">
         <div className="card-body p-3">
           <div className="input-group input-group-sm" style={{ maxWidth: '400px' }}>
@@ -93,7 +91,6 @@ const MyFinesPage = () => {
         </div>
       </div>
 
-      {/* Fines Table Matching Reference Image Screen 6 */}
       <div className="card shadow-sm border mb-4">
         <div className="card-header bg-light fw-bold text-dark d-flex justify-content-between align-items-center">
           <span>

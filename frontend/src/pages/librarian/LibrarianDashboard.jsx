@@ -104,7 +104,7 @@ const LibrarianDashboard = () => {
 
   return (
     <div>
-      {/* Top Header */}
+
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h3 className="fw-bold mb-1">Dashboard</h3>
@@ -126,9 +126,8 @@ const LibrarianDashboard = () => {
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
       <AlertMessage type="success" message={success} onClose={() => setSuccess('')} />
 
-      {/* Top 4 Metric Cards */}
       <div className="row g-3 mb-4">
-        {/* 1. Total Users */}
+
         <div className="col-12 col-sm-6 col-xl-3">
           <StatsCard
             title="Total Users"
@@ -139,7 +138,6 @@ const LibrarianDashboard = () => {
           />
         </div>
 
-        {/* 2. Issued Books */}
         <div className="col-12 col-sm-6 col-xl-3">
           <StatsCard
             title="Issued Books"
@@ -150,7 +148,6 @@ const LibrarianDashboard = () => {
           />
         </div>
 
-        {/* 3. Total Fines */}
         <div className="col-12 col-sm-6 col-xl-3">
           <StatsCard
             title="Total Fines"
@@ -160,7 +157,6 @@ const LibrarianDashboard = () => {
           />
         </div>
 
-        {/* 4. Total Books */}
         <div className="col-12 col-sm-6 col-xl-3">
           <StatsCard
             title="Total Books"
@@ -171,7 +167,6 @@ const LibrarianDashboard = () => {
         </div>
       </div>
 
-      {/* Reserved Books Section */}
       <div className="card shadow-sm border mb-4">
         <div className="card-header bg-light d-flex justify-content-between align-items-center">
           <span className="fw-semibold">
@@ -265,7 +260,6 @@ const LibrarianDashboard = () => {
         </div>
       </div>
 
-      {/* Pending Return Requests (from students) */}
       {returnRequests.length > 0 && (
         <div className="card shadow-sm border mb-4 border-success">
           <div
@@ -329,7 +323,6 @@ const LibrarianDashboard = () => {
         </div>
       )}
 
-      {/* Renewal / Extension Requests Section */}
       <div className="card shadow-sm border mb-4">
         <div className="card-header bg-light d-flex justify-content-between align-items-center">
           <span className="fw-semibold text-dark">
@@ -363,7 +356,7 @@ const LibrarianDashboard = () => {
                         border: '1px solid #1f2937'
                       }}
                     >
-                      {/* Title & Badge */}
+
                       <div className="mb-3">
                         <div className="text-white fw-bold mb-2" style={{ fontSize: '1.15rem' }}>
                           Renewal Requests
@@ -384,7 +377,6 @@ const LibrarianDashboard = () => {
                         </span>
                       </div>
 
-                      {/* Metadata items */}
                       <div className="mb-4" style={{ fontSize: '0.98rem', lineHeight: '2' }}>
                         <div>
                           <span style={{ color: '#9ca3af' }}>Student: </span>
@@ -404,7 +396,6 @@ const LibrarianDashboard = () => {
                         </div>
                       </div>
 
-                      {/* Action Buttons: Approve & Reject matching Image 3 */}
                       <div className="d-flex gap-3">
                         <button
                           type="button"
@@ -456,7 +447,6 @@ const LibrarianDashboard = () => {
         </div>
       </div>
 
-      {/* Overdue Checkouts */}
       <div className="card shadow-sm border mb-4">
         <div className="card-header bg-light d-flex justify-content-between align-items-center">
           <span className="fw-semibold">

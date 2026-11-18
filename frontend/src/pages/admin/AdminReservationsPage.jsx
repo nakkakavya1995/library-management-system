@@ -54,7 +54,6 @@ const AdminReservationsPage = () => {
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
       <AlertMessage type="success" message={success} onClose={() => setSuccess('')} />
 
-      {/* Filter Tabs */}
       <div className="d-flex gap-2 mb-3">
         <button
           className={`btn btn-sm ${statusFilter === '' ? 'btn-dark' : 'btn-outline-secondary'}`}
@@ -82,7 +81,6 @@ const AdminReservationsPage = () => {
         </button>
       </div>
 
-      {/* Reservations Table */}
       <div className="card shadow-sm border-0">
         <div className="card-body p-0">
           {loading ? (
@@ -182,4 +180,3 @@ const AdminReservationsPage = () => {
 };
 
 export default AdminReservationsPage;
-

@@ -87,7 +87,6 @@ const LibrarianReportsPage = () => {
 
   if (loading) return <LoadingSpinner text="Generating Library Reports..." />;
 
-  // Calculate category distribution
   const categoryCounts = books.reduce((acc, curr) => {
     const cat = curr.category || 'General';
     acc[cat] = (acc[cat] || 0) + 1;
@@ -105,7 +104,6 @@ const LibrarianReportsPage = () => {
 
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
 
-      {/* KPI Overview Cards */}
       <div className="row g-3 mb-4">
         <div className="col-md-3">
           <div className="card shadow-sm border p-3">
@@ -137,9 +135,8 @@ const LibrarianReportsPage = () => {
         </div>
       </div>
 
-      {/* 2-Column Section Matching Reference Image Screen 7 */}
       <div className="row g-4 mb-4">
-        {/* Left Column: Issued vs Returned Distribution & Category Breakdown */}
+
         <div className="col-lg-7">
           <div className="card shadow-sm border mb-4">
             <div className="card-header bg-light fw-bold text-dark">
@@ -170,7 +167,6 @@ const LibrarianReportsPage = () => {
           </div>
         </div>
 
-        {/* Right Column: One-Click Data Triggers Matching Reference Image Screen 7 */}
         <div className="col-lg-5">
           <div className="card shadow-sm border mb-4">
             <div className="card-header bg-light fw-bold text-dark">
@@ -213,4 +209,3 @@ const LibrarianReportsPage = () => {
 };
 
 export default LibrarianReportsPage;
-

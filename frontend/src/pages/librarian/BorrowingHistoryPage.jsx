@@ -48,7 +48,6 @@ const BorrowingHistoryPage = () => {
 
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
 
-      {/* Filter and Search Bar */}
       <div className="card mb-4">
         <div className="card-body p-3">
           <div className="row g-2 align-items-center">
@@ -174,4 +173,3 @@ const BorrowingHistoryPage = () => {
 };
 
 export default BorrowingHistoryPage;
-

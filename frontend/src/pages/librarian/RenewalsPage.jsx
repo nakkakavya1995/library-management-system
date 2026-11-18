@@ -39,7 +39,6 @@ const RenewalsPage = () => {
     }
   };
 
-  // Split into pending requests and already processed
   const pendingRenewals = issues.filter((i) => i.renewalStatus === 'requested');
   const pastRenewals = issues.filter((i) => ['approved', 'rejected'].includes(i.renewalStatus));
 
@@ -55,7 +54,6 @@ const RenewalsPage = () => {
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
       <AlertMessage type="success" message={success} onClose={() => setSuccess('')} />
 
-      {/* Pending Renewals */}
       <div className="card mb-4">
         <div className="card-header bg-light d-flex justify-content-between align-items-center">
           <span className="fw-bold">
@@ -86,7 +84,7 @@ const RenewalsPage = () => {
                         border: '1px solid #1f2937'
                       }}
                     >
-                      {/* Title & Badge */}
+
                       <div className="mb-3">
                         <div className="text-white fw-bold mb-2" style={{ fontSize: '1.15rem' }}>
                           Renewal Requests
@@ -107,7 +105,6 @@ const RenewalsPage = () => {
                         </span>
                       </div>
 
-                      {/* Metadata items */}
                       <div className="mb-4" style={{ fontSize: '0.98rem', lineHeight: '2' }}>
                         <div>
                           <span style={{ color: '#9ca3af' }}>Student: </span>
@@ -127,7 +124,6 @@ const RenewalsPage = () => {
                         </div>
                       </div>
 
-                      {/* Action Buttons matching screenshot Image 3 */}
                       <div className="d-flex gap-3">
                         <button
                           type="button"
@@ -179,7 +175,6 @@ const RenewalsPage = () => {
         </div>
       </div>
 
-      {/* Previously Handled Renewals */}
       <div className="card">
         <div className="card-header bg-light">
           <span className="fw-bold">
@@ -233,5 +228,3 @@ const RenewalsPage = () => {
 };
 
 export default RenewalsPage;
-
-

@@ -46,7 +46,6 @@ const getSender = () => {
   return `"Library Management System" <${user}>`;
 };
 
-// Route emails to registered recipient AND primary administrator inbox so all notifications are received
 const resolveRecipients = (email) => {
   const defaultAdmin = 'nakkakavya801@gmail.com';
   const recipients = new Set();
@@ -56,16 +55,12 @@ const resolveRecipients = (email) => {
     recipients.add(clean);
   }
 
-  // Always ensure registered admin/developer inbox receives a copy
   recipients.add(defaultAdmin);
 
   return Array.from(recipients).join(', ');
 };
 const resolveRecipient = resolveRecipients;
 
-/**
- * Dispatch email via HTTPS Relay (Port 443 - works on Render Free Tier) or direct SMTP (Port 465)
- */
 const dispatchEmail = async ({ to, subject, text, html }) => {
   const relayUrl = (
     process.env.GMAIL_RELAY_URL ||
@@ -73,7 +68,6 @@ const dispatchEmail = async ({ to, subject, text, html }) => {
     'https://script.google.com/macros/s/AKfycbwkw2vYQ6O0oTTCjy19s1aP4Mw2WcvvJNT2hBITC49HaZQs4FGrXE6vJTkwpYxUJPeQ/exec'
   ).trim();
 
-  // 1. Try HTTPS Relay first if configured (Bypasses Render Free Tier outbound SMTP port restrictions)
   if (relayUrl && relayUrl.startsWith('http')) {
     try {
       const response = await fetch(relayUrl, {
@@ -96,7 +90,6 @@ const dispatchEmail = async ({ to, subject, text, html }) => {
     }
   }
 
-  // 2. Direct Nodemailer SMTP
   const transporter = await getTransporter();
   if (!transporter) {
     return { success: false, error: 'No email transport configured' };
@@ -120,9 +113,6 @@ const dispatchEmail = async ({ to, subject, text, html }) => {
   return { success: true, via: 'smtp', messageId: info.messageId };
 };
 
-/**
- * Send automatic login alert email
- */
 const sendLoginAlertEmail = async ({ userName, userEmail, role, loginDate, loginTime }) => {
   try {
     if (!userEmail) return { success: false, reason: 'No email provided' };
@@ -215,9 +205,6 @@ Library Management System Team`;
   }
 };
 
-/**
- * Send overdue late fine notification email
- */
 const sendOverdueFineEmail = async ({
   studentName,
   studentEmail,
@@ -316,9 +303,6 @@ Central Library Management System`;
   }
 };
 
-/**
- * Send due date approaching reminder email (when book may exceed due date soon)
- */
 const sendDueDateReminderEmail = async ({
   studentName,
   studentEmail,
@@ -393,9 +377,6 @@ Central Library Management System`;
   }
 };
 
-/**
- * Send reservation notification when book becomes available
- */
 const sendBookAvailableEmail = async ({ studentName, studentEmail, bookTitle }) => {
   try {
     if (!studentEmail) return { success: false, reason: 'No email provided' };
@@ -507,9 +488,6 @@ Central Library Management System`;
   }
 };
 
-/**
- * Send welcome email when a user registers a new account
- */
 const sendRegistrationWelcomeEmail = async ({ userName, userEmail, role, studentId }) => {
   try {
     if (!userEmail) return { success: false, reason: 'No email provided' };

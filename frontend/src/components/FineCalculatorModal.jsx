@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 const FineCalculatorModal = ({ show, onClose, defaultRate = 5 }) => {
-  const [mode, setMode] = useState('days'); // 'days' or 'dates'
+  const [mode, setMode] = useState('days');
   const [days, setDays] = useState(3);
   const [dueDate, setDueDate] = useState('');
   const [returnDate, setReturnDate] = useState(new Date().toISOString().slice(0, 10));
@@ -111,7 +111,6 @@ const FineCalculatorModal = ({ show, onClose, defaultRate = 5 }) => {
               </div>
             </div>
 
-            {/* Computation Result Card */}
             <div className="p-3 rounded bg-light border text-center">
               <div className="text-muted small mb-1">
                 {calculatedDays} day(s) × ₹{rate}/day
@@ -133,4 +132,3 @@ const FineCalculatorModal = ({ show, onClose, defaultRate = 5 }) => {
 };
 
 export default FineCalculatorModal;
-

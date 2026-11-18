@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-// Create Axios client instance
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
   timeout: 20000,
@@ -9,7 +8,6 @@ const api = axios.create({
   }
 });
 
-// Request interceptor to attach JWT token to all authorized requests
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -21,10 +19,9 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor to handle session expiration or auth errors
 api.interceptors.response.use(
   (response) => {
-    // If backend provided a self-healed or refreshed token, save it automatically
+
     const refreshedToken = response.headers
       ? (response.headers['x-refreshed-token'] || response.headers['X-Refreshed-Token'])
       : null;
@@ -34,7 +31,7 @@ api.interceptors.response.use(
     return response;
   },
   async (error) => {
-    // If running on local machine and request failed due to proxy drop, failover to direct backend port 5000
+
     const config = error.config;
     const isLocalhost =
       typeof window !== 'undefined' &&
@@ -52,11 +49,10 @@ api.interceptors.response.use(
     }
 
     if (error.response && error.response.status === 401) {
-      // Clear token and user if unauthorized or token expired
+
       localStorage.removeItem('token');
       localStorage.removeItem('user');
 
-      // Auto-redirect to login page if user was on a protected page
       if (
         typeof window !== 'undefined' &&
         !window.location.pathname.includes('/login') &&
@@ -70,4 +66,3 @@ api.interceptors.response.use(
 );
 
 export default api;
-

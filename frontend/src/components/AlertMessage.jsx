@@ -15,4 +15,3 @@ const AlertMessage = ({ type = 'danger', message, onClose }) => {
 };
 
 export default AlertMessage;
-

@@ -9,11 +9,9 @@ const UserManagementPage = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  // Filters
   const [roleFilter, setRoleFilter] = useState('');
   const [search, setSearch] = useState('');
 
-  // Modal State
   const [showModal, setShowModal] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [formData, setFormData] = useState({
@@ -73,7 +71,7 @@ const UserManagementPage = () => {
     setFormData({
       name: user.name,
       email: user.email,
-      password: '', // Leave empty if not changing
+      password: '',
       role: user.role,
       studentId: user.studentId || '',
       phone: user.phone || '',
@@ -93,11 +91,11 @@ const UserManagementPage = () => {
 
     try {
       if (editingUser) {
-        // Update user
+
         await api.put(`/users/${editingUser._id}`, formData);
         setSuccess('User updated successfully');
       } else {
-        // Create user
+
         if (!formData.password) {
           setError('Password is required for new user');
           return;
@@ -142,7 +140,6 @@ const UserManagementPage = () => {
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
       <AlertMessage type="success" message={success} onClose={() => setSuccess('')} />
 
-      {/* Filter and Search Bar */}
       <div className="card mb-4">
         <div className="card-body p-3">
           <div className="row g-2 align-items-center">
@@ -188,7 +185,6 @@ const UserManagementPage = () => {
         </div>
       </div>
 
-      {/* Users Table */}
       <div className="card">
         <div className="card-body p-0">
           {loading ? (
@@ -261,7 +257,6 @@ const UserManagementPage = () => {
         </div>
       </div>
 
-      {/* Add / Edit User Modal */}
       {showModal && (
         <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
           <div className="modal-dialog modal-dialog-centered">
@@ -382,4 +377,3 @@ const UserManagementPage = () => {
 };
 
 export default UserManagementPage;
-

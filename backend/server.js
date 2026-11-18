@@ -36,7 +36,6 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Reject database queries early with helpful message if DB is not connected
 app.use('/api', (req, res, next) => {
   if (req.path === '/health') return next();
   if (mongoose.connection.readyState !== 1) {
@@ -55,12 +54,10 @@ app.use('/api/reservations', require('./routes/reservationRoutes'));
 app.use('/api/reviews', require('./routes/reviewRoutes'));
 app.use('/api/reports', require('./routes/reportRoutes'));
 
-// Serve frontend build in production
 if (process.env.NODE_ENV === 'production') {
   const distPath = path.resolve(__dirname, '../frontend/dist');
   app.use(express.static(distPath));
 
-  // SPA fallback for all non-API GET requests (Express 5 compatible)
   app.use((req, res, next) => {
     if (req.method === 'GET' && !req.path.startsWith('/api')) {
       return res.sendFile(path.resolve(distPath, 'index.html'));

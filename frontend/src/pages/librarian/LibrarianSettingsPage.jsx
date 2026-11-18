@@ -81,7 +81,7 @@ const LibrarianSettingsPage = () => {
 
       <form onSubmit={handleSave}>
         <div className="row g-4">
-          {/* Library Settings */}
+
           <div className="col-lg-6">
             <div className="card shadow-sm border h-100">
               <div className="card-header bg-light fw-bold text-dark">
@@ -121,9 +121,8 @@ const LibrarianSettingsPage = () => {
             </div>
           </div>
 
-          {/* Fine Rates & Notification Toggles Matching Reference Image Screen 8 */}
           <div className="col-lg-6">
-            {/* Fine Rates Box */}
+
             <div className="card shadow-sm border mb-4">
               <div className="card-header bg-light fw-bold text-dark">
                 <i className="bi bi-cash-stack me-2"></i>Fine Rates
@@ -149,7 +148,6 @@ const LibrarianSettingsPage = () => {
               </div>
             </div>
 
-            {/* Notification Box */}
             <div className="card shadow-sm border mb-4">
               <div className="card-header bg-light fw-bold text-dark">
                 <i className="bi bi-bell me-2"></i>Notification
@@ -198,7 +196,6 @@ const LibrarianSettingsPage = () => {
         </div>
       </form>
 
-      {/* Real-Time Email Diagnostic & Delivery Card */}
       <div className="card shadow-sm border mt-4">
         <div className="card-header bg-light d-flex justify-content-between align-items-center">
           <span className="fw-semibold text-dark">
@@ -264,4 +261,3 @@ const LibrarianSettingsPage = () => {
 };
 
 export default LibrarianSettingsPage;
-

@@ -5,9 +5,6 @@ const IssueRecord = require('../models/IssueRecord');
 const calculateFine = require('../utils/calculateFine');
 const { sendOverdueFineEmail, sendDueDateReminderEmail } = require('../utils/emailService');
 
-/**
- * Checks all active borrowed books and automatically sends late fine & overdue emails
- */
 const checkAndSendOverdueNotifications = async () => {
   try {
     if (mongoose.connection.readyState !== 1) {
@@ -31,12 +28,10 @@ const checkAndSendOverdueNotifications = async () => {
 
       const { daysOverdue, fine } = calculateFine(record.dueDate);
 
-      // Case 1: Book has exceeded due date -> dispatch Late Fine Notification
       if (daysOverdue > 0) {
         const lastNotified = record.notificationDate ? new Date(record.notificationDate).getTime() : 0;
         const hoursSinceLastNotification = (now.getTime() - lastNotified) / (1000 * 60 * 60);
 
-        // Notify if never notified, or if it has been 24+ hours since the last notification
         if (!record.overdueNotified || hoursSinceLastNotification >= 24) {
           console.log(`[Overdue Service] Book "${record.book?.title}" is ${daysOverdue} days overdue for ${record.student?.email} (Fine: ₹${fine}). Dispatching late fine email...`);
 
@@ -60,7 +55,7 @@ const checkAndSendOverdueNotifications = async () => {
           overdueNotifiedCount++;
         }
       }
-      // Case 2: Book is due soon (within 48 hours) and hasn't yet exceeded due date
+
       else {
         const msRemaining = new Date(record.dueDate).getTime() - now.getTime();
         const hoursRemaining = msRemaining / (1000 * 60 * 60);
@@ -101,10 +96,6 @@ const checkAndSendOverdueNotifications = async () => {
   }
 };
 
-/**
- * Start periodic automated check
- * Runs 5s after startup, and every 30 minutes thereafter
- */
 const startOverdueScheduler = () => {
   setTimeout(() => {
     checkAndSendOverdueNotifications();

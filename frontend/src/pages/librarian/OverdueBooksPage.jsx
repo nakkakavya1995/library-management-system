@@ -15,7 +15,7 @@ const OverdueBooksPage = () => {
     try {
       setLoading(true);
       const res = await api.get('/issues?status=issued');
-      // Filter only overdue books
+
       const overdues = res.data.issues.filter((i) => i.isOverdue || i.currentFine > 0);
       setIssues(overdues);
     } catch (err) {
@@ -65,7 +65,6 @@ const OverdueBooksPage = () => {
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
       <AlertMessage type="success" message={success} onClose={() => setSuccess('')} />
 
-      {/* Summary Box */}
       <div className="row g-3 mb-4">
         <div className="col-12 col-md-6 col-xl-4">
           <div className="card bg-light border text-dark shadow-sm">
@@ -80,7 +79,6 @@ const OverdueBooksPage = () => {
         </div>
       </div>
 
-      {/* Transaction Tracking Search */}
       <div className="card shadow-sm border mb-4">
         <div className="card-body p-3">
           <div className="input-group input-group-sm" style={{ maxWidth: '400px' }}>
@@ -101,7 +99,6 @@ const OverdueBooksPage = () => {
         </div>
       </div>
 
-      {/* Transaction Tracking Sheet Table Matching Reference Image Screen 6 */}
       <div className="card shadow-sm border mb-4">
         <div className="card-header bg-light fw-bold text-dark d-flex justify-content-between align-items-center">
           <span>

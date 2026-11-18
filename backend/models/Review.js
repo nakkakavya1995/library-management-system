@@ -29,8 +29,6 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
-// One review per student per book
 reviewSchema.index({ book: 1, student: 1 }, { unique: true });
 
 module.exports = mongoose.model('Review', reviewSchema);
-

@@ -8,7 +8,7 @@ const AdminSettingsPage = () => {
       try {
         return JSON.parse(saved);
       } catch (e) {
-        // fallback to defaults
+
       }
     }
     return {
@@ -48,7 +48,7 @@ const AdminSettingsPage = () => {
 
   return (
     <div>
-      {/* Header */}
+
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h3 className="fw-bold mb-1">Settings</h3>
@@ -69,7 +69,7 @@ const AdminSettingsPage = () => {
 
       <form onSubmit={handleSave}>
         <div className="row g-4 mb-4">
-          {/* Library Rules */}
+
           <div className="col-lg-6">
             <div className="card shadow-sm border h-100">
               <div className="card-header bg-light">
@@ -142,7 +142,6 @@ const AdminSettingsPage = () => {
             </div>
           </div>
 
-          {/* Email Notifications */}
           <div className="col-lg-6">
             <div className="card shadow-sm border h-100">
               <div className="card-header bg-light">
@@ -202,7 +201,6 @@ const AdminSettingsPage = () => {
           </div>
         </div>
 
-        {/* Submit */}
         <div className="d-flex justify-content-end">
           <button type="submit" className="btn btn-dark">
             <i className="bi bi-check-lg me-1"></i> Save Settings

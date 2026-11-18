@@ -6,7 +6,6 @@ const PRIMARY_ATLAS_URI =
 let lastDbError = null;
 let isConnecting = false;
 
-// Connect to MongoDB with auto-failover and auto-retry
 const connectDB = async () => {
   if (mongoose.connection.readyState === 1 || isConnecting) {
     return;
@@ -19,7 +18,7 @@ const connectDB = async () => {
       ? PRIMARY_ATLAS_URI
       : 'mongodb://localhost:27017/library_management_system';
   } else if (uri.includes('V7vrAjSpC8bRdPnH')) {
-    // Auto-heal old expired password if still configured in host environment
+
     console.log('[MongoDB] Auto-correcting expired database password in connection string...');
     uri = uri.replace('V7vrAjSpC8bRdPnH', 'H5UaH0Ar2zuBfFbl');
   }
@@ -35,7 +34,6 @@ const connectDB = async () => {
   } catch (error) {
     console.error(`MongoDB Connection Error on primary attempt: ${error.message}`);
 
-    // If host environment URI failed, attempt direct fallback to PRIMARY_ATLAS_URI
     if (uri !== PRIMARY_ATLAS_URI) {
       try {
         console.log('[MongoDB] Retrying connection using PRIMARY_ATLAS_URI fallback...');
@@ -63,4 +61,3 @@ const connectDB = async () => {
 const getLastDbError = () => lastDbError;
 
 module.exports = { connectDB, getLastDbError };
-

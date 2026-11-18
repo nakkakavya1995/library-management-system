@@ -2,9 +2,6 @@ const Review = require('../models/Review');
 const IssueRecord = require('../models/IssueRecord');
 const Book = require('../models/Book');
 
-// @desc   Add rating and review for a book
-// @route  POST /api/reviews
-// @access Private (Student)
 const addReview = async (req, res, next) => {
   try {
     const { bookId, rating, comment } = req.body;
@@ -23,7 +20,6 @@ const addReview = async (req, res, next) => {
       return res.status(404).json({ message: 'Book not found' });
     }
 
-    // Rule: Allow students to review only books they have borrowed
     const hasBorrowed = await IssueRecord.findOne({
       book: bookId,
       student: req.user._id
@@ -35,7 +31,6 @@ const addReview = async (req, res, next) => {
       });
     }
 
-    // Rule: Prevent duplicate reviews for the same book by the same student
     const existingReview = await Review.findOne({
       book: bookId,
       student: req.user._id
@@ -67,9 +62,6 @@ const addReview = async (req, res, next) => {
   }
 };
 
-// @desc   Get all reviews for a specific book
-// @route  GET /api/reviews/book/:bookId
-// @access Private (All authenticated users)
 const getBookReviews = async (req, res, next) => {
   try {
     const { bookId } = req.params;
@@ -94,9 +86,6 @@ const getBookReviews = async (req, res, next) => {
   }
 };
 
-// @desc   Get all reviews across all books (Librarian & Admin management)
-// @route  GET /api/reviews
-// @access Private (Librarian, Admin)
 const getAllReviews = async (req, res, next) => {
   try {
     const reviews = await Review.find()
@@ -114,9 +103,6 @@ const getAllReviews = async (req, res, next) => {
   }
 };
 
-// @desc   Delete a review (Librarian, Admin moderation)
-// @route  DELETE /api/reviews/:id
-// @access Private (Librarian, Admin)
 const deleteReview = async (req, res, next) => {
   try {
     const review = await Review.findById(req.params.id);
@@ -131,9 +117,6 @@ const deleteReview = async (req, res, next) => {
   }
 };
 
-// @desc   Get current student's submitted reviews and pending unreviewed returned books
-// @route  GET /api/reviews/my-reviews
-// @access Private (Student)
 const getMyReviews = async (req, res, next) => {
   try {
     const reviews = await Review.find({ student: req.user._id })
@@ -178,4 +161,3 @@ module.exports = {
   deleteReview,
   getMyReviews
 };
-

@@ -12,7 +12,6 @@ const AdminDashboard = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  // User modal state
   const [showUserModal, setShowUserModal] = useState(false);
   const [userData, setUserData] = useState({
     name: '',
@@ -32,7 +31,6 @@ const AdminDashboard = () => {
   const [createdCredentials, setCreatedCredentials] = useState(null);
   const [savingUser, setSavingUser] = useState(false);
 
-  // Editing state for users in table
   const [editingUserId, setEditingUserId] = useState(null);
   const [userEdits, setUserEdits] = useState({});
 
@@ -148,7 +146,7 @@ const AdminDashboard = () => {
 
   return (
     <div>
-      {/* Top Header Matching Reference Screen 1 */}
+
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h3 className="fw-bold mb-1">Admin Dashboard (All Features)</h3>
@@ -167,7 +165,6 @@ const AdminDashboard = () => {
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
       <AlertMessage type="success" message={success} onClose={() => setSuccess('')} />
 
-      {/* Generated Credentials Alert if newly created */}
       {createdCredentials && (
         <div className="card shadow-sm border border-secondary mb-4">
           <div className="card-header bg-light d-flex justify-content-between align-items-center">
@@ -203,9 +200,8 @@ const AdminDashboard = () => {
         </div>
       )}
 
-      {/* 4 KPI Cards Matching Reference Image Screen 1 */}
       <div className="row g-3 mb-4">
-        {/* 1. Total Users */}
+
         <div className="col-12 col-sm-6 col-xl-3">
           <StatsCard
             title="Total Users"
@@ -216,7 +212,6 @@ const AdminDashboard = () => {
           />
         </div>
 
-        {/* 2. Issued Books */}
         <div className="col-12 col-sm-6 col-xl-3">
           <StatsCard
             title="Issued Books"
@@ -227,7 +222,6 @@ const AdminDashboard = () => {
           />
         </div>
 
-        {/* 3. Total Fines */}
         <div className="col-12 col-sm-6 col-xl-3">
           <StatsCard
             title="Total Fines"
@@ -237,7 +231,6 @@ const AdminDashboard = () => {
           />
         </div>
 
-        {/* 4. Total Books */}
         <div className="col-12 col-sm-6 col-xl-3">
           <StatsCard
             title="Total Books"
@@ -248,7 +241,6 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Main Section: User & Role Management Table */}
       <div className="card shadow-sm border mb-4">
         <div className="card-header bg-light d-flex justify-content-between align-items-center">
           <div>
@@ -334,7 +326,6 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Add New User Modal */}
       {showUserModal && (
         <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
           <div className="modal-dialog modal-dialog-centered">

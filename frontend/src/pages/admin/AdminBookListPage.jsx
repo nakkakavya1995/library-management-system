@@ -60,7 +60,6 @@ const AdminBookListPage = () => {
 
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
 
-      {/* Filter and Search Bar */}
       <div className="card mb-4">
         <div className="card-body p-3">
           <div className="row g-2 align-items-center">
@@ -108,7 +107,6 @@ const AdminBookListPage = () => {
         </div>
       </div>
 
-      {/* Books Table */}
       <div className="card">
         <div className="card-body p-0">
           {loading ? (
@@ -169,4 +167,3 @@ const AdminBookListPage = () => {
 };
 
 export default AdminBookListPage;
-

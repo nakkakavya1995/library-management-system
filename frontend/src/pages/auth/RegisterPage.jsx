@@ -46,7 +46,6 @@ const RegisterPage = () => {
         password: formData.password
       });
 
-      // Automatically redirects to student dashboard
       navigate('/student');
     } catch (err) {
       setError(
@@ -68,7 +67,7 @@ const RegisterPage = () => {
         }}
       >
         <div className="row g-0">
-          {/* Left Side: Vibrant Blue Section (matched with LoginPage) */}
+
           <div
             className="col-12 col-md-5 d-flex flex-column justify-content-center align-items-center text-center p-4 p-lg-5 text-white"
             style={{
@@ -97,7 +96,6 @@ const RegisterPage = () => {
                 Create your student account to browse thousands of titles, manage active loans, place reservations, and receive automatic email alerts.
               </p>
 
-              {/* Highlights */}
               <div
                 className="d-flex flex-column gap-2 mb-4 text-start w-100 px-3 py-3 rounded-3"
                 style={{
@@ -124,7 +122,6 @@ const RegisterPage = () => {
                 </div>
               </div>
 
-              {/* Pill Button matching reference */}
               <Link
                 to="/login"
                 className="btn text-white text-decoration-none shadow-sm"
@@ -144,7 +141,6 @@ const RegisterPage = () => {
             </div>
           </div>
 
-          {/* Right Side: Registration Form */}
           <div className="col-12 col-md-7 d-flex flex-column justify-content-center p-4 p-lg-5 bg-white">
             <div style={{ maxWidth: '440px', width: '100%', margin: '0 auto' }}>
               <h2 className="fw-bold text-dark text-center mb-4" style={{ letterSpacing: '-0.02em', fontSize: '2rem' }}>
@@ -316,4 +312,3 @@ const RegisterPage = () => {
 };
 
 export default RegisterPage;
-

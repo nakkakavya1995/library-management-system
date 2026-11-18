@@ -15,7 +15,7 @@ const ProtectedRoute = ({ allowedRoles }) => {
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    // Redirect to user's permitted dashboard if they don't have access
+
     const roleRedirects = {
       admin: '/admin',
       librarian: '/librarian',
@@ -28,4 +28,3 @@ const ProtectedRoute = ({ allowedRoles }) => {
 };
 
 export default ProtectedRoute;
-

@@ -28,7 +28,6 @@ const MyReservationsPage = () => {
   useEffect(() => {
     fetchMyReservations(false);
 
-    // Auto-refresh silently when tab gains focus or becomes visible
     const handleSync = () => fetchMyReservations(true);
     window.addEventListener('focus', handleSync);
     const handleVisibility = () => {
@@ -36,7 +35,6 @@ const MyReservationsPage = () => {
     };
     document.addEventListener('visibilitychange', handleVisibility);
 
-    // Silent sync interval (10s)
     const interval = setInterval(handleSync, 10000);
 
     return () => {
@@ -90,7 +88,6 @@ const MyReservationsPage = () => {
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
       <AlertMessage type="success" message={success} onClose={() => setSuccess('')} />
 
-      {/* Reservations Table Matching Reference Image Screen 4 */}
       <div className="card shadow-sm border">
         <div className="card-header bg-light fw-bold text-dark d-flex justify-content-between align-items-center">
           <span>
@@ -118,7 +115,7 @@ const MyReservationsPage = () => {
                   {reservations.length > 0 ? (
                     reservations.map((item) => (
                       <tr key={item._id}>
-                        {/* Book thumbnail icon */}
+
                         <td>
                           <div
                             className="bg-light border rounded d-flex align-items-center justify-content-center text-muted"

@@ -48,14 +48,13 @@ const StudentDashboard = () => {
   };
 
   useEffect(() => {
-    // Safety fallback: Never keep student dashboard locked on full-screen loading spinner
+
     const safetyTimer = setTimeout(() => {
       setLoading(false);
     }, 2500);
 
     fetchDashboardData(false);
 
-    // Auto-refresh silently when student tab gains focus or becomes visible
     const handleSync = () => fetchDashboardData(true);
     window.addEventListener('focus', handleSync);
     const handleVisibility = () => {
@@ -63,7 +62,6 @@ const StudentDashboard = () => {
     };
     document.addEventListener('visibilitychange', handleVisibility);
 
-    // Silent background sync interval (15s) without tearing down dashboard with a spinner
     const interval = setInterval(handleSync, 15000);
 
     return () => {
@@ -125,14 +123,13 @@ const StudentDashboard = () => {
 
   const totalUnpaidFine = borrowedBooks.reduce((sum, b) => sum + (b.isOverdue ? b.currentFine || 0 : 0), 0);
 
-  // Only show full-page loading spinner on initial load before any data is available
   if (loading && !stats && borrowedBooks.length === 0 && reservations.length === 0) {
     return <LoadingSpinner text="Loading Student Dashboard..." />;
   }
 
   return (
     <div>
-      {/* Top Header */}
+
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h3 className="fw-bold mb-1">Student Dashboard</h3>
@@ -146,9 +143,8 @@ const StudentDashboard = () => {
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
       <AlertMessage type="success" message={success} onClose={() => setSuccess('')} />
 
-      {/* Top 4 Summary Cards - Matching Reference Image */}
       <div className="row g-3 mb-4">
-        {/* 1. Borrowed Books */}
+
         <div className="col-12 col-sm-6 col-xl-3">
           <StatsCard
             title="Borrowed Books"
@@ -159,7 +155,6 @@ const StudentDashboard = () => {
           />
         </div>
 
-        {/* 2. Due Soon / Overdue */}
         <div className="col-12 col-sm-6 col-xl-3">
           <StatsCard
             title="Due Soon / Overdue"
@@ -170,7 +165,6 @@ const StudentDashboard = () => {
           />
         </div>
 
-        {/* 3. Active Reservations */}
         <div className="col-12 col-sm-6 col-xl-3">
           <StatsCard
             title="Active Reservations"
@@ -180,7 +174,6 @@ const StudentDashboard = () => {
           />
         </div>
 
-        {/* 4. Overdue Fines */}
         <div className="col-12 col-sm-6 col-xl-3">
           <StatsCard
             title="Overdue Fines"
@@ -192,7 +185,6 @@ const StudentDashboard = () => {
         </div>
       </div>
 
-      {/* Quick Search Bar */}
       <div className="card shadow-sm border mb-4">
         <div className="card-body p-3">
           <form onSubmit={handleQuickSearch} className="d-flex gap-2">
@@ -213,9 +205,8 @@ const StudentDashboard = () => {
         </div>
       </div>
 
-      {/* Main 2-Column Section Matching Reference Image (Recently Borrowed & Active Reservations) */}
       <div className="row g-4 mb-4">
-        {/* Left Card: Recently Borrowed Books */}
+
         <div className="col-lg-6">
           <div className="card shadow-sm border h-100">
             <div className="card-header bg-light d-flex justify-content-between align-items-center">
@@ -292,7 +283,6 @@ const StudentDashboard = () => {
           </div>
         </div>
 
-        {/* Right Card: Active Reservations */}
         <div className="col-lg-6">
           <div className="card shadow-sm border h-100">
             <div className="card-header bg-light d-flex justify-content-between align-items-center">
@@ -359,7 +349,6 @@ const StudentDashboard = () => {
         </div>
       </div>
 
-      {/* Bottom Shortcuts / Links */}
       <div className="row g-3">
         <div className="col-md-3">
           <Link to="/student/catalog" className="card p-3 border shadow-sm text-decoration-none text-dark h-100 hover-card">

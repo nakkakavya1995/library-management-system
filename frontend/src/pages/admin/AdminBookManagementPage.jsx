@@ -13,7 +13,6 @@ const AdminBookManagementPage = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  // Modal State
   const [showModal, setShowModal] = useState(false);
   const [editingBook, setEditingBook] = useState(null);
   const [formData, setFormData] = useState({
@@ -127,7 +126,6 @@ const AdminBookManagementPage = () => {
     }
   };
 
-  // Summary Metrics for Book Inventory
   const totalBookTitles = books.length;
   const totalPhysicalCopies = books.reduce((sum, b) => sum + (b.totalCopies || 0), 0);
   const totalAvailableCopies = books.reduce((sum, b) => sum + (b.availableCopies || 0), 0);
@@ -170,7 +168,6 @@ const AdminBookManagementPage = () => {
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
       <AlertMessage type="success" message={success} onClose={() => setSuccess('')} />
 
-      {/* Summary Cards */}
       <div className="row g-3 mb-4">
         <div className="col-12 col-sm-6 col-xl-3">
           <div className="card shadow-sm border p-3 bg-white">
@@ -202,7 +199,6 @@ const AdminBookManagementPage = () => {
         </div>
       </div>
 
-      {/* Filter and Search Bar */}
       <div className="card mb-4 shadow-sm border">
         <div className="card-body p-3">
           <div className="row g-2 align-items-center">
@@ -250,7 +246,6 @@ const AdminBookManagementPage = () => {
         </div>
       </div>
 
-      {/* Books Table */}
       <div className="card shadow-sm">
         <div className="card-header bg-light d-flex justify-content-between align-items-center">
           <span className="fw-semibold">
@@ -347,7 +342,6 @@ const AdminBookManagementPage = () => {
         </div>
       </div>
 
-      {/* Add / Edit Book Modal */}
       {showModal && (
         <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
           <div className="modal-dialog modal-dialog-centered">
@@ -442,4 +436,3 @@ const AdminBookManagementPage = () => {
 };
 
 export default AdminBookManagementPage;
-

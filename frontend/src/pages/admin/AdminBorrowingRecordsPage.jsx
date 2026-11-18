@@ -39,7 +39,6 @@ const AdminBorrowingRecordsPage = () => {
 
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
 
-      {/* Filter tabs */}
       <div className="d-flex gap-2 mb-3">
         <button
           className={`btn btn-sm ${statusFilter === '' ? 'btn-dark' : 'btn-outline-secondary'}`}
@@ -147,4 +146,3 @@ const AdminBorrowingRecordsPage = () => {
 };
 
 export default AdminBorrowingRecordsPage;
-

@@ -11,7 +11,6 @@ const ManageLibrariansPage = () => {
   const [search, setSearch] = useState('');
   const [createdCredentials, setCreatedCredentials] = useState(null);
 
-  // Modal State
   const [showModal, setShowModal] = useState(false);
   const [editingLibrarian, setEditingLibrarian] = useState(null);
   const [formData, setFormData] = useState({
@@ -65,7 +64,7 @@ const ManageLibrariansPage = () => {
     setFormData({
       name: librarian.name,
       email: librarian.email,
-      password: '', // leave empty to keep current
+      password: '',
       phone: librarian.phone || '',
       status: librarian.status || 'active'
     });
@@ -152,7 +151,6 @@ const ManageLibrariansPage = () => {
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
       <AlertMessage type="success" message={success} onClose={() => setSuccess('')} />
 
-      {/* Generated Librarian Credentials Box */}
       {createdCredentials && (
         <div className="alert alert-secondary border shadow-sm mb-4 p-3">
           <div className="d-flex justify-content-between align-items-start">
@@ -191,7 +189,6 @@ const ManageLibrariansPage = () => {
         </div>
       )}
 
-      {/* Search Bar */}
       <div className="card mb-4 shadow-sm">
         <div className="card-body p-3">
           <form onSubmit={handleSearchSubmit} className="d-flex gap-2" style={{ maxWidth: '450px' }}>
@@ -221,7 +218,6 @@ const ManageLibrariansPage = () => {
         </div>
       </div>
 
-      {/* Librarians Table */}
       <div className="card shadow-sm">
         <div className="card-header bg-light d-flex justify-content-between align-items-center">
           <span className="fw-semibold">
@@ -297,7 +293,6 @@ const ManageLibrariansPage = () => {
         </div>
       </div>
 
-      {/* Add / Edit Librarian Modal */}
       {showModal && (
         <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
           <div className="modal-dialog modal-dialog-centered">
@@ -394,4 +389,3 @@ const ManageLibrariansPage = () => {
 };
 
 export default ManageLibrariansPage;
-

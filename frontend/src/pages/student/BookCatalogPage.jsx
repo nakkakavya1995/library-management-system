@@ -17,18 +17,15 @@ const BookCatalogPage = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  // Reservation Modal
   const [reserveBook, setReserveBook] = useState(null);
   const [reserveNotes, setReserveNotes] = useState('');
   const [reserving, setReserving] = useState(false);
 
-  // Reviews Modal
   const [reviewBook, setReviewBook] = useState(null);
   const [bookReviews, setBookReviews] = useState([]);
   const [averageRating, setAverageRating] = useState(0);
   const [loadingReviews, setLoadingReviews] = useState(false);
 
-  // Info Modal for Borrowing Available Books
   const [infoBook, setInfoBook] = useState(null);
 
   const fetchBooks = async () => {
@@ -61,7 +58,7 @@ const BookCatalogPage = () => {
       const res = await api.get('/issues/my-borrowings?status=issued');
       setActiveBorrowCount((res.data.issues || []).length);
     } catch (err) {
-      // ignore
+
     }
   };
 
@@ -79,7 +76,6 @@ const BookCatalogPage = () => {
     fetchBooks();
   };
 
-  // Handle Reservation
   const handleOpenReserve = (book) => {
     setReserveBook(book);
     setReserveNotes('');
@@ -107,7 +103,6 @@ const BookCatalogPage = () => {
     }
   };
 
-  // Handle Book Reviews inspection
   const handleOpenReviews = async (book) => {
     setReviewBook(book);
     try {
@@ -126,7 +121,7 @@ const BookCatalogPage = () => {
 
   return (
     <div>
-      {/* Page Title */}
+
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h3 className="fw-bold mb-1">Book Catalog</h3>
@@ -137,7 +132,6 @@ const BookCatalogPage = () => {
       <AlertMessage type="danger" message={error} onClose={() => setError('')} />
       <AlertMessage type="success" message={success} onClose={() => setSuccess('')} />
 
-      {/* Top Search Bar - Matching Reference Image */}
       <div className="card shadow-sm border mb-4">
         <div className="card-body p-3">
           <form onSubmit={handleSearchSubmit} className="row g-2 align-items-center">
@@ -175,9 +169,8 @@ const BookCatalogPage = () => {
         </div>
       </div>
 
-      {/* 2-Column Layout Matching Reference Image: Categories on left, Books on right */}
       <div className="row g-4">
-        {/* Left Column: All Book Categories */}
+
         <div className="col-lg-3">
           <div className="card shadow-sm border mb-4">
             <div className="card-header bg-light fw-bold text-dark">
@@ -211,7 +204,6 @@ const BookCatalogPage = () => {
           </div>
         </div>
 
-        {/* Right Column: Books in Category Grid */}
         <div className="col-lg-9">
           <div className="card shadow-sm border mb-4">
             <div className="card-header bg-light d-flex justify-content-between align-items-center">
@@ -230,7 +222,7 @@ const BookCatalogPage = () => {
                       <div className="card h-100 border shadow-sm d-flex flex-column">
                         <div className="card-body p-3 flex-grow-1">
                           <div className="d-flex align-items-start gap-3 mb-2">
-                            {/* Book cover thumbnail icon */}
+
                             <div
                               className="bg-light border rounded d-flex align-items-center justify-content-center text-muted"
                               style={{ width: '48px', height: '60px', flexShrink: 0 }}
@@ -266,7 +258,6 @@ const BookCatalogPage = () => {
                           )}
                         </div>
 
-                        {/* Card Actions Matching Reference Image: Borrow & Reserve */}
                         <div className="card-footer bg-white border-top p-2 d-flex justify-content-between align-items-center gap-1">
                           <button
                             type="button"
@@ -321,7 +312,6 @@ const BookCatalogPage = () => {
         </div>
       </div>
 
-      {/* Borrow Instructions Modal */}
       {infoBook && (
         <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
           <div className="modal-dialog modal-dialog-centered">
@@ -370,7 +360,6 @@ const BookCatalogPage = () => {
         </div>
       )}
 
-      {/* Reservation Modal */}
       {reserveBook && (
         <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
           <div className="modal-dialog modal-dialog-centered">
@@ -413,7 +402,6 @@ const BookCatalogPage = () => {
         </div>
       )}
 
-      {/* Book Reviews Modal */}
       {reviewBook && (
         <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
           <div className="modal-dialog modal-dialog-centered modal-lg">
