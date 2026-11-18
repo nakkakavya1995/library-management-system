@@ -178,22 +178,9 @@ const LoginPage = () => {
                 <i className="bi bi-book-half fs-2 text-white"></i>
               </div>
 
-              <h2 className="fw-bold mb-2 text-white" style={{ letterSpacing: '-0.02em' }}>
+              <h2 className="fw-bold mb-3 text-white" style={{ letterSpacing: '-0.02em' }}>
                 Library Management
               </h2>
-
-              <span
-                className="badge mb-3 px-3 py-1"
-                style={{
-                  background: 'rgba(255, 255, 255, 0.18)',
-                  color: '#ffffff',
-                  fontSize: '0.78rem',
-                  fontWeight: '500',
-                  borderRadius: '50px'
-                }}
-              >
-                MERN Stack Digital Portal
-              </span>
 
               <p className="mb-4 lh-base" style={{ color: 'rgba(255, 255, 255, 0.92)', fontSize: '0.92rem' }}>
                 A centralized, full-stack digital platform engineered for automated book circulation, real-time catalog management, reservation queues, and instant email notifications across Admin, Librarian, and Student roles.
