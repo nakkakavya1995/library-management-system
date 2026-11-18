@@ -183,7 +183,7 @@ const LoginPage = () => {
               </h2>
 
               <p className="mb-4 lh-base" style={{ color: 'rgba(255, 255, 255, 0.92)', fontSize: '0.92rem' }}>
-                A centralized, full-stack digital platform engineered for automated book circulation, real-time catalog management, reservation queues, and instant email notifications across Admin, Librarian, and Student roles.
+                A centralized, full-stack digital platform engineered for automated book circulation, real-time catalog management, reservations, and instant email notifications across Admin, Librarian, and Student roles.
               </p>
 
               {/* Feature Highlights */}
@@ -205,7 +205,7 @@ const LoginPage = () => {
                 </div>
                 <div className="d-flex align-items-center gap-2">
                   <i className="bi bi-check-circle-fill text-white opacity-75"></i>
-                  <span>Hold reservation queue with restock alerts</span>
+                  <span>Hold reservations with restock alerts</span>
                 </div>
                 <div className="d-flex align-items-center gap-2">
                   <i className="bi bi-check-circle-fill text-white opacity-75"></i>
