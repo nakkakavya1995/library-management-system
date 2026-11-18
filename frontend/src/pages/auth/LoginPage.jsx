@@ -147,135 +147,246 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="container d-flex align-items-center justify-content-center min-vh-100 py-5">
-      <div className="card shadow-sm border-0" style={{ maxWidth: '440px', width: '100%' }}>
-        <div className="card-body p-4 p-sm-5">
-          <div className="text-center mb-4">
-            <div className="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle p-3 mb-3 shadow-sm">
-              <i className="bi bi-book-half fs-2"></i>
+    <div className="container min-vh-100 d-flex align-items-center justify-content-center py-5">
+      <div
+        className="card border-0 shadow-lg w-100 overflow-hidden"
+        style={{
+          maxWidth: '960px',
+          borderRadius: '20px',
+          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.08)'
+        }}
+      >
+        <div className="row g-0">
+          {/* Left Side: Vibrant Blue Project Description (matching reference design) */}
+          <div
+            className="col-12 col-md-6 d-flex flex-column justify-content-center align-items-center text-center p-4 p-lg-5 text-white"
+            style={{
+              background: 'linear-gradient(135deg, #2b70f0 0%, #1e5dd8 100%)',
+              minHeight: '520px'
+            }}
+          >
+            <div style={{ maxWidth: '380px' }} className="d-flex flex-column align-items-center">
+              <div
+                className="d-inline-flex align-items-center justify-content-center rounded-circle mb-3 shadow-sm"
+                style={{
+                  width: '64px',
+                  height: '64px',
+                  background: 'rgba(255, 255, 255, 0.2)',
+                  backdropFilter: 'blur(4px)'
+                }}
+              >
+                <i className="bi bi-book-half fs-2 text-white"></i>
+              </div>
+
+              <h2 className="fw-bold mb-2 text-white" style={{ letterSpacing: '-0.02em' }}>
+                Library Management
+              </h2>
+
+              <span
+                className="badge mb-3 px-3 py-1"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.18)',
+                  color: '#ffffff',
+                  fontSize: '0.78rem',
+                  fontWeight: '500',
+                  borderRadius: '50px'
+                }}
+              >
+                MERN Stack Digital Portal
+              </span>
+
+              <p className="mb-4 lh-base" style={{ color: 'rgba(255, 255, 255, 0.92)', fontSize: '0.92rem' }}>
+                A centralized, full-stack digital platform engineered for automated book circulation, real-time catalog management, reservation queues, and instant email notifications across Admin, Librarian, and Student roles.
+              </p>
+
+              {/* Feature Highlights */}
+              <div
+                className="d-flex flex-column gap-2 mb-4 text-start w-100 px-3 py-3 rounded-3"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  fontSize: '0.82rem',
+                  color: 'rgba(255, 255, 255, 0.95)'
+                }}
+              >
+                <div className="d-flex align-items-center gap-2">
+                  <i className="bi bi-check-circle-fill text-white opacity-75"></i>
+                  <span>Role-based access for Admin, Librarian & Student</span>
+                </div>
+                <div className="d-flex align-items-center gap-2">
+                  <i className="bi bi-check-circle-fill text-white opacity-75"></i>
+                  <span>One-click return desk, renewals & fine tracking</span>
+                </div>
+                <div className="d-flex align-items-center gap-2">
+                  <i className="bi bi-check-circle-fill text-white opacity-75"></i>
+                  <span>Hold reservation queue with restock alerts</span>
+                </div>
+                <div className="d-flex align-items-center gap-2">
+                  <i className="bi bi-check-circle-fill text-white opacity-75"></i>
+                  <span>Automated email delivery via Nodemailer & Relay</span>
+                </div>
+              </div>
+
+              {/* Pill Button matching reference */}
+              <Link
+                to="/register"
+                className="btn text-white text-decoration-none shadow-sm"
+                style={{
+                  borderRadius: '50px',
+                  background: 'rgba(255, 255, 255, 0.18)',
+                  border: '1px solid rgba(255, 255, 255, 0.35)',
+                  padding: '10px 26px',
+                  fontSize: '0.88rem',
+                  fontWeight: '500',
+                  backdropFilter: 'blur(4px)',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                New student? Create an account
+              </Link>
             </div>
-            <h4 className="fw-bold mb-1">Library Management</h4>
-            <p className="text-muted small">Sign in to access your role dashboard</p>
           </div>
 
-          <AlertMessage type="danger" message={error} onClose={() => setError('')} />
+          {/* Right Side: White Sign-In Form (matching reference design) */}
+          <div className="col-12 col-md-6 d-flex flex-column justify-content-center p-4 p-lg-5 bg-white">
+            <div style={{ maxWidth: '380px', width: '100%', margin: '0 auto' }}>
+              <h2 className="fw-bold text-dark text-center mb-4" style={{ letterSpacing: '-0.02em', fontSize: '2rem' }}>
+                Sign In
+              </h2>
 
-          <form onSubmit={handleSubmit} autoComplete="off">
-            {/* Dummy hidden inputs to absorb browser autofill */}
-            <input type="text" style={{ display: 'none' }} tabIndex="-1" autoComplete="off" />
-            <input type="password" style={{ display: 'none' }} tabIndex="-1" autoComplete="new-password" />
+              <AlertMessage type="danger" message={error} onClose={() => setError('')} />
 
-            <div className="mb-3">
-              <label className="form-label small fw-semibold">User Name</label>
-              <div className="input-group">
-                <span className="input-group-text bg-light"><i className="bi bi-person"></i></span>
-                <input
-                  type="text"
-                  name="user_login_identity"
-                  className="form-control"
-                  placeholder="Enter user name"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  autoComplete="off"
-                  readOnly={!inputsReady}
-                  onFocus={() => setInputsReady(true)}
-                  required
-                />
-              </div>
-            </div>
+              <form onSubmit={handleSubmit} autoComplete="off">
+                {/* Dummy hidden inputs to absorb browser autofill */}
+                <input type="text" style={{ display: 'none' }} tabIndex="-1" autoComplete="off" />
+                <input type="password" style={{ display: 'none' }} tabIndex="-1" autoComplete="new-password" />
 
-            <div className="mb-4">
-              <div className="d-flex justify-content-between align-items-center mb-1">
-                <label className="form-label small fw-semibold mb-0">Password</label>
+                <div className="mb-3">
+                  <label className="form-label small fw-semibold text-muted mb-1">User Name / Email</label>
+                  <input
+                    type="text"
+                    name="user_login_identity"
+                    className="form-control"
+                    placeholder="Enter user name or email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    autoComplete="off"
+                    readOnly={!inputsReady}
+                    onFocus={() => setInputsReady(true)}
+                    required
+                    style={{
+                      background: '#edf0f5',
+                      border: '1px solid transparent',
+                      borderRadius: '8px',
+                      padding: '12px 16px',
+                      fontSize: '0.92rem'
+                    }}
+                  />
+                </div>
+
+                <div className="mb-2">
+                  <div className="d-flex justify-content-between align-items-center mb-1">
+                    <label className="form-label small fw-semibold text-muted mb-0">Password</label>
+                    <button
+                      type="button"
+                      className="btn btn-link p-0 text-decoration-none small text-muted"
+                      onClick={() => {
+                        setResetEmail(email);
+                        setResetSuccess('');
+                        setResetError('');
+                        setShowForgotModal(true);
+                      }}
+                    >
+                      Forgot password?
+                    </button>
+                  </div>
+                  <input
+                    type="password"
+                    name="user_login_passcode"
+                    className="form-control"
+                    placeholder="Enter password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    autoComplete="new-password"
+                    readOnly={!inputsReady}
+                    onFocus={() => setInputsReady(true)}
+                    required
+                    style={{
+                      background: '#edf0f5',
+                      border: '1px solid transparent',
+                      borderRadius: '8px',
+                      padding: '12px 16px',
+                      fontSize: '0.92rem'
+                    }}
+                  />
+                </div>
+
+                <div className="mb-4 text-end"></div>
+
                 <button
-                  type="button"
-                  className="btn btn-link p-0 text-decoration-none small text-muted"
-                  onClick={() => {
-                    setResetEmail(email);
-                    setResetSuccess('');
-                    setResetError('');
-                    setShowForgotModal(true);
+                  type="submit"
+                  className="btn w-100 py-3 fw-semibold mb-3 shadow-sm text-white"
+                  disabled={loading || googleLoading}
+                  style={{
+                    backgroundColor: '#3272f0',
+                    borderColor: '#3272f0',
+                    borderRadius: '8px',
+                    fontSize: '0.95rem'
                   }}
                 >
-                  Forgot password?
+                  {loading ? (
+                    <span><span className="spinner-border spinner-border-sm me-2"></span>Signing In...</span>
+                  ) : (
+                    'Sign In'
+                  )}
                 </button>
+              </form>
+
+              {/* Social login divider matching reference: "or signup with" -> "or sign in with" */}
+              <div className="text-center my-3">
+                <span className="text-muted small">or sign in with</span>
               </div>
-              <div className="input-group">
-                <span className="input-group-text bg-light"><i className="bi bi-lock"></i></span>
-                <input
-                  type="password"
-                  name="user_login_passcode"
-                  className="form-control"
-                  placeholder="Enter password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="new-password"
-                  readOnly={!inputsReady}
-                  onFocus={() => setInputsReady(true)}
-                  required
-                />
-              </div>
+
+              {/* Continue with Google Button */}
+              <button
+                type="button"
+                className="btn w-100 py-2 d-flex align-items-center justify-content-center gap-2 shadow-sm"
+                onClick={handleGoogleSignIn}
+                disabled={googleLoading || loading}
+                style={{
+                  background: '#f8fafc',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '8px',
+                  padding: '10px 16px',
+                  color: '#1e293b'
+                }}
+              >
+                {googleLoading ? (
+                  <span className="text-muted small"><span className="spinner-border spinner-border-sm me-2"></span>Connecting to Google...</span>
+                ) : (
+                  <>
+                    <svg width="18" height="18" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+                      <path
+                        fill="#4285F4"
+                        d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"
+                      />
+                      <path
+                        fill="#34A853"
+                        d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.34 24 12 24z"
+                      />
+                      <path
+                        fill="#FBBC05"
+                        d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"
+                      />
+                      <path
+                        fill="#EA4335"
+                        d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
+                      />
+                    </svg>
+                    <span className="fw-semibold text-dark small">Continue with Google</span>
+                  </>
+                )}
+              </button>
             </div>
-
-            <button
-              type="submit"
-              className="btn btn-dark w-100 py-2 fw-semibold mb-3 shadow-sm"
-              disabled={loading || googleLoading}
-            >
-              {loading ? (
-                <span><span className="spinner-border spinner-border-sm me-2"></span>Signing In...</span>
-              ) : (
-                <span><i className="bi bi-box-arrow-in-right me-2"></i>Sign In</span>
-              )}
-            </button>
-          </form>
-
-          {/* Divider */}
-          <div className="d-flex align-items-center my-3">
-            <hr className="flex-grow-1 my-0 text-muted" />
-            <span className="px-3 text-muted small fw-semibold">OR</span>
-            <hr className="flex-grow-1 my-0 text-muted" />
-          </div>
-
-          {/* Continue with Google Button */}
-          <button
-            type="button"
-            className="btn btn-outline-dark w-100 py-2 d-flex align-items-center justify-content-center gap-2 mb-3 shadow-sm bg-white"
-            onClick={handleGoogleSignIn}
-            disabled={googleLoading || loading}
-          >
-            {googleLoading ? (
-              <span><span className="spinner-border spinner-border-sm me-2"></span>Connecting to Google...</span>
-            ) : (
-              <>
-                <svg width="18" height="18" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
-                  <path
-                    fill="#4285F4"
-                    d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"
-                  />
-                  <path
-                    fill="#34A853"
-                    d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.34 24 12 24z"
-                  />
-                  <path
-                    fill="#FBBC05"
-                    d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"
-                  />
-                  <path
-                    fill="#EA4335"
-                    d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
-                  />
-                </svg>
-                <span className="fw-semibold text-dark">Continue with Google</span>
-              </>
-            )}
-          </button>
-
-          <div className="text-center mt-3">
-            <span className="text-muted small">New student? </span>
-            <Link to="/register" className="small fw-semibold text-decoration-none">
-              Register here
-            </Link>
           </div>
         </div>
       </div>
